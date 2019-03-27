@@ -1,0 +1,133 @@
+{
+  "data": [
+    {
+      "menuId": 10,
+      "parentId": 0,
+      "name": "首页",
+      "url": "index",
+      "perms": "mer:index",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": ""
+    },
+    {
+      "menuId": 11,
+      "parentId": 0,
+      "name": "报表",
+      "url": "report",
+      "perms": "mer:report",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "",
+      "children": [
+        {
+          "menuId": 10,
+          "parentId": 0,
+          "name": "营收报表",
+          "url": "profit",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        },
+        {
+          "menuId": 10,
+          "parentId": 0,
+          "name": "时段平均报表",
+          "url": "timeaverage",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        },
+        {
+          "menuId": 10,
+          "parentId": 0,
+          "name": "流水明细",
+          "url": "balanceLog",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    },
+    {
+      "menuId": 104,
+      "parentId": 0,
+      "name": "店铺管理",
+      "url": "shopmanagement",
+      "perms": "mer:report",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "",
+      "children": [
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "店铺列表",
+          "url": "list",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    },
+    {
+      "menuId": 3,
+      "parentId": 0,
+      "name": "订单管理",
+      "url": "ordermanagement",
+      "perms": "mer:report",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "",
+      "children": [
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "订单列表",
+          "url": "list",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    },
+    {
+      "menuId": 5,
+      "parentId": 0,
+      "name": "人员管理",
+      "url": "membermanagement",
+      "perms": "mer:report",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "",
+      "children": [
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "人员列表",
+          "url": "list",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    }
+  ]
+}
