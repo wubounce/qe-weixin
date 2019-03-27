@@ -40,10 +40,10 @@ export default [
     name: 'userAgreement'
   },
   {
-    path: '/tencentAlipay',
-    component: () => import('@/pages/tencentAlipay/index'),
+    path: '/alipay',
+    component: () => import('@/pages/alipay/index'),
     hidden: true,
-    name: 'tencentAlipay'
+    name: 'alipay'
   },
   {
     path: '/',
