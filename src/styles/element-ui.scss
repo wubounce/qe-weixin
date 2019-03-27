@@ -75,3 +75,12 @@
 .el-pager li {
   font-weight: normal;
 }
+
+.el-cascader-menu__item.is-active {
+  background: $activeBg;
+}
+
+.el-cascader-menu__item:focus:not(:active),
+.el-cascader-menu__item:hover {
+  background-color: none;
+}

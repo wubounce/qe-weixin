@@ -32,7 +32,7 @@
             <Upload v-model="TencentAlipayForm.shopPicUrl" />
           </span>
           <span class="qie-pic">
-            <img src="static/image/qiezhaop.jpg" alt="企鹅共享洗衣" width="146" height="146">
+            <img src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/qiezhaop.jpg" alt="企鹅共享洗衣" width="146" height="146">
             <span class="example">示例</span>
           </span>
         </el-form-item>

@@ -68,7 +68,9 @@ module.exports = {
   },
   //允许对内部的 webpack 配置进行更细粒度的修改。
   chainWebpack: config => {
-    config.resolve.alias.set('@', resolve('src')).set('static', path.join(__dirname, 'public/static'));
+    // config.resolve.alias.set('@', resolve('src')).set('static', path.join(__dirname, 'public/static'));
+    config.resolve.alias.set('@', resolve('src')).set('static', 'https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/');
+
     //打包文件带hash
     config.output.filename('[name].[hash].js').end();
     config.module.rules.delete('svg'); //重点:删除默认配置中处理svg,

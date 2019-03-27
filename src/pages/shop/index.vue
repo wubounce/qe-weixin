@@ -10,10 +10,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="选择区域：">
-        <el-select v-model="searchData.direct" placeholder="请选择">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
+        <area-cascader></area-cascader>
       </el-form-item>
       <el-form-item label="地址：">
         <el-input v-model="searchData.address" placeholder="请输入"></el-input>
@@ -30,10 +27,18 @@
       </div>
       <el-table :data="shopDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-        <el-table-column header-align="left" class-name="rowstyle" prop="shopName" label="店铺名称" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="shopName" label="店铺名称" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span class="rowstyle">{{scope.row.shopName}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="count" label="店铺地址" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="shopType" label="店铺类型"></el-table-column>
-        <el-table-column header-align="left" prop="machineCount" label="设备数量"></el-table-column>
+        <el-table-column header-align="left" prop="machineCount" label="设备数量">
+          <template slot-scope="scope">
+            <span class="rowstyle">{{scope.row.machineCount}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="profit" label="累计收益(元)"></el-table-column>
         <el-table-column header-align="left" prop="isReserve" label="预约功能">
           <template slot-scope="scope">
@@ -60,12 +65,14 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, manageListFun } from '@/service/shop'
 import Pagination from '@/components/Pager'
+import AreaCascader from '@/components/AreaCascader'
 import PagerMixin from "@/mixins/PagerMixin";
 
 export default {
   mixins: [PagerMixin],
   components: {
-    Pagination
+    Pagination,
+    AreaCascader
   },
   data () {
     return {
@@ -107,14 +114,13 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-@import "~@/styles/variables.scss";
-.rowstyle {
-  color: $menuText;
-}
-</style>
+
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import "~@/styles/variables.scss";
 .table-header-action {
   padding-bottom: 16px;
+}
+.rowstyle {
+  color: $menuText;
 }
 </style>
