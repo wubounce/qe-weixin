@@ -59,7 +59,6 @@ export default {
       oderDataList: [],
       moneyDataList: [],
       reportDate: [],
-      shopList: [],
       shopFilterName: null,
       filterShopVisible: false,
       /* eslint-disable */

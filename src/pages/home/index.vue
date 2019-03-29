@@ -203,10 +203,11 @@ export default {
       delete res.all; //图表删除总数
       delete res.timeout; //图表删除总数
       for (var i in res) {
-        this.pietypeData.push({
-          value: res[i],
-          name: MachineStatus(i)
-        });
+        let tmp =
+          this.pietypeData.push({
+            value: res[i],
+            name: MachineStatus[i]
+          });
       }
       this.piechart.setOption(this.pietypeChartOPtion);
     },

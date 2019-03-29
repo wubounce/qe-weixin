@@ -13,6 +13,12 @@ import filter from '@/filters/index'; // global filter
 import directive from '@/directive/index'; // global directive
 
 import { Message } from 'element-ui';
+// 引入vue-amap
+
+window.VueAMap.initAMapApiLoader({
+  key: '613b0f15bea16ba4bb84c1c9cde9ae88',
+  plugin: ['Autocomplete', 'PlaceSearch', 'Scale', 'OverView', 'ToolBar', 'MapType', 'PolyEditor', 'CircleEditor', 'Geolocation', 'Geocoder']
+});
 /* eslint-disable */
 Vue.config.productionTip = true;
 Vue.prototype.$ELEMENT = { size: Cookies.get('size') || 'small' };

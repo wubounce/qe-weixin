@@ -96,6 +96,25 @@ export default [
       }
     ]
   },
+  {
+    path: '/devicemanagement',
+    component: Layout,
+    redirect: '/devicemanagement/list',
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/pages/device/index'),
+        name: 'devicelist',
+        meta: { title: '设备列表', icon: 'dashboard', noCache: true }
+      },
+      {
+        path: 'batchStart',
+        component: () => import('@/pages/device/batchStart'),
+        name: 'batchStart',
+        meta: { title: '设备批量启动', icon: 'dashboard', noCache: true }
+      }
+    ]
+  },
   { path: '/404', component: () => import('@/pages/404'), hidden: true },
   { path: '*', redirect: '/404', hidden: true }
 ];

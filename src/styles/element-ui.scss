@@ -84,3 +84,25 @@
 .el-cascader-menu__item:hover {
   background-color: none;
 }
+
+.el-dialog__header {
+  padding: 24px 32px !important;
+}
+.el-dialog__body {
+  padding: 0 32px !important;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: #fff !important;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: $menuText;
+  border-radius: 50px;
+  line-height: 24px !important;
+  text-align: center;
+}
+
+.el-table th {
+  background: #fafafa !important;
+}

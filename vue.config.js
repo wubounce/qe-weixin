@@ -62,7 +62,8 @@ module.exports = {
       moment: 'moment',
       echarts: 'echarts',
       jsencrypt: 'JSEncrypt',
-      axios: 'axios'
+      axios: 'axios',
+      VueAMap: 'VueAMap'
     };
     config.plugins = [...config.plugins, ...plugins];
   },

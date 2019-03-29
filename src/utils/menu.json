@@ -16,7 +16,6 @@
       "parentId": 0,
       "name": "报表",
       "url": "report",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,
@@ -62,7 +61,6 @@
       "parentId": 0,
       "name": "店铺管理",
       "url": "shopmanagement",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,
@@ -82,11 +80,44 @@
       ]
     },
     {
+      "menuId": 104,
+      "parentId": 0,
+      "name": "设备管理",
+      "url": "devicemanagement",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "",
+      "children": [
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "设备列表",
+          "url": "list",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        },
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "设备批量启动",
+          "url": "batchStart",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    },
+    {
       "menuId": 3,
       "parentId": 0,
       "name": "订单管理",
       "url": "ordermanagement",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,
@@ -110,7 +141,6 @@
       "parentId": 0,
       "name": "人员管理",
       "url": "membermanagement",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,

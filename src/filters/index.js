@@ -10,6 +10,13 @@ const install = Vue => {
   });
 
   /**
+   * @description 千分位
+   */
+  Vue.filter('numFormat', value => {
+    return String(value).indexOf('.') !== -1 ? value.toLocaleString() : String(value).replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+  });
+
+  /**
    * @description 根据支付宝账号中间四位*代替
    */
   Vue.filter('replaceAliply', value => {
