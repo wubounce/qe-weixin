@@ -65,11 +65,9 @@ export const waterStatus = {
 
 // 订单状态类型
 export const orderStatus = {
-  0: '未支付',
+  0: '待支付',
   1: '支付超时',
   2: '已支付',
-  3: '已完成',
-  4: '申请退款',
   5: '已退款'
 };
 

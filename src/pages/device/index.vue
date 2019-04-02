@@ -107,13 +107,13 @@
         </el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
-            <el-tooltip content="筒自洁" placement="top" effect="dark">
-              <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="oneditShop(scope.row)" />
+            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.hasTzj && scope.row.machineState===1||scope.row.hasTzj && scope.row.machineState===4">
+              <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
             </el-tooltip>
-            <el-tooltip content="复位" placement="top" effect="dark">
+            <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'">
               <svg-icon icon-class="fuwei" class="icon-fuwei" />
             </el-tooltip>
-            <el-tooltip content="启动" placement="top" effect="dark">
+            <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.machineState===1 && scope.row.subTypeName !== '通用脉冲充电桩'||scope.row.machineState===4 && scope.row.subTypeName !== '通用脉冲充电桩'">
               <svg-icon icon-class="qidong" class="icon-qidong" />
             </el-tooltip>
             <el-tooltip content="编辑" placement="top" effect="dark">
@@ -127,7 +127,7 @@
       </el-table>
       <Pagination @pagination="handleSearch" :total="total" />
       <!-- 设备详情 -->
-      <el-dialog title="设备详情" :visible.sync="detailDialogVisible" @close="detailActiveTab='first'" width="540px">
+      <el-dialog title="设备详情" :visible.sync="detailDialogVisible" @close="detailActiveTab='first'" width="540px" top="50px">
         <h3 class="detail-base-title">基本信息</h3>
         <ul class="deatil-list">
           <li><span>设备名称：</span>{{detailData.machineName}}</li>
@@ -186,7 +186,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun } from '@/service/device'
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun } from '@/service/device'
 import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType } from '@/utils/mapping'
 import Pagination from '@/components/Pager'
 import PagerMixin from "@/mixins/PagerMixin";
@@ -260,7 +260,7 @@ export default {
       let res = await getlistParentTypeFun({ onlyMine: true });
       this.machineParentTypeList = res
     },
-    async getmachineSubType () { //获取设备类型
+    async getmachineSubType () { //获取设备二级类型
       let res = await listSubTypeAllFun();
       this.machineSubTypeList = res
     },
@@ -287,13 +287,20 @@ export default {
       this.detailData = res;
 
     },
-    oneditShop (row) {
-      this.lookShopDetail(row);
-      this.addShopDialogVisible = true;
-    },
     resetForm (formName) {
       this.$refs[formName].resetFields();
       this.addShopDialogVisible = false;
+    },
+    handleDeviceTzj (row) {
+      let payload = { machineId: row.machineId };
+      this.$confirm(`确认筒自洁${row.machineName}此设备?`, '提示', {
+        showClose: false
+      }).then(() => {
+        tzjDeviceFun(payload).then(() => {
+          this.$message.success('筒自洁成功');
+          this.getDeviceDataToTable()
+        });
+      });
     },
   },
 }

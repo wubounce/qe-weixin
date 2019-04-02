@@ -115,6 +115,32 @@ export default [
       }
     ]
   },
+  {
+    path: '/ordermanagement',
+    component: Layout,
+    redirect: '/ordermanagement/list',
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/pages/order/index'),
+        name: 'orderlist',
+        meta: { title: '订单列表', icon: 'dashboard', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/membermanagement',
+    component: Layout,
+    redirect: '/membermanagement/list',
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/pages/member/index'),
+        name: 'memberlist',
+        meta: { title: '人员列表', icon: 'dashboard', noCache: true }
+      }
+    ]
+  },
   { path: '/404', component: () => import('@/pages/404'), hidden: true },
   { path: '*', redirect: '/404', hidden: true }
 ];

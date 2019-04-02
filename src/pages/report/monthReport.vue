@@ -1,5 +1,5 @@
 <template>
-  <div class="date-earing year-earing">
+  <div class="date-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="earing-search">
       <el-form-item label="年份筛选：" prop="date">
         <el-date-picker v-model="searchData.time" type="monthrange" align="right" unlink-panels range-separator="~" start-placeholder="开始月份" end-placeholder="结束月份" value-format="yyyy-MM">
@@ -255,7 +255,7 @@ export default {
               normal: {
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1,
                   [
-                    { offset: 0, color: '#FFECC9' },
+                    { offset: 0, color: '#FFB300' },
                     { offset: 1, color: '#FDFDFD' }
                   ]
                 )
@@ -294,15 +294,6 @@ export default {
   },
 }
 </script>
-<style rel="stylesheet/scss" lang="scss">
-.year-earing .el-date-editor {
-  width: 120px !important;
-  .el-input__inner {
-    padding-left: 30px !important;
-  }
-}
-</style>
-
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import "~@/styles/profitreport.scss";
 </style>

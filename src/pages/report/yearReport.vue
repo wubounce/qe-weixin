@@ -254,7 +254,7 @@ export default {
               normal: {
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1,
                   [
-                    { offset: 0, color: '#FFECC9' },
+                    { offset: 0, color: '#FFB300' },
                     { offset: 1, color: '#FDFDFD' }
                   ]
                 )

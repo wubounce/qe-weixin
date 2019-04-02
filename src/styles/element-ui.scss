@@ -106,3 +106,16 @@
 .el-table th {
   background: #fafafa !important;
 }
+
+.el-message-box {
+  padding: 0 32px;
+}
+.el-message-box__header {
+  padding: 24px 24px !important;
+  text-align: center;
+  border-bottom: 1px solid $under_line;
+}
+.el-message-box__content {
+  padding: 30px 15px !important;
+  text-align: center;
+}

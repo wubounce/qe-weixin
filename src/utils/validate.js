@@ -65,3 +65,17 @@ export const validatShopName = str => {
   const reg = /^[\u4e00-\u9fa5_a-zA-Z0-9_-]{2,16}$/;
   return reg.test(str);
 };
+
+/**
+ * 订单补偿券
+ *
+ */
+export const validatPrice = str => {
+  const reg = /^[0-9]{1}\d*(\.\d{1,2})?$/;
+  return reg.test(str);
+};
+
+export const validatNum = str => {
+  const reg = /^[1-9]+\d*$/;
+  return reg.test(str);
+};

@@ -22,7 +22,7 @@
     </el-form>
     <div class="table-content">
       <div class="table-header-action">
-        <el-button type="primary" icon="el-icon-plus" @click="addShopDialogVisible=true">新增店铺</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addShopDialogVisible=true;">新增店铺</el-button>
         <el-button icon="el-icon-download">导出</el-button>
       </div>
       <el-table :data="shopDataToTable" style="width: 100%">
@@ -396,16 +396,8 @@ export default {
           payload.districtId = payload.region[2]
           payload.region = []
           let res = await addOrEditShopFun(payload);
-          this.addShopDialogVisible = false;
-          this.$refs[formName].resetFields();
-          this.addShopFrom.lng = '';
-          this.addShopFrom.lat = '';
-          this.addShopFrom.organization = '';
-          this.$Message({
-            showClose: true,
-            message: "恭喜你，操作成功！",
-            type: "success"
-          });
+          this.resetForm(formName);
+          this.$Message("恭喜你，操作成功！");
           this.getShopDataToTable()
         } else {
           return false;
@@ -425,7 +417,9 @@ export default {
     },
     // 删除店铺
     handleDelete (shopId) {
-      this.$confirm("您确定要删除该店铺?").then(() => {
+      this.$confirm("您确定要删除该店铺?", '提示', {
+        showClose: false
+      }).then(() => {
         deleteShopFun({ shopId, shopId }).then(() => {
           this.$message.success('店铺删除成功');
           this.getShopDataToTable()
