@@ -40,7 +40,7 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary">
-          <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' /> 批量修改</el-button>
+          <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' /> 批量编辑 </el-button>
         <el-button>
           <svg-icon icon-class="daochu" class="daochu" /> 导出</el-button>
       </div>
@@ -111,21 +111,21 @@
               <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
             </el-tooltip>
             <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'">
-              <svg-icon icon-class="fuwei" class="icon-fuwei" />
+              <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
             </el-tooltip>
             <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.machineState===1 && scope.row.subTypeName !== '通用脉冲充电桩'||scope.row.machineState===4 && scope.row.subTypeName !== '通用脉冲充电桩'">
-              <svg-icon icon-class="qidong" class="icon-qidong" />
+              <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
             </el-tooltip>
             <el-tooltip content="编辑" placement="top" effect="dark">
               <svg-icon icon-class="bianji" class="icon-bianji" />
             </el-tooltip>
             <el-tooltip content="异常日志" placement="top" effect="dark">
-              <svg-icon icon-class="yichangrizhi" class="icon-yichangrizhi" />
+              <svg-icon icon-class="yichangrizhi" class="icon-yichangrizhi" @click="errorLogDialogVisible=true" />
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handleSearch" :total="total" />
+      <Pagination @pagination="handlePagination" />
       <!-- 设备详情 -->
       <el-dialog title="设备详情" :visible.sync="detailDialogVisible" @close="detailActiveTab='first'" width="540px" top="50px">
         <h3 class="detail-base-title">基本信息</h3>
@@ -181,12 +181,27 @@
           <el-table-column prop="address" min-width="180" label="设备型号" show-overflow-tooltip></el-table-column>
         </el-table>
       </el-dialog>
+      <!-- 设备异常状态日志 -->
+      <el-dialog title="启动设备" :visible.sync="deviceStertDialogVisible" width="540px">
+        <h5 class="chose-start-fun">选择设备启动的模式</h5>
+        <el-table :data="detailData.functionList" style="width: 100%">
+          <el-table-column prop="functionName" label="功能"></el-table-column>
+          <el-table-column prop="needMinutes" label="耗时/分钟" v-if="detailData.subTypeName !== '通用脉冲充电桩'"></el-table-column>
+          <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
+          <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineId,scope.row)">启动</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun } from '@/service/device'
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun } from '@/service/device'
 import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType } from '@/utils/mapping'
 import Pagination from '@/components/Pager'
 import PagerMixin from "@/mixins/PagerMixin";
@@ -212,7 +227,9 @@ export default {
       errorLogDialogVisible: false,
       errorLogDeviceList: [],
       machineParentTypeList: [],
-      machineSubTypeList: []
+      machineSubTypeList: [],
+
+      deviceStertDialogVisible: false,
     }
   },
   filters: {
@@ -264,15 +281,15 @@ export default {
       let res = await listSubTypeAllFun();
       this.machineSubTypeList = res
     },
-    handleSearch (data) {
+    handlePagination (data) { //分页
       this.searchData = Object.assign(this.searchData, data)
       this.getDeviceDataToTable()
     },
-    searchForm () {
+    searchForm () { //头部搜索
       let payload = Object.assign({}, this.searchData);
       this.getDeviceDataToTable(payload)
     },
-    async getDeviceDataToTable () {
+    async getDeviceDataToTable () { //列表 
       let payload = Object.assign({}, this.searchData);
       let res = await deviceListFun(payload);
       this.deviceDataToTable = res.page.items;
@@ -281,7 +298,7 @@ export default {
       });
       this.total = res.page.total
     },
-    async lookShopDetail (row) {
+    async lookShopDetail (row) { //详情
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = res;
@@ -291,7 +308,7 @@ export default {
       this.$refs[formName].resetFields();
       this.addShopDialogVisible = false;
     },
-    handleDeviceTzj (row) {
+    handleDeviceTzj (row) { //筒自洁
       let payload = { machineId: row.machineId };
       this.$confirm(`确认筒自洁${row.machineName}此设备?`, '提示', {
         showClose: false
@@ -301,6 +318,54 @@ export default {
           this.getDeviceDataToTable()
         });
       });
+    },
+    handleDeviceReset (row) { //复位
+      let payload = { machineId: row.machineId };
+      this.$confirm(`确认复位${row.machineName}此设备?`, '提示', {
+        showClose: false
+      }).then(() => {
+        manageResetDeviceFun(payload).then(() => {
+          this.$message.success('复位成功');
+          this.getDeviceDataToTable()
+        });
+      });
+    },
+    handleDeviceStart (row) { //启动列表
+      if (row.machineState === 1) {
+        this.lookShopDetail(row);
+        this.deviceStertDialogVisible = true;
+      }
+      if (row.machineState === 2) {
+        this.$confirm(`设备运行中，请先复位`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+        });
+      }
+      if (row.machineState === 3) {
+        this.$confirm(`设备已被预约，请先复位`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+        });
+      }
+      if (row.machineState === 4) {
+        this.$confirm(`设备故障，启动失败`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+        });
+      }
+      if (row.machineState === 8) {
+        this.$confirm(`设备离线，启动失败`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+        });
+      }
+    },
+    startDeviceFun (machineId, row) {
+      let payload = { machineId: machineId, functionId: row.functionId };
+      machineStartFun(payload).then(() => {
+        this.deviceStertDialogVisible = false;
+        this.$message.success('启动成功');
+      })
     },
   },
 }
@@ -419,6 +484,12 @@ export default {
   width: 3px;
   height: 15px;
   border-radius: 1px;
+}
+.chose-start-fun {
+  border-top: 1px solid $under_line;
+  color: $comment;
+  padding: 23px 0 16px 0;
+  font-weight: normal;
 }
 </style>
  

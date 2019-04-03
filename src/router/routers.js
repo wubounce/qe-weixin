@@ -141,6 +141,37 @@ export default [
       }
     ]
   },
+  {
+    path: '/marketingmanagement',
+    component: Layout,
+    redirect: '/marketingmanagement/discount',
+    children: [
+      {
+        path: 'discount',
+        component: () => import('@/pages/marketing/tLimitedDiscount'),
+        name: 'discount',
+        meta: { title: '限时优惠', icon: 'dashboard', noCache: true }
+      },
+      {
+        path: 'couponsent',
+        component: () => import('@/pages/marketing/couponSent'),
+        name: 'couponsent',
+        meta: { title: '优惠券发放', icon: 'dashboard', noCache: true }
+      },
+      {
+        path: 'couponactive',
+        component: () => import('@/pages/marketing/couponActive'),
+        name: 'couponactive',
+        meta: { title: '优惠券活动', icon: 'dashboard', noCache: true }
+      },
+      {
+        path: 'couponrecord',
+        component: () => import('@/pages/marketing/couponRecord'),
+        name: 'couponrecord',
+        meta: { title: '优惠券记录', icon: 'dashboard', noCache: true }
+      }
+    ]
+  },
   { path: '/404', component: () => import('@/pages/404'), hidden: true },
   { path: '*', redirect: '/404', hidden: true }
 ];

@@ -95,7 +95,7 @@
         </ul>
       </el-dialog>
       <!-- 订单补偿 -->
-      <el-dialog title="补偿券发放" :visible.sync="compensateDialogVisible" @close="addOrEditShopfrom('compensateFrom')" width="540px" top="20px">
+      <el-dialog title="补偿券发放" :visible.sync="compensateDialogVisible" @close="resetForm('compensateFrom')" width="540px" top="20px">
         <el-form ref="compensateFrom" :model="compensateFrom" :rules="compensateFormRules" class="add-shop-from" label-width="120px">
           <el-form-item label="发放用户：" class="shop-name">
             <span>{{compensateFrom.phone}}</span>
@@ -103,7 +103,7 @@
           <el-form-item label="适用店铺：">
             <span>{{compensateFrom.shopName}}</span>
           </el-form-item>
-          <el-form-item label="适用类型：" class="shop-name" prop="parentTypeId">
+          <el-form-item label="适用类型：" prop="parentTypeId">
             <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择">
               <el-option label="全部" value=""></el-option>
               <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
@@ -280,7 +280,7 @@ export default {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
           let payload = Object.assign({}, this.compensateFrom)
-          let res = await compensateFun(payload);
+          await compensateFun(payload);
           this.$Message.success("恭喜你，操作成功！");
           this.$refs[formName].resetFields();
           this.compensateDialogVisible = false;

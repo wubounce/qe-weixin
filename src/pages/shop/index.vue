@@ -153,7 +153,6 @@
 import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun } from '@/service/shop'
 import { deviceListFun } from '@/service/device'
 import { isReserveType, isHasVipType, isDiscountType, deviceStatus, deviceColorStatus } from '@/utils/mapping'
-import { validatShopName } from '@/utils/validate';
 import Pagination from '@/components/Pager'
 import AreaCascader from '@/components/AreaCascader'
 import PagerMixin from "@/mixins/PagerMixin";
@@ -164,15 +163,6 @@ export default {
     AreaCascader
   },
   data () {
-    const validateShopName = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('手机号不能为空'));
-      } else if (!validatShopName(value)) {
-        callback(new Error("请输入正确的手机号"));
-      } else {
-        callback();
-      }
-    };
     let self = this;
     return {
       searchData: {
@@ -395,7 +385,7 @@ export default {
           payload.cityId = payload.region[1]
           payload.districtId = payload.region[2]
           payload.region = []
-          let res = await addOrEditShopFun(payload);
+          await addOrEditShopFun(payload);
           this.resetForm(formName);
           this.$Message("恭喜你，操作成功！");
           this.getShopDataToTable()
@@ -420,7 +410,7 @@ export default {
       this.$confirm("您确定要删除该店铺?", '提示', {
         showClose: false
       }).then(() => {
-        deleteShopFun({ shopId, shopId }).then(() => {
+        deleteShopFun({ shopId: shopId }).then(() => {
           this.$message.success('店铺删除成功');
           this.getShopDataToTable()
         });

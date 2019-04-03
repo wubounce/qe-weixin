@@ -94,10 +94,9 @@
 
 <script type="text/ecmascript-6">
 import { shopListFun, operatorListFun, lockOperatorrFun, getOperatorInfoFun, updateOperatorInfoFun, delOperatorFun, permsMenuFun, addOperatorFun } from '@/service/member'
-import { validatShopName } from '@/utils/validate';
 import { getTrees } from '@/utils/tools';
 import Pagination from '@/components/Pager'
-import multipleShop from './multipleShop'
+import multipleShop from '@/components/multipleShop'
 import PagerMixin from "@/mixins/PagerMixin";
 export default {
   mixins: [PagerMixin],
@@ -118,7 +117,6 @@ export default {
       addMemberDialogVisible: false,
       detailPermissionsData: [],
       addOrEditMemberTitle: '新增人员',
-      addMemberDialogVisible: false,
       addMemberFrom: {
         id: '',
         phone: '',
@@ -198,7 +196,7 @@ export default {
         isLock = 1;
       }
       let payload = Object.assign({}, { id: row.id, isLock: isLock });
-      let res = await lockOperatorrFun(payload);
+      await lockOperatorrFun(payload);
       this.$Message.success('操作成功');
     },
     async openAddBDDialog (row = {}) {
