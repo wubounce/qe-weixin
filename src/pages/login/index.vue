@@ -36,6 +36,7 @@
 <script>
 import { mapActions } from 'vuex';
 import JsEncrypt from 'jsencrypt';
+import { removeToken } from '@/utils/auth';
 export default {
   name: "Login",
   data () {
@@ -59,6 +60,10 @@ export default {
       },
       immediate: true
     }
+  },
+  created () {
+    removeToken();
+    localStorage.clear();
   },
   methods: {
     ...mapActions([

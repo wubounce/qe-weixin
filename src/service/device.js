@@ -31,6 +31,7 @@ const stateMachine = '/machine/statisticsMachine';
 const listSubTypeAll = '/machine/listSubTypeAll';
 const listShopBatchStart = '/shop/listShopBatchStart'; //批量启动店铺列表
 const machineStart = '/machine/machineStart'; //设备详情 - 启动
+const batchEditDetergent = 'machine/batchEditDetergent'; //设备详情 - 启动
 
 export const device = payload => fetch.get(deviceApi, { params: payload }); //登录
 export const deviceListFun = payload => fetch.post(deviceList, payload); //获取设备列表
@@ -58,3 +59,4 @@ export const stateMachineFun = payload => fetch.post(stateMachine, payload);
 export const listSubTypeAllFun = payload => fetch.post(listSubTypeAll, payload);
 export const listShopBatchStartFun = payload => fetch.post(listShopBatchStart, payload); //批量启动店铺列表
 export const machineStartFun = payload => fetch.post(machineStart, payload); //批量启动店铺列表
+export const batchEditDetergentFun = payload => fetch.post(batchEditDetergent, payload); //批量启动店铺列表

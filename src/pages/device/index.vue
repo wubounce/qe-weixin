@@ -39,12 +39,12 @@
     </el-form>
     <div class="table-content">
       <div class="table-header-action">
-        <el-button type="primary">
+        <el-button type="primary" @click="handleBatchEdit">
           <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' /> 批量编辑 </el-button>
         <el-button>
           <svg-icon icon-class="daochu" class="daochu" /> 导出</el-button>
       </div>
-      <el-table :data="deviceDataToTable" style="width: 100%">
+      <el-table :data="deviceDataToTable" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="machineName" label="设备名称" show-overflow-tooltip>
@@ -89,7 +89,7 @@
               <span class="signal signal-two" style="background:#4ECB73"></span>
               <span class="signal signal-three" style="background:#4ECB73"></span>
               <span class="signal signal-four" style="background:#4ECB73"></span>
-              <span class="signal signal-five" style="background:#4ECB73"></span>
+              <span class="signal signal-five"></span>
             </div>
             <div v-show="scope.row.signal>=24">
               <span class="signal signal-one" style="background:#4ECB73"></span>
@@ -107,7 +107,7 @@
         </el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
-            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.hasTzj && scope.row.machineState===1||scope.row.hasTzj && scope.row.machineState===4">
+            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState===4">
               <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
             </el-tooltip>
             <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'">
@@ -117,7 +117,7 @@
               <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
             </el-tooltip>
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <svg-icon icon-class="bianji" class="icon-bianji" />
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="handleDeviceEdit(scope.row)" />
             </el-tooltip>
             <el-tooltip content="异常日志" placement="top" effect="dark">
               <svg-icon icon-class="yichangrizhi" class="icon-yichangrizhi" @click="errorLogDialogVisible=true" />
@@ -125,7 +125,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handlePagination" />
+      <Pagination @pagination="handlePagination" :total="total" />
       <!-- 设备详情 -->
       <el-dialog title="设备详情" :visible.sync="detailDialogVisible" @close="detailActiveTab='first'" width="540px" top="50px">
         <h3 class="detail-base-title">基本信息</h3>
@@ -156,18 +156,30 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="洗衣液设置" name="second">
+          <el-tab-pane label="洗衣液设置" name="second" v-if="detailData.parentTypeName === '洗衣机'">
             <el-table :data="detailData.detergentFunctionList" style="width: 100%">
               <el-table-column prop="functionName" label="功能"></el-table-column>
               <el-table-column prop="detergentLiquid" label="用量/ml"></el-table-column>
-              <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
+              <el-table-column prop="detergentPrice" label="原价/元"></el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="其他属性设置" name="third">
-            <el-table :data="detailData.functionList" style="width: 100%">
-              <el-table-column prop="functionName" label="属性名称"></el-table-column>
-              <el-table-column prop="needMinutes" label="属性值"></el-table-column>
-              <el-table-column prop="functionPrice" label="属性说明"></el-table-column>
+          <el-tab-pane label="其他属性设置" name="third" v-if="detailData.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
+            <el-table :data="detailData.waterLevel" style="width: 100%">
+              <el-table-column prop="functionName" label="属性名称">
+                <template slot-scope="scope">
+                  <span>水位设置</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="waterLevel" label="属性值">
+                <template slot-scope="scope">
+                  <span>{{scope.row | waterStatus}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="functionPrice" label="属性说明">
+                <template slot-scope="scope">
+                  <span>控制洗衣模式最大</span>
+                </template>
+              </el-table-column>
             </el-table>
           </el-tab-pane>
         </el-tabs>
@@ -196,26 +208,37 @@
           </el-table-column>
         </el-table>
       </el-dialog>
+      <!-- 编辑设备  -->
+      <el-dialog title="编辑设备" :visible.sync="deviceEditDialogVisible" width="768px">
+        <edit-device :deviceEditdetailForm="deviceEditdetailForm" :visible="deviceEditDialogVisible" @closeDeviceEdit="closeDeviceEdit" v-if="deviceEditDialogVisible"></edit-device>
+      </el-dialog>
+      <!-- 批量编辑设备  -->
+      <el-dialog title="编辑设备" :visible.sync="batchDEditDeviceDialogVisible" width="768px">
+        <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :visible="batchDEditDeviceDialogVisible" @closeBatchDeviceEdit="closeBatchDeviceEdit" v-if="batchDEditDeviceDialogVisible"></batch-edit>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun } from '@/service/device'
-import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType } from '@/utils/mapping'
+import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType, waterStatus } from '@/utils/mapping'
 import Pagination from '@/components/Pager'
 import PagerMixin from "@/mixins/PagerMixin";
 import ShopFilter from '@/components/Shopfilter';
+import editDevice from './editDevice';
+import batchEdit from './batchEdit';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
     ShopFilter,
+    editDevice,
+    batchEdit,
   },
   data () {
     return {
-      searchData: {
-      },
+      searchData: {},
       shopFilterName: null,
       filterShopVisible: false,
 
@@ -230,6 +253,14 @@ export default {
       machineSubTypeList: [],
 
       deviceStertDialogVisible: false,
+      multipleSelection: [],
+
+      //编辑
+      deviceEditDialogVisible: false,
+      deviceEditdetailForm: {},
+
+      //批量编辑设备
+      batchDEditDeviceDialogVisible: false,
     }
   },
   filters: {
@@ -241,6 +272,9 @@ export default {
     },
     ifOpenType (val) {
       return ifOpenType[val];
+    },
+    waterStatus (val) {
+      return waterStatus[val];
     },
 
   },
@@ -286,23 +320,31 @@ export default {
       this.getDeviceDataToTable()
     },
     searchForm () { //头部搜索
+      this.searchData.page = 1;
       let payload = Object.assign({}, this.searchData);
       this.getDeviceDataToTable(payload)
     },
     async getDeviceDataToTable () { //列表 
+      this.deviceDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await deviceListFun(payload);
       this.deviceDataToTable = res.page.items;
-      this.deviceDataToTable.forEach((item, index) => {
-        item.signal = index * 3
-      });
       this.total = res.page.total
     },
     async lookShopDetail (row) { //详情
       let payload = { machineId: row.machineId };
-      let res = await detailDeviceListFun(payload);
-      this.detailData = res;
-
+      let res = await detailDeviceListFun(payload)
+      this.detailData = Object.assign({}, res);
+      this.deviceEditdetailForm = {};
+      this.deviceEditdetailForm = Object.assign({}, res);
+      console.log(this.deviceEditdetailForm)
+      this.deviceEditdetailForm.functionJson = res.functionList;
+      this.deviceEditdetailForm.detergentJson = res.detergentFunctionList;
+      this.deviceEditdetailForm.isOpenDetergent == 1 ? this.deviceEditdetailForm.isOpenDetergentStatus = true : this.deviceEditdetailForm.isOpenDetergentStatus = false;
+      this.deviceEditdetailForm.functionList.forEach((item) => {
+        item.ifOpen === 0 ? item.ifOpenStatus = true : item.ifOpenStatus = false;
+      });
+      return Promise.resolve();
     },
     resetForm (formName) {
       this.$refs[formName].resetFields();
@@ -315,7 +357,7 @@ export default {
       }).then(() => {
         tzjDeviceFun(payload).then(() => {
           this.$message.success('筒自洁成功');
-          this.getDeviceDataToTable()
+          this.getDeviceDataToTable();
         });
       });
     },
@@ -326,11 +368,12 @@ export default {
       }).then(() => {
         manageResetDeviceFun(payload).then(() => {
           this.$message.success('复位成功');
-          this.getDeviceDataToTable()
+          this.getDeviceDataToTable();
         });
       });
     },
     handleDeviceStart (row) { //启动列表
+      console.log(row.machineState)
       if (row.machineState === 1) {
         this.lookShopDetail(row);
         this.deviceStertDialogVisible = true;
@@ -360,12 +403,48 @@ export default {
         });
       }
     },
-    startDeviceFun (machineId, row) {
+    startDeviceFun (machineId, row) {//启动
       let payload = { machineId: machineId, functionId: row.functionId };
       machineStartFun(payload).then(() => {
         this.deviceStertDialogVisible = false;
         this.$message.success('启动成功');
       })
+    },
+    handleDeviceEdit (row) {//设备单个编辑
+      this.lookShopDetail(row).then(data => {
+        this.deviceEditDialogVisible = true;
+      })
+    },
+    closeDeviceEdit (res) {
+      this.deviceEditDialogVisible = false;
+      this.getDeviceDataToTable();
+    },
+
+    handleSelectionChange (val) {
+      this.multipleSelection = val;
+    },
+    handleBatchEdit () {//设备批量编辑
+      if (this.multipleSelection.length <= 0) {
+        this.$alert(`请勾选想要批量编辑的设备`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+        });
+        return false;
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$alert(`一次只能勾选一个店铺进行批量编辑`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+        });
+        return false;
+      }
+      this.lookShopDetail(this.multipleSelection[0]).then(data => {
+        this.batchDEditDeviceDialogVisible = true;
+      })
+    },
+    closeBatchDeviceEdit (res) {
+      this.batchDEditDeviceDialogVisible = false;
+      this.getDeviceDataToTable();
     },
   },
 }
@@ -388,6 +467,25 @@ export default {
   }
   .el-radio + .el-radio {
     margin-left: 0px;
+  }
+}
+.device-edit-wrap {
+  .el-input__inner {
+    width: 100% !important;
+  }
+  .edit-device-name {
+    .el-input__inner {
+      width: 220px !important;
+    }
+  }
+  .edit-waterLevel {
+    margin-bottom: 0 !important;
+    .el-form-item__content {
+      margin-left: 0 !important;
+    }
+  }
+  .edit-isOpenDetergent {
+    margin-bottom: 16px 0;
   }
 }
 </style>
