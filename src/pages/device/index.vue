@@ -1,40 +1,40 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="设备名称：">
+      <el-form-item label="设备名称：" prop="name">
         <el-input v-model="searchData.name" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="IMEI：">
+      <el-form-item label="IMEI：" prop="nameOrImei">
         <el-input v-model="searchData.nameOrImei" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="所属店铺：">
+      <el-form-item label="所属店铺：" prop="shopIds">
         <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:'请选择'}}</span>
         <shop-filter v-model="searchData.shopIds" @getShopFilterName="getShopFilterName(arguments)" :visible="filterShopVisible"></shop-filter>
       </el-form-item>
-      <el-form-item label="设备状态：">
+      <el-form-item label="设备状态：" prop="machineState">
         <el-select v-model="searchData.machineState" placeholder="请选择">
           <el-option v-for="(name, id) in deviceSearchStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="设备类型：">
+      <el-form-item label="设备类型：" prop="parentTypeId">
         <el-select v-model="searchData.parentTypeId" placeholder="请选择">
           <el-option label="全部" value=""></el-option>
           <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="设备型号：">
+      <el-form-item label="设备型号：" prop="subTypeId">
         <el-select v-model="searchData.subTypeId" placeholder="请选择">
           <el-option v-for="(item, index) in machineSubTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="通信类型：">
+      <el-form-item label="通信类型：" prop="communicateType">
         <el-select v-model="searchData.communicateType" placeholder="请选择">
           <el-option v-for="(name, id) in communicateType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
-        <el-button @click="resetForm('searchForm')">重 置</el-button>
+        <el-button @click="resetSearchForm('searchForm')">重 置</el-button>
       </el-form-item>
     </el-form>
     <div class="table-content">
@@ -238,7 +238,15 @@ export default {
   },
   data () {
     return {
-      searchData: {},
+      searchData: {
+        name: '',
+        nameOrImei: '',
+        shopIds: [],
+        machineState: '',
+        parentTypeId: '',
+        subTypeId: '',
+        communicateType: '',
+      },
       shopFilterName: null,
       filterShopVisible: false,
 
@@ -324,6 +332,11 @@ export default {
       let payload = Object.assign({}, this.searchData);
       this.getDeviceDataToTable(payload)
     },
+    resetSearchForm (formName) { //头部搜索
+      this.$refs[formName].resetFields();
+      this.shopFilterName = null;
+      this.getDeviceDataToTable();
+    },
     async getDeviceDataToTable () { //列表 
       this.deviceDataToTable = [];
       let payload = Object.assign({}, this.searchData);
@@ -337,7 +350,6 @@ export default {
       this.detailData = Object.assign({}, res);
       this.deviceEditdetailForm = {};
       this.deviceEditdetailForm = Object.assign({}, res);
-      console.log(this.deviceEditdetailForm)
       this.deviceEditdetailForm.functionJson = res.functionList;
       this.deviceEditdetailForm.detergentJson = res.detergentFunctionList;
       this.deviceEditdetailForm.isOpenDetergent == 1 ? this.deviceEditdetailForm.isOpenDetergentStatus = true : this.deviceEditdetailForm.isOpenDetergentStatus = false;
@@ -345,10 +357,6 @@ export default {
         item.ifOpen === 0 ? item.ifOpenStatus = true : item.ifOpenStatus = false;
       });
       return Promise.resolve();
-    },
-    resetForm (formName) {
-      this.$refs[formName].resetFields();
-      this.addShopDialogVisible = false;
     },
     handleDeviceTzj (row) { //筒自洁
       let payload = { machineId: row.machineId };

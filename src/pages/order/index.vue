@@ -1,27 +1,27 @@
 <template>
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="订单编号：">
+      <el-form-item label="订单编号：" prop="orderNo">
         <el-input v-model="searchData.orderNo" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="用户账号：">
+      <el-form-item label="用户账号：" prop="phone">
         <el-input v-model="searchData.phone" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="设备名称：">
+      <el-form-item label="设备名称：" prop="machineName">
         <el-input v-model="searchData.machineName" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="订单状态：">
+      <el-form-item label="订单状态：" prop="orderStatus">
         <el-select v-model="searchData.orderStatus" placeholder="请选择">
           <el-option v-for="(name, id) in orderStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="日期筛选：">
+      <el-form-item label="日期筛选：" prop="time">
         <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
-        <el-button @click="resetForm('searchForm')">重 置</el-button>
+        <el-button @click="resetSearchForm('searchForm')">重 置</el-button>
       </el-form-item>
     </el-form>
     <div class="table-content">
@@ -129,7 +129,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">保存</el-button>
-            <el-button @click="resetForm('compensateFrom')">取消</el-button>
+            <el-button @click="resetCompensateForm('compensateFrom')">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -197,7 +197,13 @@ export default {
       }
     };
     return {
-      searchData: {},
+      searchData: {
+        orderNo: '',
+        phone: '',
+        machineName: '',
+        orderStatus: '',
+        time: [],
+      },
       orederDataToTable: [],
       detailDialogVisible: false,
       detailData: {},
@@ -261,6 +267,11 @@ export default {
       let payload = Object.assign({}, this.searchData);
       this.getOrderDataToTable(payload)
     },
+    resetSearchForm (formName) {
+      this.searchData.page = 1;
+      this.$refs[formName].resetFields();
+      this.getOrderDataToTable();
+    },
     async getmachineParentType (shopId = '') { //获取设备类型
       let res = await getlistParentTypeFun({ shopId: shopId });
       this.machineParentTypeList = res
@@ -290,7 +301,7 @@ export default {
         }
       });
     },
-    resetForm (formName) {
+    resetCompensateForm (formName) {
       this.$refs[formName].resetFields();
       this.compensateDialogVisible = false;
     },

@@ -1,11 +1,11 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchData" :model="searchData" class="header-search">
-      <el-form-item label="人员姓名 ：">
+      <el-form-item label="人员姓名 ：" prop="name">
         <el-input v-model="searchData.name" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="负责店铺：">
-        <el-select v-model="searchData.type" placeholder="请选择">
+      <el-form-item label="负责店铺：" prop="shopId">
+        <el-select v-model="searchData.shopId" placeholder="请选择">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
@@ -108,7 +108,7 @@ export default {
     return {
       searchData: {
         name: '',
-        type: ''
+        shopId: ''
       },
       shopList: [],
       detailDialogVisible: false,
@@ -169,13 +169,16 @@ export default {
       this.getMemberDataToTable()
     },
     searchForm () {
+      this.searchData.page = 1;
       let payload = Object.assign({}, this.searchData);
       this.getMemberDataToTable(payload)
     },
     resetSearchForm (formName) {
       this.$refs[formName].resetFields();
+      this.getMemberDataToTable();
     },
     async getMemberDataToTable () {
+      this.memberDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await operatorListFun(payload);
       this.memberDataToTable = res.items;

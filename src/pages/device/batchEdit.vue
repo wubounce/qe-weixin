@@ -4,8 +4,8 @@
     <el-form-item label="批量编辑选择：" class="check-batch-funtion">
       <el-radio-group v-model="checkBatchFuntion">
         <el-radio :label="1">功能设置</el-radio>
-        <el-radio :label="2">洗衣液属性</el-radio>
-        <el-radio :label="3">其他属性</el-radio>
+        <el-radio :label="2" v-if="deviceEditForm.parentTypeName === '洗衣机'">洗衣液属性</el-radio>
+        <el-radio :label="3" v-if="deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">其他属性</el-radio>
       </el-radio-group>
     </el-form-item>
     <el-table :data="functionJson" style="width: 100%" v-if="checkBatchFuntion === 1">
@@ -41,7 +41,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div v-if="checkBatchFuntion === 2">
+    <div v-if="checkBatchFuntion === 2&&deviceEditForm.parentTypeName === '洗衣机'">
       <el-form-item label="洗衣液功能" prop="isOpenDetergent" class="edit-isOpenDetergent">
         <el-switch v-model="deviceEditForm.isOpenDetergentStatus">
         </el-switch>
@@ -65,7 +65,7 @@
           </template></el-table-column>
       </el-table>
     </div>
-    <el-table :data="deviceEditForm.waterLevel" style="width: 100%" v-if="checkBatchFuntion === 3">
+    <el-table :data="deviceEditForm.waterLevel" style="width: 100%" v-if="checkBatchFuntion === 3&&deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
       <el-table-column prop="functionName" label="属性名称">
         <template slot-scope="scope">
           <span>水位设置</span>
@@ -94,7 +94,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { batchEditFun, batchEditDetergentFun } from '@/service/device'
+import { getFunctionSetListFun, batchEditFun, batchEditDetergentFun } from '@/service/device'
 export default {
   props: ["deviceEditdetailForm", "visible"],
   data () {
@@ -117,7 +117,7 @@ export default {
       ],
       checkBatchFuntion: 1,
       deviceEditForm: this.deviceEditdetailForm,
-      functionJson: this.deviceEditdetailForm.functionList, //直接无法校验
+      functionJson: [], //直接无法校验
       detergentJson: this.deviceEditdetailForm.detergentFunctionList,
       deviceEditFormRules: {
         machineName: [
@@ -152,7 +152,20 @@ export default {
   mounted () {
 
   },
+  created () {
+    this.getFunctionSetList();
+  },
   methods: {
+    async getFunctionSetList () {
+      let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
+      let res = await getFunctionSetListFun(payload);
+      this.functionJson = res.list;
+      this.deviceEditForm.communicateType = res.communicateType;
+      this.deviceEditForm.functionTempletType = res.functionTempletType;
+      this.functionJson.forEach((item) => {
+        item.ifOpen === 0 ? item.ifOpenStatus = true : item.ifOpenStatus = false;
+      });
+    },
     onEditDecive (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {

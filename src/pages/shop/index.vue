@@ -1,23 +1,23 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="店铺名称：">
+      <el-form-item label="店铺名称：" prop="name">
         <el-input v-model="searchData.name" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="店铺类型：">
+      <el-form-item label="店铺类型：" prop="type">
         <el-select v-model="searchData.type" placeholder="请选择">
           <el-option v-for="(item,index) in shopTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="选择区域：">
+      <el-form-item label="选择区域：" prop="areas">
         <area-cascader v-model="searchData.areas"></area-cascader>
       </el-form-item>
-      <el-form-item label="地址：">
+      <el-form-item label="地址：" prop="address">
         <el-input v-model="searchData.address" placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
-        <el-button @click="resetForm('searchForm')">重 置</el-button>
+        <el-button @click="resetSearchForm('searchForm')">重 置</el-button>
       </el-form-item>
     </el-form>
     <div class="table-content">
@@ -141,7 +141,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitShopFrom('addShopFrom')">保存</el-button>
-            <el-button @click="resetForm('addShopFrom')">取消</el-button>
+            <el-button @click="resetaddOrEditShopForm('addShopFrom')">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -166,6 +166,10 @@ export default {
     let self = this;
     return {
       searchData: {
+        name: '',
+        type: '',
+        areas: [],
+        address: '',
       },
       shopTypeList: [],
       shopDataToTable: [],
@@ -295,8 +299,13 @@ export default {
       this.getShopDataToTable()
     },
     searchForm () {
+      this.searchData.page = 1;
       let payload = Object.assign({}, this.searchData);
       this.getShopDataToTable(payload)
+    },
+    resetSearchForm (formName) {
+      this.$refs[formName].resetFields();
+      this.getShopDataToTable();
     },
     async getShopDataToTable () {
       let payload = Object.assign({}, this.searchData);
@@ -386,7 +395,7 @@ export default {
           payload.districtId = payload.region[2]
           payload.region = []
           await addOrEditShopFun(payload);
-          this.resetForm(formName);
+          this.resetaddOrEditShopForm(formName);
           this.$Message("恭喜你，操作成功！");
           this.getShopDataToTable()
         } else {
@@ -394,7 +403,7 @@ export default {
         }
       });
     },
-    resetForm (formName) {
+    resetaddOrEditShopForm (formName) {
       this.isposition = true;
       this.$refs[formName].resetFields();
       this.addShopFrom.lng = '';
@@ -403,7 +412,7 @@ export default {
       this.addShopDialogVisible = false;
     },
     addOrEditShopfrom (formName) {
-      this.resetForm(formName)
+      this.resetaddOrEditShopForm(formName)
     },
     // 删除店铺
     handleDelete (shopId) {

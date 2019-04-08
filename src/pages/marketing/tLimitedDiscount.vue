@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column header-align="left" prop="expired" label="活动状态">
           <template slot-scope="scope">
-            <span>{{scope.row.expired===2 ? '过期':''}} 折</span>
+            <span>{{scope.row.expired===2 ? '过期':''}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" label="开启/关闭">
@@ -180,6 +180,7 @@ export default {
       this.getTimeMaketingDataToTable()
     },
     searchForm () {
+      this.searchData.page = 1;
       let payload = Object.assign({}, this.searchData);
       this.getTimeMaketingDataToTable(payload)
     },
