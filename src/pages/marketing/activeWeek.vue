@@ -1,18 +1,20 @@
 <template>
-  <div class="shop-filter" v-show="visibleModel">
-    <div class=" el-select-dropdown el-popper" x-placement="bottom-start">
-      <div class="week">
-        <el-checkbox-group v-model="customWeekCheckList">
-          <el-checkbox name="customWeekCheckList" v-for="(item,index) in  weekTitle" :key="index" :label="item.value">{{item.label}}</el-checkbox>
-        </el-checkbox-group>
-        <div class="action">
-          <span @click="getCustomCheckedWeek" style="margin-right:24px;">确定</span>
-          <span style="color:rgba(0,0,0,0.65);" @click="resetCheckedWeek">取消</span>
+  <transition name="el-zoom-in-top">
+    <div class="shop-filter" v-show="visibleModel">
+      <div class=" el-select-dropdown el-popper" x-placement="bottom-start">
+        <div class="week">
+          <el-checkbox-group v-model="customWeekCheckList">
+            <el-checkbox name="customWeekCheckList" v-for="(item,index) in  weekTitle" :key="index" :label="item.value">{{item.label}}</el-checkbox>
+          </el-checkbox-group>
+          <div class="action">
+            <span @click="getCustomCheckedWeek" style="margin-right:24px;">确定</span>
+            <span style="color:rgba(0,0,0,0.65);" @click="resetCheckedWeek">取消</span>
+          </div>
         </div>
+        <div x-arrow="" class="popper__arrow" style="left: 35px;"></div>
       </div>
-      <div x-arrow="" class="popper__arrow" style="left: 35px;"></div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script type="text/ecmascript-6">
