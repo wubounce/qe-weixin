@@ -46,7 +46,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handlePagination" :total="total" />
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
       <!-- 编辑设备  -->
       <el-dialog title="编辑批量启动" :visible.sync="deviceBatchStartDialogVisible" width="540px">
         <el-form :model="deviceBatchStartForm" ref="deviceBatchStartForm" :rules="deviceBatchStartFormRules" label-position="left" class="batch-device-edit-wrap">
@@ -104,23 +104,23 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getlistParentTypeFun } from '@/service/device'
-import { listBatchStartFun, batchStartNowFun, updateBatchStartFun, getFunctionListFun, delBatchStartFun, addBatchStartFun } from '@/service/todoList'
-import { listShopBatchStartFun } from '@/service/device'
-import Pagination from '@/components/Pager'
-import PagerMixin from "@/mixins/PagerMixin";
+import { getlistParentTypeFun } from '@/service/device';
+import { listBatchStartFun, batchStartNowFun, updateBatchStartFun, getFunctionListFun, delBatchStartFun, addBatchStartFun } from '@/service/todoList';
+import { listShopBatchStartFun } from '@/service/device';
+import Pagination from '@/components/Pager';
+import PagerMixin from '@/mixins/PagerMixin';
 import ShopFilter from '@/components/Shopfilter';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    ShopFilter,
+    ShopFilter
   },
-  data () {
+  data() {
     return {
       searchData: {
         shopIds: [],
-        parentTypeId: '',
+        parentTypeId: ''
       },
       shopFilterName: null,
       filterShopVisible: false,
@@ -136,15 +136,11 @@ export default {
       deviceBatchStartDialogVisible: false,
       deviceBatchStartForm: {
         standardFunctionId: '',
-        startTime: '',
+        startTime: ''
       },
       deviceBatchStartFormRules: {
-        standardFunctionId: [
-          { required: true, message: '请选择模式', trigger: 'change' }
-        ],
-        startTime: [
-          { required: true, message: '请选择时间', trigger: 'change' }
-        ],
+        standardFunctionId: [{ required: true, message: '请选择模式', trigger: 'change' }],
+        startTime: [{ required: true, message: '请选择时间', trigger: 'change' }]
       },
 
       //批量添加启动
@@ -154,111 +150,103 @@ export default {
         machineParentTypeId: '',
         standardFunctionId: '',
         standardFunctionAction: '',
-        startTime: '',
+        startTime: ''
       },
       addDeviceBatchStartDialogVisible: false,
       addBatchStartMachineParentTypeList: [],
       addBatchStartFunctionList: [],
       isNowAndTimingStartAction: false,
       addDeviceBatchStartFormRules: {
-        shopId: [
-          { required: true, message: '请选择店铺', trigger: 'change' }
-        ],
-        machineParentTypeId: [
-          { required: true, message: '请选择设备类型', trigger: 'change' }
-        ],
-        standardFunctionId: [
-          { required: true, message: '请选择启动模式', trigger: 'change' }
-        ],
-        standardFunctionAction: [
-          { required: true, message: '请选择启动方式', trigger: 'change' }
-        ],
-        startTime: [
-          { required: true, message: '请选择时间', trigger: 'change' }
-        ],
-      },
-    }
+        shopId: [{ required: true, message: '请选择店铺', trigger: 'change' }],
+        machineParentTypeId: [{ required: true, message: '请选择设备类型', trigger: 'change' }],
+        standardFunctionId: [{ required: true, message: '请选择启动模式', trigger: 'change' }],
+        standardFunctionAction: [{ required: true, message: '请选择启动方式', trigger: 'change' }],
+        startTime: [{ required: true, message: '请选择时间', trigger: 'change' }]
+      }
+    };
   },
-  filters: {
-  },
-  computed: {
-
-  },
-  mounted () {
-
-  },
-  created () {
+  filters: {},
+  computed: {},
+  mounted() {},
+  created() {
     this.getmachineParentType();
     this.getBatchStartDataToTable();
     this.getshopBatchStartList();
   },
   methods: {
-    getFilterShop () {
-      this.filterShopVisible = true
+    getFilterShop() {
+      this.filterShopVisible = true;
     },
-    getShopFilterName (data) {
-      this.shopFilterName = data[0].join(',')
-      this.filterShopVisible = data[1]
+    getShopFilterName(data) {
+      this.shopFilterName = data[0].join(',');
+      this.filterShopVisible = data[1];
     },
-    async getmachineParentType () { //获取设备类型
+    async getmachineParentType() {
+      //获取设备类型
       let res = await getlistParentTypeFun({ onlyMine: true });
-      this.machineParentTypeList = res
+      this.machineParentTypeList = res;
     },
-    handlePagination (data) { //分页
-      this.searchData = Object.assign(this.searchData, data)
-      this.getBatchStartDataToTable()
+    handlePagination(data) {
+      //分页
+      this.searchData = Object.assign(this.searchData, data);
+      this.getBatchStartDataToTable();
     },
-    searchForm () { //头部搜索
+    searchForm() {
+      //头部搜索
       this.searchData.page = 1;
-      let payload = Object.assign({}, this.searchData);
-      this.getBatchStartDataToTable(payload)
+      this.getBatchStartDataToTable();
     },
-    resetForm (formName) {
+    resetForm(formName) {
+      this.searchData.page = 1;
       this.searchData.shopIds = [];
       this.shopFilterName = null;
       this.$refs[formName].resetFields();
       this.getBatchStartDataToTable();
     },
-    async getshopBatchStartList () { //获取批量添加店铺列表
+    async getshopBatchStartList() {
+      //获取批量添加店铺列表
       let res = await listShopBatchStartFun();
       this.shopBatchStartList = res;
     },
-    async getBatchStartDataToTable () { //列表 
+    async getBatchStartDataToTable() {
+      //列表
       this.batchStartDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await listBatchStartFun(payload);
       this.batchStartDataToTable = res.items;
-      this.total = res.total
+      this.total = res.total;
     },
-    async changeBatchFuncionList (val) {//根据店铺和一级类型获取启动模式
+    async changeBatchFuncionList(val) {
+      //根据店铺和一级类型获取启动模式
       let payload = { shopId: this.addDeviceBatchStartForm.shopId, machineParentTypeId: val };
       let res = await getFunctionListFun(payload);
       this.addBatchStartFunctionList = res;
     },
-    async changeBatchMachineype (val) { //根据店铺获取一级类型
+    async changeBatchMachineype(val) {
+      //根据店铺获取一级类型
       let payload = { shopId: val, batchStart: true };
       let res = await getlistParentTypeFun(payload);
       this.addBatchStartMachineParentTypeList = res;
     },
-    nowAndTimingStartAction (val) {
-      val === 1 ? this.isNowAndTimingStartAction = true : this.isNowAndTimingStartAction = false;
+    nowAndTimingStartAction(val) {
+      val === 1 ? (this.isNowAndTimingStartAction = true) : (this.isNowAndTimingStartAction = false);
     },
-    onSubmitAddDeviceStart (formName) {
-      this.$refs[formName].validate((valid) => {
+    onSubmitAddDeviceStart(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
-          let payload = Object.assign({}, this.addDeviceBatchStartForm)
+          let payload = Object.assign({}, this.addDeviceBatchStartForm);
           addBatchStartFun(payload).then(() => {
             this.$message.success('添加成功');
             this.$refs[formName].resetFields();
             this.getBatchStartDataToTable();
             this.addDeviceBatchStartDialogVisible = false;
-          })
+          });
         } else {
           return false;
         }
       });
     },
-    async handleDeviceEdit (row) {
+    async handleDeviceEdit(row) {
       this.deviceBatchStartForm.startTime = moment(row.beginTime).format('YYYY-MM-DD HH:mm:ss');
       this.deviceBatchStartForm.id = row.id;
       this.deviceBatchStartForm.machineParentTypeId = row.machineParentTypeId;
@@ -268,23 +256,23 @@ export default {
       this.functionEditList = res;
       this.deviceBatchStartDialogVisible = true;
     },
-    onSubmitDeviceEdit (formName) {
-      this.$refs[formName].validate((valid) => {
+    onSubmitDeviceEdit(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
-          let payload = Object.assign({}, this.deviceBatchStartForm)
+          let payload = Object.assign({}, this.deviceBatchStartForm);
           updateBatchStartFun(payload).then(() => {
             this.$message.success('编辑成功');
             this.getBatchStartDataToTable();
             this.deviceBatchStartDialogVisible = false;
-          })
+          });
         } else {
           return false;
         }
       });
     },
-    handleDeviceStart (row) {
-      let payload = { id: row.id }
-      this.$confirm("您确定要立即批量启动设备?", '提示', {
+    handleDeviceStart(row) {
+      let payload = { id: row.id };
+      this.$confirm('您确定要立即批量启动设备?', '提示', {
         showClose: false
       }).then(() => {
         batchStartNowFun(payload).then(() => {
@@ -294,9 +282,9 @@ export default {
       });
     },
     // 删除
-    handleDeviceDelete (row) {
-      let payload = { id: row.id }
-      this.$confirm("您确定要取消批量启动设备?", '提示', {
+    handleDeviceDelete(row) {
+      let payload = { id: row.id };
+      this.$confirm('您确定要取消批量启动设备?', '提示', {
         showClose: false
       }).then(() => {
         delBatchStartFun(payload).then(() => {
@@ -304,9 +292,9 @@ export default {
           this.getBatchStartDataToTable();
         });
       });
-    },
-  },
-}
+    }
+  }
+};
 </script>
 <style lang="scss">
 .batch-device-edit-wrap,
@@ -318,7 +306,7 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .filter-shop {
   display: inline-block;
   width: 140px;
@@ -343,7 +331,7 @@ export default {
   color: $menuText;
   cursor: pointer;
 }
-[class^="icon-"] {
+[class^='icon-'] {
   width: 20px;
   height: 20px;
   margin-right: 20px;

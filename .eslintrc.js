@@ -5,6 +5,11 @@ module.exports = {
     node: true,
     es6: true
   },
+  globals: {
+    echarts: false,
+    moment: false,
+    scope: false
+  },
   // extends: ['plugin:vue/essential', '@vue/prettier'],
   // extends: ['plugin:vue/recommended', 'eslint:recommended'],
   extends: ['plugin:vue/essential', 'eslint:recommended'],

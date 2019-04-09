@@ -20,7 +20,7 @@
 
 <script>
 import axios from 'axios';
-import { areaListFun } from "@/service/shop";
+import { areaListFun } from '@/service/shop';
 
 export default {
   props: {
@@ -39,7 +39,7 @@ export default {
       default: null
     }
   },
-  data () {
+  data() {
     return {
       list: [
         [], // 省 level = 0
@@ -58,7 +58,7 @@ export default {
       ]
     };
   },
-  created () {
+  created() {
     // 初始化数据
     let arr = [];
     arr.push(this.getAreaList(0, 0));
@@ -74,7 +74,7 @@ export default {
     );
   },
   methods: {
-    getAreaList (pid = 0, level = 0) {
+    getAreaList(pid = 0, level = 0) {
       return areaListFun({ parentId: pid }).then(resp => {
         // 三级类型，如果不存在，就用二级类型
         if (level === 2 && resp.length === 0) {
@@ -84,7 +84,7 @@ export default {
         this.$set(this.list, level, resp);
       });
     },
-    handleChange (pid, level = 0) {
+    handleChange(pid, level = 0) {
       this.$set(this.dataName, level, event.target.innerText);
       if (pid > 0) {
         // 选中了数据
@@ -106,13 +106,15 @@ export default {
     }
   },
   watch: {
-    // 监听数据变化，触发数据更新
-    data (v) {
-      console.log(v)
-      this.$emit("input", v);
+    value(val) {
+      this.data = val;
     },
-    dataName (v) {
-      this.$emit("getAreaName", v);
+    // 监听数据变化，触发数据更新
+    data(v) {
+      this.$emit('input', v);
+    },
+    dataName(v) {
+      this.$emit('getAreaName', v);
     }
   }
 };
@@ -125,7 +127,7 @@ export default {
 <style lang="scss">
 .area-com {
   .el-select {
-    flex: 1;
+    width: 33%;
     margin-right: 8px;
   }
 }

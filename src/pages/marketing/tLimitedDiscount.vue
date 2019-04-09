@@ -1,15 +1,15 @@
 <template>
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="优惠适用店铺：">
+      <el-form-item label="优惠适用店铺：" prop="name">
         <el-input v-model="searchData.name" placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="活动状态：">
-        <el-select v-model="searchData.type" placeholder="请选择">
+      <el-form-item label="活动状态：" prop="status">
+        <el-select v-model="searchData.status" placeholder="请选择">
           <el-option label="开启"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="开启/关闭：">
+      <el-form-item label="开启/关闭：" prop="type">
         <el-select v-model="searchData.type" placeholder="请选择">
           <el-option value="0" label="开启"></el-option>
           <el-option value="1" label="关闭"></el-option>
@@ -17,7 +17,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
-        <el-button @click="resetForm('searchForm')">重 置</el-button>
+        <el-button @click="resetSearchForm('searchForm')">重 置</el-button>
       </el-form-item>
     </el-form>
     <div class="table-content">
@@ -29,7 +29,10 @@
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="适用店铺" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="more-shop" v-for="(items,index) in scope.row.shop" :key="index">{{items.name}}<i v-if="index !== (scope.row.shop.length-1)">,</i></span>
+            <span class="more-shop" v-for="(items,index) in scope.row.shop" :key="index">
+              {{items.name}}
+              <i v-if="index !== (scope.row.shop.length-1)">,</i>
+            </span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="parentTypeName" label="适用类型" show-overflow-tooltip></el-table-column>
@@ -38,7 +41,11 @@
             <span>{{scope.row.noDiscountStart}}~{{scope.row.noDiscountEnd}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="week" label="活动日"></el-table-column>
+        <el-table-column header-align="left" prop="week" label="活动日">
+          <template slot-scope="scope">
+            <span>{{scope.row.week?scope.row.week:'1,2,3' | week}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="time" label="每日活动时段"></el-table-column>
         <el-table-column header-align="left" prop="discount" label="优惠折扣">
           <template slot-scope="scope">
@@ -52,8 +59,7 @@
         </el-table-column>
         <el-table-column header-align="left" label="开启/关闭">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.switchStatus">
-            </el-switch>
+            <el-switch v-model="scope.row.switchStatus"></el-switch>
           </template>
         </el-table-column>
         <el-table-column header-align="left" label="操作">
@@ -62,42 +68,41 @@
               <i class="el-icon-edit" @click="openAddBDDialog(scope.row)"></i>
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <i class="el-icon-delete" @click="handleDelete(scope.row.shopId)"></i>
+              <i class="el-icon-delete" @click="handleDeleteDiscount(scope.row)"></i>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handleSearch" :total="total" />
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
     <!-- 新增 -->
-    <el-dialog :title="addOrEditMaketTitle" :visible.sync="addMaketDialogVisible" @close="addMaketDialogVisible = false" width="620px" height="768px">
+    <el-dialog :title="addOrEditMaketTitle" :visible.sync="addMaketDialogVisible" @close="resetAddOrEditMaketFrom('addMaketFrom')" width="620px" height="768px">
       <el-form ref="addMaketFrom" :model="addMaketFrom" :rules="addMaketFromRules" class="add-shop-from" label-width="120px" v-if="addMaketDialogVisible">
         <el-form-item label="适用店铺：" prop="shopIds">
           <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:'请选择店铺'}}</span>
           <multiple-shop v-model="addMaketFrom.shopIds" @getShopFilterName="getShopFilterName(arguments)" :visible="filterShopVisible"></multiple-shop>
         </el-form-item>
-        <el-form-item label="适用类型：" class="shop-name" prop="parentTypeIds">
+        <el-form-item label="适用类型：" prop="parentTypeIds">
           <el-select v-model="addMaketFrom.parentTypeIds" placeholder="请先选择店铺" :disabled="hasShop">
             <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无设备</span>
             <el-option v-for="(item,index) in machineParentType" :key="index" :label="item.parentTypeName" :value="item.parentTypeId"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="优惠日期：" class="shop-name" prop="date">
-          <el-date-picker size="small" v-model="addMaketFrom.date" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
-          </el-date-picker>
+        <el-form-item label="优惠日期：" prop="date">
+          <el-date-picker size="small" v-model="addMaketFrom.date" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
         </el-form-item>
         <el-form-item label="活动日：" class="shop-name active-date" prop="week">
           <el-radio-group v-model="addMaketFrom.week" @change="changeActiveDate">
-            <el-radio label="9">每天</el-radio>
-            <el-radio label="8">周一～周五</el-radio>
-            <el-radio label="10">自定义</el-radio>
+            <el-radio :label="9">每天</el-radio>
+            <el-radio :label="8">周一～周五</el-radio>
+            <el-radio :label="10">自定义</el-radio>
           </el-radio-group>
-          <active-week v-model="addMaketFrom.weekCheckList" @getShopFilterName="getWeekFilterName(arguments)" :visible="weekFilterVisible" />
+          <active-week v-model="addMaketFrom.weekCheckList" @getcustomWeekCheckList="getcustomWeekCheckList(arguments)" :visible="weekFilterVisible" />
         </el-form-item>
-        <el-form-item label="每日活动时段：" class="perm-tree" prop="time">
-          <el-time-picker is-range v-model="addMaketFrom.time" placeholder="请选择" value-format="HH:mm"> </el-time-picker>
+        <el-form-item label="每日活动时段：" prop="time">
+          <el-time-picker is-range v-model="addMaketFrom.time" placeholder="请选择" value-format="HH:mm"></el-time-picker>
         </el-form-item>
-        <el-form-item label="优惠折扣：" class="shop-name" prop="discount">
+        <el-form-item label="优惠折扣：" prop="discount">
           <div class="add-discount">
             <div>
               <el-input v-model="addMaketFrom.discount" placeholder="例：8.5"></el-input>
@@ -107,8 +112,8 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmitMemberFrom('addMaketFrom')">保存</el-button>
-          <el-button @click="addMaketDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="onSubmitAddOrEditMaketFrom('addMaketFrom')">保存</el-button>
+          <el-button @click="resetAddOrEditMaketFrom('addMaketFrom')">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -116,21 +121,25 @@
 </template>
 
 <script type="text/ecmascript-6">
-import Pagination from '@/components/Pager'
-import PagerMixin from "@/mixins/PagerMixin";
-import multipleShop from '@/components/multipleShop'
-import activeWeek from './activeWeek'
-import { timeMarketListFun, updataeStatusFun, addOruPdateFun, marketlistParentTypeIdFun } from '@/service/market';
+import Pagination from '@/components/Pager';
+import PagerMixin from '@/mixins/PagerMixin';
+import multipleShop from '@/components/multipleShop';
+import activeWeek from './activeWeek';
+import { timeMarketListFun, addOruPdateFun, marketlistParentTypeIdFun, delMarketFun, detailMarketFun } from '@/service/market';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
     multipleShop,
-    activeWeek,
+    activeWeek
   },
-  data () {
+  data() {
     return {
-      searchData: {},
+      searchData: {
+        name: '',
+        status: '',
+        type: ''
+      },
       timeMaketingDataToTable: [],
       addOrEditMaketTitle: '新增优惠',
       addMaketDialogVisible: false,
@@ -139,67 +148,87 @@ export default {
       weekFilterName: null,
       weekFilterVisible: false,
       addMaketFrom: {
-        id: '',
+        timeId: '',
         week: '',
         time: ['00:00', '23:59'],
         date: [],
         parentTypeIds: '',
         shopIds: [],
-        discount: ''
+        discount: '',
+        weekCheckList: []
       },
       addMaketFromRules: {
         shopIds: [
-          { required: true, type: 'array', trigger: 'change', message: '请选择适用店铺' }
+          {
+            required: true,
+            type: 'array',
+            trigger: 'change',
+            message: '请选择适用店铺'
+          }
         ],
-        parentTypeIds: [
-          { required: true, trigger: "change", message: '请填写适用类型' },
-        ],
+        parentTypeIds: [{ required: true, trigger: 'change', message: '请填写适用类型' }],
         date: [
-          { required: true, type: 'array', trigger: 'change', message: '请选择优惠日期' },
+          {
+            required: true,
+            type: 'array',
+            trigger: 'change',
+            message: '请选择优惠日期'
+          }
         ],
-        week: [
-          { required: true, trigger: 'blur', message: '请选择活动日' }
-        ],
+        week: [{ required: true, trigger: 'blur', message: '请选择活动日' }],
         time: [
-          { required: true, type: 'array', trigger: 'change', message: '请选择每日活动时间段' }
+          {
+            required: true,
+            type: 'array',
+            trigger: 'change',
+            message: '请选择每日活动时间段'
+          }
         ],
-        discount: [
-          { required: true, message: '请输入折扣', trigger: 'blur' },
-        ],
+        discount: [{ required: true, message: '请输入折扣', trigger: 'blur' }]
       },
       machineParentType: [],
-      hasShop: true,
-    }
+      hasShop: true
+    };
   },
-  created () {
+  created() {
     this.getTimeMaketingDataToTable();
   },
   methods: {
-    handleSearch (data) {
-      this.searchData = Object.assign(this.searchData, data)
-      this.getTimeMaketingDataToTable()
+    handlePagination(data) {
+      this.searchData = Object.assign(this.searchData, data);
+      this.getTimeMaketingDataToTable();
     },
-    searchForm () {
+    searchForm() {
       this.searchData.page = 1;
-      let payload = Object.assign({}, this.searchData);
-      this.getTimeMaketingDataToTable(payload)
+      this.getTimeMaketingDataToTable();
     },
-    getFilterShop () {
-      this.filterShopVisible = true
+    resetSearchForm(formName) {
+      this.searchData.page = 1;
+      this.$refs[formName].resetFields();
+      this.getTimeMaketingDataToTable();
     },
-    getShopFilterName (data) {
-      this.shopFilterName = data[0].join(',')
-      this.filterShopVisible = data[1]
+    getFilterShop() {
+      this.filterShopVisible = true;
     },
-    getWeekFilterName (data) {
-      this.weekFilterName = data[0].join(',')
-      this.weekFilterVisible = data[1]
+    getShopFilterName(data) {
+      this.shopFilterName = data[0].join(',');
+      this.filterShopVisible = data[1];
+      this.getMarketlistParentType();
     },
-    changeActiveDate (val) {
-      val == 10 ? this.weekFilterVisible = true : this.weekFilterVisible = false;
+    getcustomWeekCheckList(data) {
+      this.addMaketFrom.weekCheckList = data[0];
+      console.log(this.addMaketFrom);
+      this.weekFilterVisible = data[1];
     },
-    changeParentType () {
-      console.log(8787987)
+    changeActiveDate(val) {
+      if (val === 10) {
+        this.weekFilterVisible = true;
+      } else {
+        this.weekFilterVisible = false;
+        this.addMaketFrom.weekCheckList = [];
+      }
+    },
+    changeParentType() {
       if (this.addMaketFrom.shopIds.length <= 0) {
         this.$Message.error('先选择店铺');
         return false;
@@ -207,15 +236,18 @@ export default {
         this.getMarketlistParentType();
       }
     },
-    async getMarketlistParentType () {
+    async getMarketlistParentType() {
+      //获取二级类型
       let payload = { shopIds: this.addMaketFrom.shopIds.join(',') };
       let res = await marketlistParentTypeIdFun(payload);
-      this.machineParentType = res.length > 0 ? [{ parentTypeId: '', parentTypeName: '全部' }, ...res] : [];
+      // this.machineParentType = res.length > 0 ? [{ parentTypeId: '全部', parentTypeName: '全部' }, ...res] : [];
+      this.machineParentType = res;
     },
-    async getTimeMaketingDataToTable () {
+    async getTimeMaketingDataToTable() {
+      //获取列表
       let payload = Object.assign({}, this.searchData);
       let res = await timeMarketListFun(payload);
-      res.items.forEach((item) => {
+      res.items.forEach(item => {
         item.noDiscountStart = item.noDiscountStart ? moment(item.noDiscountStart).format('YYYY-MM-DD') : '';
         item.noDiscountEnd = item.noDiscountEnd ? moment(item.noDiscountEnd).format('YYYY-MM-DD') : '';
         if (item.status === 0) {
@@ -227,23 +259,95 @@ export default {
       this.timeMaketingDataToTable = res.items;
       this.total = res.total;
     },
-    async openAddBDDialog (row = {}) {
-      this.addOrEditMaketTitle = '新增优惠'
+    async openAddBDDialog(row = {}) {
+      this.addOrEditMaketTitle = '新增优惠';
+      this.addMaketDialogVisible = true;
       if (row.id) {
         this.addOrEditMaketTitle = '编辑优惠';
+        this.getMaketDetail(row).then(() => {
+          this.addMaketDialogVisible = true;
+        });
       }
-      this.addMaketDialogVisible = true;
     },
+    async getMaketDetail(row) {
+      let payload = { timeId: row.id };
+      let res = await detailMarketFun(payload);
+      let time = res.noTime.split('-');
+      let weeklist = res.noWeek ? res.noWeek.split(',') : [];
+      let startTime = res.noDiscountStart ? moment(res.noDiscountStart).format('YYYY-MM-DD') : '';
+      let endTime = res.noDiscountEnd ? moment(res.noDiscountEnd).format('YYYY-MM-DD') : '';
+      let beshop = [];
+      let beshopIds = [];
+      res.shop.forEach(item => {
+        beshop.push(item.name);
+        beshopIds.push(item.id);
+      });
+
+      this.shopFilterName = beshop.join(',');
+      this.addMaketFrom = {
+        timeId: res.id,
+        week: res.noWeek,
+        time: [time[0], time[1]],
+        date: [startTime, endTime],
+        parentTypeIds: res.parentTypeMap[0].parentTypeId,
+        shopIds: beshopIds,
+        discount: res.discount,
+        weekCheckList: weeklist
+      };
+      if (weeklist.length > 1) {
+        this.addMaketFrom.week = 10;
+      }
+      this.getMarketlistParentType();
+      return Promise.resolve();
+    },
+    onSubmitAddOrEditMaketFrom(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          let payload = Object.assign({}, this.addMaketFrom);
+          payload.time = payload.time.join('-');
+          payload.shopIds = payload.shopIds.join(',');
+          payload.startTime = payload.date ? payload.date[0] : null;
+          payload.endTime = payload.date ? payload.date[1] : null;
+          payload.date = null;
+          if (payload.week === 10) payload.week = payload.weekCheckList.join(',');
+          payload.parentTypeIds = `'${payload.parentTypeIds}'`;
+          addOruPdateFun(payload).then(() => {
+            this.$Message.success('操作成功');
+            this.getTimeMaketingDataToTable();
+            this.resetAddOrEditMaketFrom(formName);
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    resetAddOrEditMaketFrom(formName) {
+      this.addMaketFrom.weekCheckList = [];
+      this.$refs[formName].resetFields();
+      this.shopFilterName = null;
+      this.addMaketDialogVisible = false;
+    },
+    handleDeleteDiscount(row) {
+      let payload = { timeId: row.id };
+      this.$confirm('您确定要删除该优惠?', '提示', {
+        showClose: false
+      }).then(() => {
+        delMarketFun(payload).then(() => {
+          this.$message.success('删除成功');
+          this.getTimeMaketingDataToTable();
+        });
+      });
+    }
   },
   watch: {
     'addMaketFrom.shopIds': {
       deep: true,
-      handler: function (val) {
-        val.length > 0 ? this.hasShop = false : this.hasShop = true;
+      handler: function(val) {
+        val.length > 0 ? (this.hasShop = false) : (this.hasShop = true);
       }
     }
-  },
-}
+  }
+};
 </script>
 <style lang="scss">
 .active-date .el-radio {
@@ -251,7 +355,7 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .filter-shop {
   display: inline-block;
   width: 220px;
@@ -266,6 +370,10 @@ export default {
   white-space: nowrap;
   cursor: pointer;
 }
+.rowstyle {
+  color: $menuText;
+  cursor: pointer;
+}
 .filter-shop-selected {
   color: #606266;
 }
@@ -276,7 +384,5 @@ export default {
 }
 .add-discount {
   display: flex;
-  > div {
-  }
 }
 </style>

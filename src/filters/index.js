@@ -13,7 +13,9 @@ const install = Vue => {
    * @description 千分位
    */
   Vue.filter('numFormat', value => {
-    return String(value).indexOf('.') !== -1 ? value.toLocaleString() : String(value).replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+    return String(value).indexOf('.') !== -1
+      ? value.toLocaleString()
+      : String(value).replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
   });
 
   /**
@@ -27,9 +29,9 @@ const install = Vue => {
    * @description 限时优惠自定义活动日
    */
   Vue.filter('week', value => {
-    if (value === '9') {
+    if (value == '9') {
       return '每天';
-    } else if (value === '8') {
+    } else if (value == '8') {
       return '周一至周五';
     } else {
       let arr = [];

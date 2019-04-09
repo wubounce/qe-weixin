@@ -114,6 +114,13 @@ export const memberIsLock = {
 export const CouponType = {
   1: '补偿券'
 };
+// 优惠券状态
+export const CouponStatusType = {
+  0: '未使用',
+  1: '已使用',
+  2: '已过期',
+  3: '冻结'
+};
 
 // 预约功能状态
 export const isReserveType = {

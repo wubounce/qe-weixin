@@ -47,7 +47,7 @@
               <p class="rowstyle" style="font-size:10px;">(优惠券平台承担1.00)</p>
               <div slot="reference" class="name-wrapper">
                 <span size="medium">{{ scope.row.markPrice }}
-                  <svg-icon icon-class="xialajiantoushang" /></span>
+                  <svg-icon icon-class="xialajiantouxia" /></span>
               </div>
             </el-popover>
           </template>
@@ -79,7 +79,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handleSearch" :total="total" />
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
       <!-- 退款详情 -->
       <el-dialog title="退款详情" :visible.sync="detailDialogVisible" width="540px">
         <ul class="deatil-list">
@@ -138,25 +138,25 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { orderListFun, orderDetailFun, compensateFun, machineResetFun, machineBootFun, ordeRrefundFun } from '@/service/order'
-import { getlistParentTypeFun } from '@/service/device'
-import { orderStatus, PayType } from '@/utils/mapping'
-import { validatPrice, validatNum } from '@/utils/validate'
-import Pagination from '@/components/Pager'
-import PagerMixin from "@/mixins/PagerMixin";
+import { orderListFun, orderDetailFun, compensateFun, machineResetFun, machineBootFun, ordeRrefundFun } from '@/service/order';
+import { getlistParentTypeFun } from '@/service/device';
+import { orderStatus, PayType } from '@/utils/mapping';
+import { validatPrice, validatNum } from '@/utils/validate';
+import Pagination from '@/components/Pager';
+import PagerMixin from '@/mixins/PagerMixin';
 export default {
   mixins: [PagerMixin],
   components: {
-    Pagination,
+    Pagination
   },
-  data () {
+  data() {
     const validateCompensateMoney = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('补偿面额不能为空'));
       } else if (!validatPrice(value) || Number(value) === 0) {
-        callback(new Error("补偿面额必须大于0，支持两位小数"));
+        callback(new Error('补偿面额必须大于0，支持两位小数'));
       } else if (Number(value) > 99) {
-        callback(new Error("补偿面额输入不能超过99"));
+        callback(new Error('补偿面额输入不能超过99'));
       } else {
         callback();
       }
@@ -202,7 +202,7 @@ export default {
         phone: '',
         machineName: '',
         orderStatus: '',
-        time: [],
+        time: []
       },
       orederDataToTable: [],
       detailDialogVisible: false,
@@ -212,146 +212,139 @@ export default {
         compensateMoney: '',
         conditionMoney: '',
         validDays: '',
-        compensateNumber: '',
+        compensateNumber: ''
       },
       compensateDialogVisible: false,
       compensateFormRules: {
-        parentTypeId: [
-          { required: true, trigger: "change", message: '请选择适用类型' },
-        ],
-        compensateMoney: [
-          { required: true, trigger: 'blur', message: '请填写补偿面额', validator: validateCompensateMoney }
-        ],
-        conditionMoney: [
-          { required: true, trigger: 'blur', message: '请选择满减金额', validator: validateConditionMoney }
-        ],
-        validDays: [
-          { required: true, trigger: 'blur', message: '请填写有效期', validator: validateValidDays },
-        ],
-        compensateNumber: [
-          { required: true, trigger: 'blur', message: '请填写发放数量', validator: validateCompensateNumber },
-        ],
+        parentTypeId: [{ required: true, trigger: 'change', message: '请选择适用类型' }],
+        compensateMoney: [{ required: true, trigger: 'blur', message: '请填写补偿面额', validator: validateCompensateMoney }],
+        conditionMoney: [{ required: true, trigger: 'blur', message: '请选择满减金额', validator: validateConditionMoney }],
+        validDays: [{ required: true, trigger: 'blur', message: '请填写有效期', validator: validateValidDays }],
+        compensateNumber: [{ required: true, trigger: 'blur', message: '请填写发放数量', validator: validateCompensateNumber }]
       },
-      machineParentTypeList: [],
-    }
+      machineParentTypeList: []
+    };
   },
   filters: {
-    orderStatus: (val) => {
-      return orderStatus[val]
+    orderStatus: val => {
+      return orderStatus[val];
     },
-    PayType: (val) => {
-      return PayType(val)
-    },
+    PayType: val => {
+      return PayType(val);
+    }
   },
   computed: {
-    orderStatus: function () {
-      return orderStatus
+    orderStatus: function() {
+      return orderStatus;
     },
-    validDaysEnd: function () {
-      return moment().add(this.compensateFrom.validDays, 'days').format("YYYY-MM-DD")
+    validDaysEnd: function() {
+      return moment()
+        .add(this.compensateFrom.validDays, 'days')
+        .format('YYYY-MM-DD');
     }
-
   },
-  mounted () {
-
-  },
-  created () {
+  mounted() {},
+  created() {
     this.getOrderDataToTable();
   },
   methods: {
-    handleSearch (data) {
-      this.searchData = Object.assign(this.searchData, data)
-      this.getOrderDataToTable()
+    handlePagination(data) {
+      this.searchData = Object.assign(this.searchData, data);
+      this.getOrderDataToTable();
     },
-    searchForm () {
-      let payload = Object.assign({}, this.searchData);
-      this.getOrderDataToTable(payload)
+    searchForm() {
+      this.searchData.page = 1;
+      this.getOrderDataToTable();
     },
-    resetSearchForm (formName) {
+    resetSearchForm(formName) {
       this.searchData.page = 1;
       this.$refs[formName].resetFields();
       this.getOrderDataToTable();
     },
-    async getmachineParentType (shopId = '') { //获取设备类型
+    async getmachineParentType(shopId = '') {
+      //获取设备类型
       let res = await getlistParentTypeFun({ shopId: shopId });
-      this.machineParentTypeList = res
+      this.machineParentTypeList = res;
     },
-    async getOrderDataToTable () {
+    async getOrderDataToTable() {
       let payload = Object.assign({}, this.searchData);
+      payload.startDate = payload.time ? payload.time[0] : null;
+      payload.endDate = payload.time ? payload.time[1] : null;
+      payload.time = null;
       let res = await orderListFun(payload);
       this.orederDataToTable = res.items;
-      this.total = res.total
+      this.total = res.total;
     },
-    async lookShopDetail (row) {
+    async lookShopDetail(row) {
       let payload = { orderNo: row.orderNo, memberId: row.userId };
       let res = await orderDetailFun(payload);
       this.detailData = res;
     },
-    onSubmitCompensateFrom (formName) {
-      this.$refs[formName].validate(async (valid) => {
+    onSubmitCompensateFrom(formName) {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          let payload = Object.assign({}, this.compensateFrom)
+          let payload = Object.assign({}, this.compensateFrom);
           await compensateFun(payload);
-          this.$Message.success("恭喜你，操作成功！");
+          this.$Message.success('恭喜你，操作成功！');
           this.$refs[formName].resetFields();
           this.compensateDialogVisible = false;
-          this.getOrderDataToTable()
+          this.getOrderDataToTable();
         } else {
           return false;
         }
       });
     },
-    resetCompensateForm (formName) {
+    resetCompensateForm(formName) {
       this.$refs[formName].resetFields();
       this.compensateDialogVisible = false;
     },
-    handleDeviceReset (row) {
+    handleDeviceReset(row) {
       let payload = { orderNo: row.orderNo, machineId: row.machineId };
       this.$confirm(`确认复位${row.machineName}此设备?`, '提示', {
         showClose: false
       }).then(() => {
         machineResetFun(payload).then(() => {
           this.$Message.success('设备复位成功');
-          this.getOrderDataToTable()
+          this.getOrderDataToTable();
         });
       });
     },
-    handleDeviceStart (row) {
+    handleDeviceStart(row) {
       let payload = { orderId: row.id, memberId: row.userId };
       this.$confirm(`确认启动${row.machineName}此设备?`, '提示', {
         showClose: false
       }).then(() => {
         machineBootFun(payload).then(() => {
           this.$Message.success('设备启动成功');
-          this.getOrderDataToTable()
+          this.getOrderDataToTable();
         });
       });
     },
-    handleOrderRefund (row) {
+    handleOrderRefund(row) {
       let payload = { orderNo: row.orderNo, refundMoney: row.payPrice, memberId: row.userId };
       this.$confirm(`确定发起退款？`, '提示', {
         showClose: false
       }).then(() => {
         ordeRrefundFun(payload).then(() => {
           this.$Message.success('退款成功');
-          this.getOrderDataToTable()
+          this.getOrderDataToTable();
         });
       });
     },
-    handleCompensate (row) {
+    handleCompensate(row) {
       this.compensateDialogVisible = true;
       this.$set(this.compensateFrom, 'shopName', row.shopName);
       this.$set(this.compensateFrom, 'orderNo', row.orderNo);
       this.$set(this.compensateFrom, 'phone', row.phone);
-      this.compensateFrom.parentTypeId = row.parentTypeId
-      this.compensateFrom.compensateMoney = row.markPrice
-      this.compensateFrom.conditionMoney = row.markPrice
-      this.compensateFrom.validDays = 5
-      this.compensateFrom.compensateNumber = 1
-      this.getmachineParentType(row.shopId)
+      this.compensateFrom.parentTypeId = row.parentTypeId;
+      this.compensateFrom.compensateMoney = row.markPrice;
+      this.compensateFrom.conditionMoney = row.markPrice;
+      this.compensateFrom.validDays = 5;
+      this.compensateFrom.compensateNumber = 1;
+      this.getmachineParentType(row.shopId);
     }
-  },
-}
+  }
+};
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .order-page .el-form-item__label {
@@ -359,7 +352,7 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .table-header-action {
   padding-bottom: 16px;
 }
@@ -394,7 +387,7 @@ export default {
   padding-top: 24px;
   padding-bottom: 24px;
 }
-[class^="icon-"] {
+[class^='icon-'] {
   width: 20px;
   height: 20px;
   margin-right: 20px;

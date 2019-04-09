@@ -1,28 +1,27 @@
 <template>
   <div class="pagination-right">
-    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="searchData.page" :page-sizes="pageSizeOpts" :page-size="searchData.pagesize" :layout="layout" :total="total">
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="pageSizeOpts" :page-size="searchData.pagesize" :layout="layout" :total="total">
     </el-pagination>
   </div>
 </template>
 <script>
-import PagerMixin from "@/mixins/PagerMixin";
+import PagerMixin from '@/mixins/PagerMixin';
 export default {
   mixins: [PagerMixin],
-  props: ['total'],
-  data () {
-    return {
-    }
+  props: ['total', 'currentPage'],
+  data() {
+    return {};
   },
   methods: {
-    handleCurrentChange (val) {
+    handleCurrentChange(val) {
       this.searchData.page = val;
       this.$emit('pagination', this.searchData);
     },
-    handleSizeChange (pageSize) {
+    handleSizeChange(pageSize) {
       this.searchData.pageSize = pageSize;
       this.$emit('pagination', this.searchData);
     }
-  },
+  }
 };
 </script>
 <style lang="scss">

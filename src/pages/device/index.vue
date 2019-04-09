@@ -125,7 +125,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handlePagination" :total="total" />
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
       <!-- 设备详情 -->
       <el-dialog title="设备详情" :visible.sync="detailDialogVisible" @close="detailActiveTab='first'" width="540px" top="50px">
         <h3 class="detail-base-title">基本信息</h3>
@@ -221,10 +221,10 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun } from '@/service/device'
-import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType, waterStatus } from '@/utils/mapping'
-import Pagination from '@/components/Pager'
-import PagerMixin from "@/mixins/PagerMixin";
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun } from '@/service/device';
+import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType, waterStatus } from '@/utils/mapping';
+import Pagination from '@/components/Pager';
+import PagerMixin from '@/mixins/PagerMixin';
 import ShopFilter from '@/components/Shopfilter';
 import editDevice from './editDevice';
 import batchEdit from './batchEdit';
@@ -234,9 +234,9 @@ export default {
     Pagination,
     ShopFilter,
     editDevice,
-    batchEdit,
+    batchEdit
   },
-  data () {
+  data() {
     return {
       searchData: {
         name: '',
@@ -245,7 +245,7 @@ export default {
         machineState: '',
         parentTypeId: '',
         subTypeId: '',
-        communicateType: '',
+        communicateType: ''
       },
       shopFilterName: null,
       filterShopVisible: false,
@@ -268,97 +268,101 @@ export default {
       deviceEditdetailForm: {},
 
       //批量编辑设备
-      batchDEditDeviceDialogVisible: false,
-    }
+      batchDEditDeviceDialogVisible: false
+    };
   },
   filters: {
-    deviceStatus: (val) => {
-      return deviceStatus[val]
+    deviceStatus: val => {
+      return deviceStatus[val];
     },
-    communicateType (val) {
+    communicateType(val) {
       return communicateType[val];
     },
-    ifOpenType (val) {
+    ifOpenType(val) {
       return ifOpenType[val];
     },
-    waterStatus (val) {
+    waterStatus(val) {
       return waterStatus[val];
-    },
-
+    }
   },
   computed: {
-    deviceSearchStatus () {
+    deviceSearchStatus() {
       return deviceSearchStatus;
     },
-    communicateType () {
+    communicateType() {
       return communicateType;
     },
-    machineStateBgColor: function () {
-      return function (value) {
-        return `background:${deviceColorStatus[value]}`
-      }
-    },
+    machineStateBgColor: function() {
+      return function(value) {
+        return `background:${deviceColorStatus[value]}`;
+      };
+    }
   },
-  mounted () {
-
-  },
-  created () {
+  mounted() {},
+  created() {
     this.getmachineParentType();
     this.getmachineSubType();
-    this.getDeviceDataToTable()
+    this.getDeviceDataToTable();
   },
   methods: {
-    getFilterShop () {
-      this.filterShopVisible = true
+    getFilterShop() {
+      this.filterShopVisible = true;
     },
-    getShopFilterName (data) {
-      this.shopFilterName = data[0].join(',')
-      this.filterShopVisible = data[1]
+    getShopFilterName(data) {
+      this.shopFilterName = data[0].join(',');
+      this.filterShopVisible = data[1];
     },
-    async getmachineParentType () { //获取设备类型
+    async getmachineParentType() {
+      //获取设备类型
       let res = await getlistParentTypeFun({ onlyMine: true });
-      this.machineParentTypeList = res
+      this.machineParentTypeList = res;
     },
-    async getmachineSubType () { //获取设备二级类型
+    async getmachineSubType() {
+      //获取设备二级类型
       let res = await listSubTypeAllFun();
-      this.machineSubTypeList = res
+      this.machineSubTypeList = res;
     },
-    handlePagination (data) { //分页
-      this.searchData = Object.assign(this.searchData, data)
-      this.getDeviceDataToTable()
+    handlePagination(data) {
+      //分页
+      this.searchData = Object.assign(this.searchData, data);
+      this.getDeviceDataToTable();
     },
-    searchForm () { //头部搜索
+    searchForm() {
       this.searchData.page = 1;
       let payload = Object.assign({}, this.searchData);
-      this.getDeviceDataToTable(payload)
+      this.getDeviceDataToTable(payload);
     },
-    resetSearchForm (formName) { //头部搜索
+    resetSearchForm(formName) {
+      this.searchData.page = 1;
       this.$refs[formName].resetFields();
       this.shopFilterName = null;
       this.getDeviceDataToTable();
     },
-    async getDeviceDataToTable () { //列表 
+    async getDeviceDataToTable() {
+      //列表
       this.deviceDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await deviceListFun(payload);
       this.deviceDataToTable = res.page.items;
-      this.total = res.page.total
+      this.total = res.page.total;
     },
-    async lookShopDetail (row) { //详情
+    async lookShopDetail(row) {
+      //详情
       let payload = { machineId: row.machineId };
-      let res = await detailDeviceListFun(payload)
+      let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
       this.deviceEditdetailForm = {};
       this.deviceEditdetailForm = Object.assign({}, res);
       this.deviceEditdetailForm.functionJson = res.functionList;
       this.deviceEditdetailForm.detergentJson = res.detergentFunctionList;
-      this.deviceEditdetailForm.isOpenDetergent == 1 ? this.deviceEditdetailForm.isOpenDetergentStatus = true : this.deviceEditdetailForm.isOpenDetergentStatus = false;
-      this.deviceEditdetailForm.functionList.forEach((item) => {
-        item.ifOpen === 0 ? item.ifOpenStatus = true : item.ifOpenStatus = false;
+      this.deviceEditdetailForm.isOpenDetergent == 1 ? (this.deviceEditdetailForm.isOpenDetergentStatus = true) : (this.deviceEditdetailForm.isOpenDetergentStatus = false);
+      this.deviceEditdetailForm.functionList.forEach(item => {
+        item.ifOpen === 0 ? (item.ifOpenStatus = true) : (item.ifOpenStatus = false);
       });
       return Promise.resolve();
     },
-    handleDeviceTzj (row) { //筒自洁
+    handleDeviceTzj(row) {
+      //筒自洁
       let payload = { machineId: row.machineId };
       this.$confirm(`确认筒自洁${row.machineName}此设备?`, '提示', {
         showClose: false
@@ -369,7 +373,8 @@ export default {
         });
       });
     },
-    handleDeviceReset (row) { //复位
+    handleDeviceReset(row) {
+      //复位
       let payload = { machineId: row.machineId };
       this.$confirm(`确认复位${row.machineName}此设备?`, '提示', {
         showClose: false
@@ -380,8 +385,8 @@ export default {
         });
       });
     },
-    handleDeviceStart (row) { //启动列表
-      console.log(row.machineState)
+    handleDeviceStart(row) {
+      //启动列表
       if (row.machineState === 1) {
         this.lookShopDetail(row);
         this.deviceStertDialogVisible = true;
@@ -389,73 +394,76 @@ export default {
       if (row.machineState === 2) {
         this.$confirm(`设备运行中，请先复位`, '提示', {
           showClose: false,
-          confirmButtonText: '确定',
+          confirmButtonText: '确定'
         });
       }
       if (row.machineState === 3) {
         this.$confirm(`设备已被预约，请先复位`, '提示', {
           showClose: false,
-          confirmButtonText: '确定',
+          confirmButtonText: '确定'
         });
       }
       if (row.machineState === 4) {
         this.$confirm(`设备故障，启动失败`, '提示', {
           showClose: false,
-          confirmButtonText: '确定',
+          confirmButtonText: '确定'
         });
       }
       if (row.machineState === 8) {
         this.$confirm(`设备离线，启动失败`, '提示', {
           showClose: false,
-          confirmButtonText: '确定',
+          confirmButtonText: '确定'
         });
       }
     },
-    startDeviceFun (machineId, row) {//启动
+    startDeviceFun(machineId, row) {
+      //启动
       let payload = { machineId: machineId, functionId: row.functionId };
       machineStartFun(payload).then(() => {
         this.deviceStertDialogVisible = false;
         this.$message.success('启动成功');
-      })
+      });
     },
-    handleDeviceEdit (row) {//设备单个编辑
+    handleDeviceEdit(row) {
+      //设备单个编辑
       this.lookShopDetail(row).then(data => {
         this.deviceEditDialogVisible = true;
-      })
+      });
     },
-    closeDeviceEdit (res) {
+    closeDeviceEdit(res) {
       this.deviceEditDialogVisible = false;
       this.getDeviceDataToTable();
     },
 
-    handleSelectionChange (val) {
+    handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    handleBatchEdit () {//设备批量编辑
+    handleBatchEdit() {
+      //设备批量编辑
       if (this.multipleSelection.length <= 0) {
         this.$alert(`请勾选想要批量编辑的设备`, '提示', {
           showClose: false,
-          confirmButtonText: '确定',
+          confirmButtonText: '确定'
         });
         return false;
       }
       if (this.multipleSelection.length > 1) {
         this.$alert(`一次只能勾选一个店铺进行批量编辑`, '提示', {
           showClose: false,
-          confirmButtonText: '确定',
+          confirmButtonText: '确定'
         });
         return false;
       }
       this.lookShopDetail(this.multipleSelection[0]).then(data => {
         this.batchDEditDeviceDialogVisible = true;
-      })
+      });
     },
-    closeBatchDeviceEdit (res) {
+    closeBatchDeviceEdit(res) {
       this.batchDEditDeviceDialogVisible = false;
       this.getDeviceDataToTable();
-    },
-  },
-}
+    }
+  }
+};
 </script>
 <style lang="scss">
 .el-vue-search-box-container {
@@ -498,7 +506,7 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .filter-shop {
   display: inline-block;
   width: 140px;
@@ -556,7 +564,7 @@ export default {
   padding-top: 24px;
   padding-bottom: 24px;
 }
-[class^="icon-"] {
+[class^='icon-'] {
   width: 20px;
   height: 20px;
   margin-right: 20px;

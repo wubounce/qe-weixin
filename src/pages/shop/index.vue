@@ -10,7 +10,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="选择区域：" prop="areas">
-        <area-cascader v-model="searchData.areas"></area-cascader>
+        <Area v-model="searchData.areas" size="small" default-option="不限" />
       </el-form-item>
       <el-form-item label="地址：" prop="address">
         <el-input v-model="searchData.address" placeholder="请输入"></el-input>
@@ -57,7 +57,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handleSearch" :total="total" />
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
       <!-- 店铺详情 -->
       <el-dialog title="店铺详情" :visible.sync="detailDialogVisible" width="540px">
         <ul class="deatil-list">
@@ -94,7 +94,7 @@
         </el-table>
       </el-dialog>
       <!-- 新增编辑店铺 -->
-      <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="addOrEditShopfrom('addShopFrom')" width="1100px" top="20px">
+      <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
         <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="150px">
           <el-form-item label="店铺名称：" class="shop-name" prop="shopName">
             <el-input v-model="addShopFrom.shopName" placeholder="店铺名称需为2-16个字，只支持中英文、_和-"></el-input>
@@ -104,8 +104,8 @@
               <el-option v-for="(item,index) in shopTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="选择区域：" prop="region">
-            <area-cascader v-model="addShopFrom.region"></area-cascader>
+          <el-form-item label="选择区域：" prop="areas" style="width:520px;">
+            <Area v-model="addShopFrom.areas" size="small" default-option="不限" />
           </el-form-item>
           <el-form-item label="所在小区/大厦/学校：">
             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
@@ -150,26 +150,26 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun } from '@/service/shop'
-import { deviceListFun } from '@/service/device'
-import { isReserveType, isHasVipType, isDiscountType, deviceStatus, deviceColorStatus } from '@/utils/mapping'
-import Pagination from '@/components/Pager'
-import AreaCascader from '@/components/AreaCascader'
-import PagerMixin from "@/mixins/PagerMixin";
+import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun } from '@/service/shop';
+import { deviceListFun } from '@/service/device';
+import { isReserveType, isHasVipType, isDiscountType, deviceStatus, deviceColorStatus } from '@/utils/mapping';
+import Pagination from '@/components/Pager';
+import Area from '@/components/Area';
+import PagerMixin from '@/mixins/PagerMixin';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    AreaCascader
+    Area
   },
-  data () {
+  data() {
     let self = this;
     return {
       searchData: {
         name: '',
         type: '',
         areas: [],
-        address: '',
+        address: ''
       },
       shopTypeList: [],
       shopDataToTable: [],
@@ -182,7 +182,7 @@ export default {
       addOrEditShopTitle: '新增店铺',
       addShopFrom: {
         shopId: '',
-        region: [],
+        areas: [],
         isReserve: '0',
         workTime: ['00:00', '23:59'],
         shopName: '',
@@ -200,9 +200,9 @@ export default {
       isOffAndOnReserve: false,
       isOffAndOnReservePlaceholder: '请填写1-9数字',
       //地图 城市搜索
-      searchName: "", // 搜索城市
+      searchName: '', // 搜索城市
       searchOption: {
-        city: "",
+        city: '',
         citylimit: true
       },
       center: [121.59996, 31.197646],
@@ -216,9 +216,9 @@ export default {
       isposition: true,
       plugin: [
         {
-          pName: "Geolocation",
+          pName: 'Geolocation',
           events: {
-            init (o) {
+            init(o) {
               // o 是高德地图定位插件实例
               o.getCurrentPosition((status, result) => {
                 if (result && result.position) {
@@ -234,97 +234,82 @@ export default {
         }
       ],
 
-
       addShopRules: {
-        shopName: [
-          { required: true, trigger: "blur", message: '请输入店铺名称' },
-          { pattern: /^[\u4e00-\u9fa5_a-zA-Z_-]{2,16}$/, message: "店铺名称需为2-16个字，只支持中英文、_和-", trigger: "blur" }
-        ],
-        shopType: [
-          { required: true, message: '请选择店铺类型', trigger: 'change' }
-        ],
-        region: [
-          { required: true, type: 'array', message: '请选择区域', trigger: 'change' }
-        ],
-        address: [
-          { required: true, message: '请填写详细地址', trigger: 'blur' }
-        ],
-        orderLimitMinutes: [
-          { required: true, message: '请填写预约时长（分钟）', trigger: 'blur' },
-          { pattern: /^[1-9]+\d*$/, message: "预约时长请填写1到9的数字", trigger: "blur" }
-        ],
-        workTime: [
-          { required: true, message: '请选择营业时间', trigger: 'change' }
-        ],
-        serviceTelephone: [
-          { pattern: /^[0-9]*$/, message: "客服电话需为纯数字", trigger: "blur" }
-        ],
+        shopName: [{ required: true, trigger: 'blur', message: '请输入店铺名称' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z_-]{2,16}$/, message: '店铺名称需为2-16个字，只支持中英文、_和-', trigger: 'blur' }],
+        shopType: [{ required: true, message: '请选择店铺类型', trigger: 'change' }],
+        areas: [{ required: true, type: 'array', message: '请选择区域', trigger: 'change' }],
+        address: [{ required: true, message: '请填写详细地址', trigger: 'blur' }],
+        orderLimitMinutes: [{ required: true, message: '请填写预约时长（分钟）', trigger: 'blur' }, { pattern: /^[1-9]+\d*$/, message: '预约时长请填写1到9的数字', trigger: 'blur' }],
+        workTime: [{ required: true, message: '请选择营业时间', trigger: 'change' }],
+        serviceTelephone: [{ pattern: /^[0-9]*$/, message: '客服电话需为纯数字', trigger: 'blur' }]
       }
-    }
+    };
   },
   filters: {
-    isReserveType: (val) => {
-      return isReserveType[val]
+    isReserveType: val => {
+      return isReserveType[val];
     },
-    isHasVipType: (val) => {
-      return isHasVipType[val]
+    isHasVipType: val => {
+      return isHasVipType[val];
     },
-    isDiscountType: (val) => {
-      return isDiscountType[val]
+    isDiscountType: val => {
+      return isDiscountType[val];
     },
-    deviceStatus: (val) => {
-      return deviceStatus[val]
-    },
-  },
-  computed: {
-    classObject: function () {
-      return function (value) {
-        return `background:${deviceColorStatus[value]}`
-      }
+    deviceStatus: val => {
+      return deviceStatus[val];
     }
   },
-  mounted () {
-
+  computed: {
+    classObject: function() {
+      return function(value) {
+        return `background:${deviceColorStatus[value]}`;
+      };
+    }
   },
-  created () {
-    this.getShopTypeList()
-    this.getShopDataToTable()
+  mounted() {},
+  created() {
+    this.getShopTypeList();
+    this.getShopDataToTable();
   },
   methods: {
-    async getShopTypeList () {
+    async getShopTypeList() {
       this.shopTypeList = await shopTypeListFun();
     },
-    handleSearch (data) {
-      this.searchData = Object.assign(this.searchData, data)
-      this.getShopDataToTable()
+    handlePagination(data) {
+      this.searchData = Object.assign(this.searchData, data);
+      this.getShopDataToTable();
     },
-    searchForm () {
+    searchForm() {
       this.searchData.page = 1;
-      let payload = Object.assign({}, this.searchData);
-      this.getShopDataToTable(payload)
+      this.getShopDataToTable();
     },
-    resetSearchForm (formName) {
+    resetSearchForm(formName) {
+      this.searchData.page = 1;
       this.$refs[formName].resetFields();
       this.getShopDataToTable();
     },
-    async getShopDataToTable () {
+    async getShopDataToTable() {
       let payload = Object.assign({}, this.searchData);
+      payload.provinceId = payload.areas[0];
+      payload.cityId = payload.areas[1];
+      payload.districtId = payload.areas[2];
+      payload.areas = [];
       let res = await manageListFun(payload);
       this.shopDataToTable = res.items;
-      this.shopDataToTable.forEach((item) => {
+      this.shopDataToTable.forEach(item => {
         if (item.isReserve === 0) {
           item.isReserve = true;
         } else {
           item.isReserve = false;
         }
       });
-      this.total = res.total
+      this.total = res.total;
     },
-    async lookShopDetail (row) {
+    async lookShopDetail(row) {
       let payload = { shopId: row.shopId };
       let res = await shopDetailFun(payload);
       this.detailData = res;
-      this.addShopFrom.shopId = res.shopId
+      this.addShopFrom.shopId = res.shopId;
       this.addShopFrom.isReserve = String(res.isReserve);
       this.addShopFrom.workTime = res.workTime.split('-');
       this.addShopFrom.shopName = res.shopName;
@@ -339,16 +324,13 @@ export default {
       this.addShopFrom.organization = res.organization;
       this.addShopFrom.serviceTelephone = res.serviceTelephone;
       // 地区组件
-      this.addShopFrom.region = [
-        res.provinceId,
-        res.cityId,
-        res.districtId
-      ];
+      this.addShopFrom.areas = [res.provinceId, res.cityId, res.districtId];
       // 地图相关
       this.center = [res.lng, res.lat];
       this.marker.position = [res.lng, res.lat];
+      return Promise.resolve();
     },
-    async getDeciveFromShop (row) {
+    async getDeciveFromShop(row) {
       if (row.machineCount === 0) {
         return false;
       }
@@ -357,19 +339,18 @@ export default {
       let res = await deviceListFun(payload);
       this.deviceDialogVisible = true;
       this.deviceList = res.page.items;
-
     },
     //搜索城市获取经纬度
-    onSearchResult (pois) {
+    onSearchResult(pois) {
       this.center = [pois[0].lng, pois[0].lat];
       this.marker.position = [pois[0].lng, pois[0].lat];
-      console.log(pois)
+      console.log(pois);
       this.addShopFrom.lng = pois[0].lng;
       this.addShopFrom.lat = pois[0].lat;
       this.addShopFrom.organization = pois[0].name;
-      this.addShopFrom.lng && this.addShopFrom.lat ? this.isposition = true : this.isposition = false;
+      this.addShopFrom.lng && this.addShopFrom.lat ? (this.isposition = true) : (this.isposition = false);
     },
-    offAndOnReserve (val) {
+    offAndOnReserve(val) {
       if (val == 1) {
         this.isOffAndOnReserve = true;
         this.addShopRules.orderLimitMinutes[0].required = false;
@@ -380,53 +361,53 @@ export default {
         this.isOffAndOnReservePlaceholder = '请填写1到9的数字';
       }
     },
-    oneditShop (row) {
-      this.lookShopDetail(row);
-      this.addShopDialogVisible = true;
+    oneditShop(row) {
+      this.lookShopDetail(row).then(() => {
+        this.offAndOnReserve(this.addShopFrom.isReserve);
+        this.addShopDialogVisible = true;
+      });
     },
-    onSubmitShopFrom (formName) {
-      this.$refs[formName].validate(async (valid) => {
-        this.addShopFrom.lng && this.addShopFrom.lat ? this.isposition = true : this.isposition = false;
+    onSubmitShopFrom(formName) {
+      this.$refs[formName].validate(async valid => {
+        this.addShopFrom.lng && this.addShopFrom.lat ? (this.isposition = true) : (this.isposition = false);
         if (valid && this.isposition) {
-          let payload = Object.assign({}, this.addShopFrom)
-          payload.workTime = payload.workTime.join('-')
-          payload.provinceId = payload.region[0]
-          payload.cityId = payload.region[1]
-          payload.districtId = payload.region[2]
-          payload.region = []
+          let payload = Object.assign({}, this.addShopFrom);
+          payload.workTime = payload.workTime.join('-');
+          payload.provinceId = payload.areas[0];
+          payload.cityId = payload.areas[1];
+          payload.districtId = payload.areas[2];
+          payload.areas = [];
           await addOrEditShopFun(payload);
           this.resetaddOrEditShopForm(formName);
-          this.$Message("恭喜你，操作成功！");
-          this.getShopDataToTable()
+          this.$Message.success('操作成功！');
+          this.getShopDataToTable();
         } else {
           return false;
         }
       });
     },
-    resetaddOrEditShopForm (formName) {
-      this.isposition = true;
+    resetaddOrEditShopForm(formName) {
       this.$refs[formName].resetFields();
-      this.addShopFrom.lng = '';
-      this.addShopFrom.lat = '';
-      this.addShopFrom.organization = '';
+      this.isposition = true;
+      this.addShopFrom.areas = [];
       this.addShopDialogVisible = false;
     },
-    addOrEditShopfrom (formName) {
-      this.resetaddOrEditShopForm(formName)
+    addOrEditShopfrom(formName) {
+      this.resetaddOrEditShopForm(formName);
     },
     // 删除店铺
-    handleDelete (shopId) {
-      this.$confirm("您确定要删除该店铺?", '提示', {
+    handleDelete(shopId) {
+      this.$confirm('您确定要删除该店铺?', '提示', {
         showClose: false
       }).then(() => {
         deleteShopFun({ shopId: shopId }).then(() => {
           this.$message.success('店铺删除成功');
-          this.getShopDataToTable()
+          this.getShopDataToTable();
         });
       });
-    },
-  },
-}
+    }
+  }
+};
 </script>
 <style lang="scss">
 .el-vue-search-box-container {
@@ -450,7 +431,7 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .table-header-action {
   padding-bottom: 16px;
 }

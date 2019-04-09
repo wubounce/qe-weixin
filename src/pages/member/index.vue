@@ -48,7 +48,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handleSearch" :total="total" />
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
       <!-- 详情 -->
       <el-dialog title="人员详情" :visible.sync="detailDialogVisible" width="540px">
         <ul class="deatil-list">
@@ -93,18 +93,18 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopListFun, operatorListFun, lockOperatorrFun, getOperatorInfoFun, updateOperatorInfoFun, delOperatorFun, permsMenuFun, addOperatorFun } from '@/service/member'
+import { shopListFun, operatorListFun, lockOperatorrFun, getOperatorInfoFun, updateOperatorInfoFun, delOperatorFun, permsMenuFun, addOperatorFun } from '@/service/member';
 import { getTrees } from '@/utils/tools';
-import Pagination from '@/components/Pager'
-import multipleShop from '@/components/multipleShop'
-import PagerMixin from "@/mixins/PagerMixin";
+import Pagination from '@/components/Pager';
+import multipleShop from '@/components/multipleShop';
+import PagerMixin from '@/mixins/PagerMixin';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
     multipleShop
   },
-  data () {
+  data() {
     return {
       searchData: {
         name: '',
@@ -124,17 +124,9 @@ export default {
         operateShopIds: []
       },
       addMemberFormRules: {
-        phone: [
-          { required: true, trigger: "change", message: '请填写手机号' },
-          { pattern: /^(1)\d{10}$/, message: "请填写正确的手机号", trigger: "blur" }
-        ],
-        username: [
-          { required: true, trigger: 'blur', message: '请填写人员姓名' },
-          { pattern: /^[\u4e00-\u9fa5_a-zA-Z]{2,16}$/, message: "人员姓名需为2-16个字，只支持中英文", trigger: "blur" }
-        ],
-        operateShopIds: [
-          { required: true, type: 'array', trigger: 'change', message: '请选择负责店铺' }
-        ],
+        phone: [{ required: true, trigger: 'change', message: '请填写手机号' }, { pattern: /^(1)\d{10}$/, message: '请填写正确的手机号', trigger: 'blur' }],
+        username: [{ required: true, trigger: 'blur', message: '请填写人员姓名' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z]{2,16}$/, message: '人员姓名需为2-16个字，只支持中英文', trigger: 'blur' }],
+        operateShopIds: [{ required: true, type: 'array', trigger: 'change', message: '请选择负责店铺' }]
       },
       allMenu: [],
       permissionsData: [],
@@ -145,53 +137,49 @@ export default {
       parentIds: [],
       checkpermissionslist: [],
       shopFilterName: null,
-      filterShopVisible: false,
-    }
+      filterShopVisible: false
+    };
   },
-  filters: {
-  },
-  computed: {
-  },
-  mounted () {
-
-  },
-  created () {
-    this.getShopList()
-    this.getMemberDataToTable()
+  filters: {},
+  computed: {},
+  mounted() {},
+  created() {
+    this.getShopList();
+    this.getMemberDataToTable();
     this.menuSelect();
   },
   methods: {
-    async getShopList () {
+    async getShopList() {
       this.shopList = await shopListFun();
     },
-    handleSearch (data) {
-      this.searchData = Object.assign(this.searchData, data)
-      this.getMemberDataToTable()
+    handlePagination(data) {
+      this.searchData = Object.assign(this.searchData, data);
+      this.getMemberDataToTable();
     },
-    searchForm () {
+    searchForm() {
       this.searchData.page = 1;
       let payload = Object.assign({}, this.searchData);
-      this.getMemberDataToTable(payload)
+      this.getMemberDataToTable(payload);
     },
-    resetSearchForm (formName) {
+    resetSearchForm(formName) {
       this.$refs[formName].resetFields();
       this.getMemberDataToTable();
     },
-    async getMemberDataToTable () {
+    async getMemberDataToTable() {
       this.memberDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await operatorListFun(payload);
       this.memberDataToTable = res.items;
-      this.memberDataToTable.forEach((item) => {
+      this.memberDataToTable.forEach(item => {
         if (item.isLock === 0) {
           item.isLock = true;
         } else {
           item.isLock = false;
         }
       });
-      this.total = res.total
+      this.total = res.total;
     },
-    async lockOperator (row) {
+    async lockOperator(row) {
       let isLock = null;
       if (row.isLock === true) {
         isLock = 0;
@@ -202,8 +190,8 @@ export default {
       await lockOperatorrFun(payload);
       this.$Message.success('操作成功');
     },
-    async openAddBDDialog (row = {}) {
-      this.addOrEditMemberTitle = '新增人员'
+    async openAddBDDialog(row = {}) {
+      this.addOrEditMemberTitle = '新增人员';
       this.checkpermissionslist = [];
       this.parentIds = [];
       this.shopFilterName = null;
@@ -227,46 +215,46 @@ export default {
       }
       this.addMemberDialogVisible = true;
     },
-    async lookShopDetail (row) {
+    async lookShopDetail(row) {
       let payload = { id: row.id };
       let res = await getOperatorInfoFun(payload);
       this.detailData = res;
       this.detailPermissionsData = getTrees(res.list, 0);
     },
-    async menuSelect () {
+    async menuSelect() {
       let res = await permsMenuFun(); //拼接权限菜单
       this.allMenu = res;
       this.permissionsData = getTrees(res, 0); //兼容app
     },
-    handleCheck () {
+    handleCheck() {
       this.checkpermissionslist = this.$refs.tree.getCheckedKeys(true);
       let checklist = this.allMenu.filter(v => this.checkpermissionslist.some(k => k == v.menuId));
       this.parentIds = checklist.map(item => item.parentId); //获取父级id
       this.checkpermissionslist = Array.from(new Set([...this.checkpermissionslist]));
     },
-    getFilterShop () {
-      this.filterShopVisible = true
+    getFilterShop() {
+      this.filterShopVisible = true;
     },
-    getShopFilterName (data) {
-      this.shopFilterName = data[0].join(',')
-      this.filterShopVisible = data[1]
+    getShopFilterName(data) {
+      this.shopFilterName = data[0].join(',');
+      this.filterShopVisible = data[1];
     },
-    onSubmitMemberFrom (formName) {
-      this.$refs[formName].validate(async (valid) => {
+    onSubmitMemberFrom(formName) {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
           if (this.checkpermissionslist.length <= 0) {
-            this.$Message.error("请选择权限");
+            this.$Message.error('请选择权限');
             return false;
           }
-          let payload = Object.assign({}, this.addMemberFrom)
+          let payload = Object.assign({}, this.addMemberFrom);
           let menshopids = [];
           payload.operateShopIds.forEach(item => menshopids.push(`'${item}'`));
           payload.operateShopIds = menshopids.join(',');
-          let mIds = [...this.checkpermissionslist, ...this.parentIds];//权限父级id
-          mIds = Array.from(new Set([...mIds]));//去重
-          payload.mIds = mIds.join(',')
+          let mIds = [...this.checkpermissionslist, ...this.parentIds]; //权限父级id
+          mIds = Array.from(new Set([...mIds])); //去重
+          payload.mIds = mIds.join(',');
           payload.id ? updateOperatorInfoFun(payload) : addOperatorFun(payload);
-          this.$Message.success("操作成功！");
+          this.$Message.success('操作成功！');
           this.addMemberDialogVisible = false;
           this.getMemberDataToTable();
         } else {
@@ -275,23 +263,22 @@ export default {
       });
     },
     // 删除人员
-    handleDelete (row) {
+    handleDelete(row) {
       let payload = { id: row.id };
-      this.$confirm("您确定要删除该账号?", '提示', {
+      this.$confirm('您确定要删除该账号?', '提示', {
         showClose: false
       }).then(() => {
         delOperatorFun(payload).then(() => {
           this.$message.success('账号删除成功');
-          this.getMemberDataToTable()
+          this.getMemberDataToTable();
         });
       });
-    },
-
-  },
-}
+    }
+  }
+};
 </script>
 <style lang="scss">
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .add-shop-from {
   .shop-name .el-input__inner {
     width: 400px !important;
@@ -306,7 +293,7 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .table-header-action {
   padding-bottom: 16px;
 }
