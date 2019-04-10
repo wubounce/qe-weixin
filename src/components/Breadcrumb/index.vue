@@ -12,44 +12,42 @@
 </template>
 
 <script>
-import pathToRegexp from "path-to-regexp";
+import pathToRegexp from 'path-to-regexp';
 
 export default {
-  data () {
+  data() {
     return {
       levelList: null
     };
   },
   watch: {
-    $route () {
+    $route() {
       this.getBreadcrumb();
     }
   },
-  created () {
+  created() {
     this.getBreadcrumb();
   },
   methods: {
-    getBreadcrumb () {
+    getBreadcrumb() {
       let matched = this.$route.matched.filter(item => {
         if (item.name) {
           return true;
         }
       });
-      const first = matched[0];
-      if (first && first.name !== "home") {
-        matched = [
-          { path: "/home", meta: { title: "首页", icon: "table" } }
-        ].concat(matched);
-      }
+      // const first = matched[0];
+      // if (first && first.name !== 'home') {
+      //   matched = [{ path: '/home', meta: { title: '首页', icon: 'table' } }].concat(matched);
+      // }
       this.levelList = matched;
     },
-    pathCompile (path) {
+    pathCompile(path) {
       // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
       const { params } = this.$route;
       var toPath = pathToRegexp.compile(path);
       return toPath(params);
     },
-    handleLink (item) {
+    handleLink(item) {
       const { redirect, path } = item;
       if (redirect) {
         this.$router.push(redirect);

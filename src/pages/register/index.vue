@@ -1,6 +1,7 @@
 <template>
   <div class="register-container">
     <div class="register-form">
+      <img class="login-logo" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" alt="">
       <h3 class="title">注册账户</h3>
       <el-form ref="registerForm" :model="registerForm" :rules="registerRules" label-position="left">
         <el-form-item prop="phone">
@@ -45,18 +46,18 @@
 <script>
 import { smscodeFun, checkPhoneFun, checkRegCodeFun, saveRegisterInfoFun } from '@/service/resetPwd';
 import { validatPhone, validatName, validatPwd, validatInviteCode } from '@/utils/validate';
-import Area from "@/components/Area";
+import Area from '@/components/Area';
 export default {
-  name: "register",
+  name: 'register',
   components: {
     Area
   },
-  data () {
+  data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('手机号不能为空'));
       } else if (!validatPhone(value)) {
-        callback(new Error("请输入正确的手机号"));
+        callback(new Error('请输入正确的手机号'));
       } else {
         callback();
       }
@@ -116,35 +117,35 @@ export default {
       btn: true,
       disabled: true,
       registerRules: {
-        phone: [{ required: true, trigger: "blur", validator: validatePhone }],
-        code: [{ required: true, trigger: "blur", message: '验证码必须为数字值' }],
-        password: [{ required: true, trigger: "blur", validator: validatePassword }],
-        rePassword: [{ required: true, trigger: "blur", validator: validateRePassword }],
-        invitationCode: [{ required: true, trigger: "blur", validator: validateInviteCode }],
-        name: [{ required: true, trigger: "blur", validator: validateName }],
-        userAgreement: [{ required: true, trigger: "blur", message: '请同意用户协议' }],
-      },
+        phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
+        code: [{ required: true, trigger: 'blur', message: '验证码必须为数字值' }],
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        rePassword: [{ required: true, trigger: 'blur', validator: validateRePassword }],
+        invitationCode: [{ required: true, trigger: 'blur', validator: validateInviteCode }],
+        name: [{ required: true, trigger: 'blur', validator: validateName }],
+        userAgreement: [{ required: true, trigger: 'blur', message: '请同意用户协议' }]
+      }
     };
   },
   methods: {
-    disabledBtn () {
+    disabledBtn() {
       if (this.registerForm.phone && this.registerForm.code && this.registerForm.invitationCode && this.registerForm.password && this.registerForm.rePassword && this.registerForm.name && this.registerForm.userAgreement) {
         this.disabled = false;
       } else {
         this.disabled = true;
       }
     },
-    validatePhone () {
+    validatePhone() {
       if (this.registerForm.phone === '') {
-        this.$Message.error('请输入手机号码')
+        this.$Message.error('请输入手机号码');
         return false;
       } else if (!validatPhone(this.registerForm.phone)) {
-        this.$Message.error('请输入正确手机号码')
+        this.$Message.error('请输入正确手机号码');
         return false;
       }
       return true;
     },
-    async sendcode () {
+    async sendcode() {
       if (this.validatePhone()) {
         let res = await checkPhoneFun({ phone: this.registerForm.phone });
         if (res.exist) {
@@ -157,7 +158,7 @@ export default {
         }
       }
     },
-    countdown () {
+    countdown() {
       this.btn = false;
       this.timer = setInterval(() => {
         if (--this.time <= 0) {
@@ -166,19 +167,19 @@ export default {
         }
       }, 1000);
     },
-    getAreaName (data) {
+    getAreaName(data) {
       if (data.length > 0) {
         this.registerForm.address = data.join('');
       }
     },
-    handleRegister () {
+    handleRegister() {
       this.$refs.registerForm.validate(valid => {
         if (valid) {
           let provinceId = this.registerForm.areaIds.length > 0 ? this.registerForm.areaIds[0] : null;
           let cityId = this.registerForm.areaIds.length > 0 ? this.registerForm.areaIds[1] : null;
           let districtId = this.registerForm.areaIds.length > 0 ? this.registerForm.areaIds[2] : null;
           if (provinceId && cityId && districtId) {
-            let payload = Object.assign({}, { phone: this.registerForm.phone, code: this.registerForm.code, invitationCode: this.registerForm.invitationCode })
+            let payload = Object.assign({}, { phone: this.registerForm.phone, code: this.registerForm.code, invitationCode: this.registerForm.invitationCode });
             checkRegCodeFun(payload).then(() => {
               let payload = {
                 phone: this.registerForm.phone,
@@ -194,8 +195,7 @@ export default {
                 this.$Message.success('注册成功');
                 this.$router.push({ name: 'login' });
               });
-            })
-
+            });
           } else {
             this.$Message.error('请选择省市区');
           }
@@ -245,13 +245,19 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@//styles/variables.scss";
+@import '~@//styles/variables.scss';
 .register-container {
   height: 100%;
   width: 100%;
   background-color: $regbg;
   position: relative;
   border-radius: 12px;
+  .login-logo {
+    position: absolute;
+    top: -43px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
   .register-form {
     width: 420px;
     background: #fff;

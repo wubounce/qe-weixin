@@ -46,6 +46,12 @@ export default [
     name: 'alipay'
   },
   {
+    path: '/changepwd',
+    component: () => import('@/pages/changePwd/index'),
+    hidden: true,
+    name: 'changepwd'
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/index',
@@ -62,6 +68,8 @@ export default [
     path: '/report',
     component: Layout,
     redirect: '/report/profit',
+    name: 'report',
+    meta: { title: '报表', icon: 'dashboard', noCache: true },
     children: [
       {
         path: 'profit',
@@ -87,6 +95,8 @@ export default [
     path: '/shopmanagement',
     component: Layout,
     redirect: '/shopmanagement/list',
+    name: 'shopmanagement',
+    meta: { title: '店铺管理', icon: 'dashboard', noCache: true },
     children: [
       {
         path: 'list',
@@ -100,6 +110,8 @@ export default [
     path: '/devicemanagement',
     component: Layout,
     redirect: '/devicemanagement/list',
+    name: 'devicemanagement',
+    meta: { title: '设备管理', icon: 'dashboard', noCache: true },
     children: [
       {
         path: 'list',
@@ -119,6 +131,8 @@ export default [
     path: '/ordermanagement',
     component: Layout,
     redirect: '/ordermanagement/list',
+    name: 'ordermanagement',
+    meta: { title: '订单管理', icon: 'dashboard', noCache: true },
     children: [
       {
         path: 'list',
@@ -132,6 +146,8 @@ export default [
     path: '/membermanagement',
     component: Layout,
     redirect: '/membermanagement/list',
+    name: 'membermanagement',
+    meta: { title: '人员管理', icon: 'dashboard', noCache: true },
     children: [
       {
         path: 'list',
@@ -145,6 +161,8 @@ export default [
     path: '/marketingmanagement',
     component: Layout,
     redirect: '/marketingmanagement/discount',
+    name: 'marketingmanagement',
+    meta: { title: '营销管理', icon: 'dashboard', noCache: true },
     children: [
       {
         path: 'discount',

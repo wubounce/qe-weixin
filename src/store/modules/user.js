@@ -1,4 +1,10 @@
-import { getToken, setToken, removeToken, setUserInfoInLocalstorage, getUserInfoInLocalstorage } from '@/utils/auth';
+import {
+  getToken,
+  setToken,
+  removeToken,
+  setUserInfoInLocalstorage,
+  getUserInfoInLocalstorage
+} from '@/utils/auth';
 import { login } from '@/service/login';
 import { getOperatorFun } from '@/service/user';
 import { menuSelectFun } from '@/service/member';
@@ -66,7 +72,7 @@ const user = {
       });
     },
     // 前端 登出
-    FedLogOut({ commit }) {
+    LogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '');
         commit('SET_ACCESS', []);
