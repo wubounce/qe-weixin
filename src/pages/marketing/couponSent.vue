@@ -2,7 +2,7 @@
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="适用店铺：" prop="type">
-        <el-select v-model="searchData.type" placeholder="请选择">
+        <el-select v-model="searchData.type" clearable placeholder="请选择">
           <el-option value="0" label="开启"></el-option>
           <el-option value="1" label="关闭"></el-option>
         </el-select>
@@ -108,7 +108,4 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.table-header-action {
-  padding-bottom: 16px;
-}
 </style>

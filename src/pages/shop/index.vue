@@ -2,10 +2,10 @@
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="店铺名称：" prop="name">
-        <el-input v-model="searchData.name" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="店铺类型：" prop="type">
-        <el-select v-model="searchData.type" placeholder="请选择">
+        <el-select v-model="searchData.type" clearable placeholder="请选择">
           <el-option v-for="(item,index) in shopTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -13,7 +13,7 @@
         <Area v-model="searchData.areas" size="small" default-option="不限" />
       </el-form-item>
       <el-form-item label="地址：" prop="address">
-        <el-input v-model="searchData.address" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.address" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
@@ -432,9 +432,6 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.table-header-action {
-  padding-bottom: 16px;
-}
 .rowstyle {
   color: $menuText;
   cursor: pointer;

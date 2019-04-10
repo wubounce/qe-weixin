@@ -2,16 +2,16 @@
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="订单编号：" prop="orderNo">
-        <el-input v-model="searchData.orderNo" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.orderNo" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="用户账号：" prop="phone">
-        <el-input v-model="searchData.phone" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.phone" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="设备名称：" prop="machineName">
-        <el-input v-model="searchData.machineName" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.machineName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="订单状态：" prop="orderStatus">
-        <el-select v-model="searchData.orderStatus" placeholder="请选择">
+        <el-select v-model="searchData.orderStatus" clearable placeholder="请选择">
           <el-option v-for="(name, id) in orderStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
@@ -347,15 +347,12 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss">
-.order-page .el-form-item__label {
+.order-page .add-shop-from .el-form-item__label {
   color: rgba(23, 26, 46, 0.45);
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.table-header-action {
-  padding-bottom: 16px;
-}
 .rowstyle {
   color: $menuText;
   cursor: pointer;

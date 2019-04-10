@@ -2,15 +2,15 @@
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="优惠适用店铺：" prop="name">
-        <el-input v-model="searchData.name" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="活动状态：" prop="status">
-        <el-select v-model="searchData.status" placeholder="请选择">
+        <el-select v-model="searchData.status" clearable placeholder="请选择">
           <el-option label="开启"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="开启/关闭：" prop="type">
-        <el-select v-model="searchData.type" placeholder="请选择">
+        <el-select v-model="searchData.type" clearable placeholder="请选择">
           <el-option value="0" label="开启"></el-option>
           <el-option value="1" label="关闭"></el-option>
         </el-select>
@@ -79,8 +79,7 @@
     <el-dialog :title="addOrEditMaketTitle" :visible.sync="addMaketDialogVisible" @close="resetAddOrEditMaketFrom('addMaketFrom')" width="620px" height="768px">
       <el-form ref="addMaketFrom" :model="addMaketFrom" :rules="addMaketFromRules" class="add-shop-from" label-width="120px" v-if="addMaketDialogVisible">
         <el-form-item label="适用店铺：" prop="shopIds">
-          <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:'请选择店铺'}}</span>
-          <multiple-shop v-model="addMaketFrom.shopIds" @getShopFilterName="getShopFilterName(arguments)" :visible="filterShopVisible"></multiple-shop>
+          <multiple-shop v-model="addMaketFrom.shopIds" @change="getShopFilter" placeholder="请选择店铺"></multiple-shop>
         </el-form-item>
         <el-form-item label="适用类型：" prop="parentTypeIds">
           <el-select v-model="addMaketFrom.parentTypeIds" placeholder="请先选择店铺" :disabled="hasShop">
@@ -143,9 +142,6 @@ export default {
       timeMaketingDataToTable: [],
       addOrEditMaketTitle: '新增优惠',
       addMaketDialogVisible: false,
-      shopFilterName: null,
-      filterShopVisible: false,
-      weekFilterName: null,
       weekFilterVisible: false,
       addMaketFrom: {
         timeId: '',
@@ -207,17 +203,13 @@ export default {
       this.$refs[formName].resetFields();
       this.getTimeMaketingDataToTable();
     },
-    getFilterShop() {
-      this.filterShopVisible = true;
-    },
-    getShopFilterName(data) {
-      this.shopFilterName = data[0].join(',');
-      this.filterShopVisible = data[1];
-      this.getMarketlistParentType();
+    getShopFilter(val) {
+      if (val.length >= 1) {
+        this.getMarketlistParentType();
+      }
     },
     getcustomWeekCheckList(data) {
       this.addMaketFrom.weekCheckList = data[0];
-      console.log(this.addMaketFrom);
       this.weekFilterVisible = data[1];
     },
     changeActiveDate(val) {
@@ -282,8 +274,6 @@ export default {
         beshop.push(item.name);
         beshopIds.push(item.id);
       });
-
-      this.shopFilterName = beshop.join(',');
       this.addMaketFrom = {
         timeId: res.id,
         week: res.noWeek,
@@ -324,7 +314,6 @@ export default {
     resetAddOrEditMaketFrom(formName) {
       this.addMaketFrom.weekCheckList = [];
       this.$refs[formName].resetFields();
-      this.shopFilterName = null;
       this.addMaketDialogVisible = false;
     },
     handleDeleteDiscount(row) {
@@ -356,26 +345,9 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.filter-shop {
-  display: inline-block;
-  width: 220px;
-  height: 32px;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  line-height: 32px;
-  padding: 0 3px;
-  color: #c0c4cc;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
 .rowstyle {
   color: $menuText;
   cursor: pointer;
-}
-.filter-shop-selected {
-  color: #606266;
 }
 .add-shop-from {
   border-top: 1px solid $under_line;

@@ -2,12 +2,10 @@
   <div>
     <el-form :inline="true" ref="searchData" :model="searchData" class="header-search">
       <el-form-item label="人员姓名 ：" prop="name">
-        <el-input v-model="searchData.name" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="负责店铺：" prop="shopId">
-        <el-select v-model="searchData.shopId" placeholder="请选择">
-          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
-        </el-select>
+      <el-form-item label="负责店铺：" prop="shopIds">
+        <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
@@ -75,8 +73,7 @@
             <el-input v-model="addMemberFrom.username" placeholder="请输入人员姓名"></el-input>
           </el-form-item>
           <el-form-item label="负责店铺：" prop="operateShopIds">
-            <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:'请选择店铺'}}</span>
-            <multiple-shop v-model="addMemberFrom.operateShopIds" @getShopFilterName="getShopFilterName(arguments)" :visible="filterShopVisible"></multiple-shop>
+            <multiple-shop v-model="addMemberFrom.operateShopIds" placeholder="请选择店铺"></multiple-shop>
           </el-form-item>
           <el-form-item label="权限选择：" class="perm-tree">
             <el-tree ref="tree" :data="permissionsData" show-checkbox node-key="menuId" :props="defaultProps" @check="handleCheck" :default-checked-keys="checkpermissionslist" :default-expanded-keys="checkpermissionslist">
@@ -98,17 +95,19 @@ import { getTrees } from '@/utils/tools';
 import Pagination from '@/components/Pager';
 import multipleShop from '@/components/multipleShop';
 import PagerMixin from '@/mixins/PagerMixin';
+import ShopFilter from '@/components/Shopfilter';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    multipleShop
+    multipleShop,
+    ShopFilter
   },
   data() {
     return {
       searchData: {
         name: '',
-        shopId: ''
+        shopIds: []
       },
       shopList: [],
       detailDialogVisible: false,
@@ -135,9 +134,7 @@ export default {
         label: 'name'
       },
       parentIds: [],
-      checkpermissionslist: [],
-      shopFilterName: null,
-      filterShopVisible: false
+      checkpermissionslist: []
     };
   },
   filters: {},
@@ -162,6 +159,7 @@ export default {
       this.getMemberDataToTable(payload);
     },
     resetSearchForm(formName) {
+      this.searchData.page = 1;
       this.$refs[formName].resetFields();
       this.getMemberDataToTable();
     },
@@ -194,7 +192,6 @@ export default {
       this.addOrEditMemberTitle = '新增人员';
       this.checkpermissionslist = [];
       this.parentIds = [];
-      this.shopFilterName = null;
       this.addMemberFrom = {
         id: '',
         phone: '',
@@ -208,7 +205,6 @@ export default {
         this.addMemberFrom.id = res.id;
         this.addMemberFrom.phone = res.phone;
         this.addMemberFrom.username = res.realName;
-        this.shopFilterName = res.operateShopNames;
         let updateOperateShopIds = res.operateShopNames ? res.operateShopNames.split(',') : [];
         this.addMemberFrom.operateShopIds = this.shopList.filter(v => updateOperateShopIds.some(k => k == v.shopName)).map(item => item.shopId);
         this.checkpermissionslist = res.list.map(item => item.menuId);
@@ -231,13 +227,6 @@ export default {
       let checklist = this.allMenu.filter(v => this.checkpermissionslist.some(k => k == v.menuId));
       this.parentIds = checklist.map(item => item.parentId); //获取父级id
       this.checkpermissionslist = Array.from(new Set([...this.checkpermissionslist]));
-    },
-    getFilterShop() {
-      this.filterShopVisible = true;
-    },
-    getShopFilterName(data) {
-      this.shopFilterName = data[0].join(',');
-      this.filterShopVisible = data[1];
     },
     onSubmitMemberFrom(formName) {
       this.$refs[formName].validate(async valid => {
@@ -294,9 +283,6 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.table-header-action {
-  padding-bottom: 16px;
-}
 .rowstyle {
   color: $menuText;
   cursor: pointer;
@@ -352,23 +338,6 @@ export default {
     margin-right: 8px;
     margin-bottom: 12px;
   }
-}
-.filter-shop {
-  display: inline-block;
-  width: 400px;
-  height: 32px;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  line-height: 32px;
-  padding: 0 3px;
-  color: #c0c4cc;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.filter-shop-selected {
-  color: #606266;
 }
 </style>
  

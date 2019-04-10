@@ -2,15 +2,15 @@
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="活动名称：" prop="phone">
-        <el-input v-model="searchData.phone" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.phone" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="活动状态：" prop="status">
-        <el-select v-model="searchData.status" placeholder="请选择">
+        <el-select v-model="searchData.status" clearable placeholder="请选择">
           <el-option v-for="(name, id) in CouponStatusType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="开启/关闭：" prop="type">
-        <el-select v-model="searchData.type" placeholder="请选择">
+        <el-select v-model="searchData.type" clearable placeholder="请选择">
           <el-option value="0" label="开启"></el-option>
           <el-option value="1" label="关闭"></el-option>
         </el-select>
@@ -121,7 +121,4 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.table-header-action {
-  padding-bottom: 16px;
-}
 </style>

@@ -77,7 +77,7 @@ export default [
       },
       {
         path: 'balanceLog',
-        component: () => import('@/pages/report/index'),
+        component: () => import('@/pages/report/balanceLog'),
         name: 'balanceLog',
         meta: { title: '流水明细', icon: 'dashboard', noCache: true }
       }

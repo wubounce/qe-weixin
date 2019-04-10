@@ -2,33 +2,32 @@
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="设备名称：" prop="name">
-        <el-input v-model="searchData.name" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="IMEI：" prop="nameOrImei">
-        <el-input v-model="searchData.nameOrImei" placeholder="请输入"></el-input>
+        <el-input v-model="searchData.nameOrImei" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="所属店铺：" prop="shopIds">
-        <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:'请选择'}}</span>
-        <shop-filter v-model="searchData.shopIds" @getShopFilterName="getShopFilterName(arguments)" :visible="filterShopVisible"></shop-filter>
+        <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
       </el-form-item>
       <el-form-item label="设备状态：" prop="machineState">
-        <el-select v-model="searchData.machineState" placeholder="请选择">
+        <el-select v-model="searchData.machineState" clearable placeholder="请选择">
           <el-option v-for="(name, id) in deviceSearchStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备类型：" prop="parentTypeId">
-        <el-select v-model="searchData.parentTypeId" placeholder="请选择">
+        <el-select v-model="searchData.parentTypeId" clearable placeholder="请选择">
           <el-option label="全部" value=""></el-option>
           <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备型号：" prop="subTypeId">
-        <el-select v-model="searchData.subTypeId" placeholder="请选择">
+        <el-select v-model="searchData.subTypeId" clearable placeholder="请选择">
           <el-option v-for="(item, index) in machineSubTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="通信类型：" prop="communicateType">
-        <el-select v-model="searchData.communicateType" placeholder="请选择">
+        <el-select v-model="searchData.communicateType" clearable placeholder="请选择">
           <el-option v-for="(name, id) in communicateType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
@@ -247,9 +246,6 @@ export default {
         subTypeId: '',
         communicateType: ''
       },
-      shopFilterName: null,
-      filterShopVisible: false,
-
       deviceDataToTable: [],
 
       detailDialogVisible: false,
@@ -305,13 +301,6 @@ export default {
     this.getDeviceDataToTable();
   },
   methods: {
-    getFilterShop() {
-      this.filterShopVisible = true;
-    },
-    getShopFilterName(data) {
-      this.shopFilterName = data[0].join(',');
-      this.filterShopVisible = data[1];
-    },
     async getmachineParentType() {
       //获取设备类型
       let res = await getlistParentTypeFun({ onlyMine: true });
@@ -335,7 +324,6 @@ export default {
     resetSearchForm(formName) {
       this.searchData.page = 1;
       this.$refs[formName].resetFields();
-      this.shopFilterName = null;
       this.getDeviceDataToTable();
     },
     async getDeviceDataToTable() {
@@ -507,26 +495,6 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.filter-shop {
-  display: inline-block;
-  width: 140px;
-  height: 32px;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  line-height: 32px;
-  padding: 0 3px;
-  color: #c0c4cc;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.filter-shop-selected {
-  color: #606266;
-}
-.table-header-action {
-  padding-bottom: 16px;
-}
 .rowstyle {
   color: $menuText;
   cursor: pointer;

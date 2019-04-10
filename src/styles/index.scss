@@ -9,7 +9,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, Arial, sans-serif;
 }
 
 label {
@@ -103,6 +104,9 @@ a:hover {
   padding: 24px 32px 24px 32px;
   border-radius: 2px;
   margin-top: 24px;
+  .table-header-action {
+    padding-bottom: 16px;
+  }
   .el-table [class^='el-icon-'] {
     font-size: 18px;
     padding-right: 20px;
