@@ -66,7 +66,7 @@
       </el-dialog>
       <!-- 新增  -->
       <el-dialog title="新增批量启动" :visible.sync="addDeviceBatchStartDialogVisible" width="540px">
-        <el-form :model="addDeviceBatchStartForm" ref="addDeviceBatchStartForm" :rules="addDeviceBatchStartFormRules" v-if="addDeviceBatchStartDialogVisible" label-position="left">
+        <el-form :model="addDeviceBatchStartForm" ref="addDeviceBatchStartForm" :rules="addDeviceBatchStartFormRules" class="batch-device-edit-wrap" v-if="addDeviceBatchStartDialogVisible" label-position="left">
           <el-form-item label="所属店铺：" prop="shopId">
             <el-select v-model="addDeviceBatchStartForm.shopId" placeholder="请选择" @change="changeBatchMachineype">
               <el-option v-for="(item,index) in shopBatchStartList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
@@ -291,10 +291,6 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.rowstyle {
-  color: $menuText;
-  cursor: pointer;
-}
 [class^='icon-'] {
   width: 20px;
   height: 20px;
@@ -303,10 +299,8 @@ export default {
 .batch-device-edit-wrap {
   color: #8c8c8c;
   padding-top: 16px;
-  border-top: 1px solid $under_line;
 }
 .batch-device-edit-action {
-  border-top: 1px solid $under_line;
   padding-top: 16px;
   padding-bottom: 16px;
   text-align: right;

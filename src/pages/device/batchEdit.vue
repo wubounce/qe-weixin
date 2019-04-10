@@ -94,84 +94,58 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getFunctionSetListFun, batchEditFun, batchEditDetergentFun } from '@/service/device'
+import { getFunctionSetListFun, batchEditFun, batchEditDetergentFun } from '@/service/device';
 export default {
-  props: ["deviceEditdetailForm", "visible"],
-  data () {
+  props: ['deviceEditdetailForm', 'visible'],
+  data() {
     var validatorFunctionPrice = (rule, value, callback) => {
       let reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/; //可带二位小数的正整数
       if (!reg.test(value)) {
-        return callback(new Error("最多保留2位小数"));
+        return callback(new Error('最多保留2位小数'));
       } else if (Number(value) > 99) {
-        return callback(new Error("请输入0-99之间的数字"));
+        return callback(new Error('请输入0-99之间的数字'));
       } else {
         callback();
       }
     };
     return {
-      waterLevelList: [
-        { value: '1', name: '极低水位' },
-        { value: '2', name: '低水位' },
-        { value: '3', name: '中水位' },
-        { value: '4', name: '高水位' },
-      ],
+      waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       checkBatchFuntion: 1,
       deviceEditForm: this.deviceEditdetailForm,
       functionJson: [], //直接无法校验
       detergentJson: this.deviceEditdetailForm.detergentFunctionList,
       deviceEditFormRules: {
-        machineName: [
-          { required: true, message: '请填写设备名称', trigger: 'blur' }
-        ],
-        needMinutes: [
-          { required: true, message: '请填写耗时', trigger: 'blur' },
-          { pattern: /^([1-9]\d{0,3})$/, message: "请输入1-9999之间的数字", trigger: "blur" }
-        ],
-        functionPrice: [
-          { required: true, message: "请填写原价", trigger: "blur" },
-          { validator: validatorFunctionPrice, trigger: "blur" }
-        ],
-        functionCode: [
-          { required: true, message: '请填写脉冲', trigger: 'blur' },
-          { pattern: /^([1-9]\d{0,1})$/, message: "请输入1-99之间的数字", trigger: "blur" }
-        ],
-        detergentLiquid: [
-          { required: true, message: '请填写用量', trigger: 'blur' },
-          { pattern: /^([1-9]\d{0,1})$/, message: "请输入1-99之间的数字", trigger: "blur" }
-        ],
-        detergentPrice: [
-          { required: true, message: "请填写洗衣液价格", trigger: "blur" },
-          { validator: validatorFunctionPrice, trigger: "blur" }
-        ],
-      },
-    }
+        machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
+        needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
+        functionPrice: [{ required: true, message: '请填写原价', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
+        functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }]
+      }
+    };
   },
-  components: {
-
-  },
-  mounted () {
-
-  },
-  created () {
+  components: {},
+  mounted() {},
+  created() {
     this.getFunctionSetList();
   },
   methods: {
-    async getFunctionSetList () {
+    async getFunctionSetList() {
       let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
       let res = await getFunctionSetListFun(payload);
       this.functionJson = res.list;
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
-      this.functionJson.forEach((item) => {
-        item.ifOpen === 0 ? item.ifOpenStatus = true : item.ifOpenStatus = false;
+      this.functionJson.forEach(item => {
+        item.ifOpen === 0 ? (item.ifOpenStatus = true) : (item.ifOpenStatus = false);
       });
     },
-    onEditDecive (formName) {
-      this.$refs[formName].validate((valid) => {
+    onEditDecive(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.checkBatchFuntion === 1 || this.checkBatchFuntion === 3) {
             let ifOpenLen = 0;
-            this.functionJson.forEach((item) => {
+            this.functionJson.forEach(item => {
               if (item.ifOpenStatus === false) {
                 item.ifOpen = 1;
                 ifOpenLen = ifOpenLen + 1;
@@ -188,48 +162,46 @@ export default {
             batchEditFun(payload).then(() => {
               this.$Message.success('批量编辑成功');
               this.visible = false;
-              this.$emit('closeBatchDeviceEdit', this.visible)
-            })
+              this.$emit('closeBatchDeviceEdit', this.visible);
+            });
           }
           if (this.checkBatchFuntion === 2) {
-            this.deviceEditForm.isOpenDetergentStatus === true ? this.deviceEditForm.isOpenDetergent = 1 : this.deviceEditForm.isOpenDetergent = 0;
+            this.deviceEditForm.isOpenDetergentStatus === true ? (this.deviceEditForm.isOpenDetergent = 1) : (this.deviceEditForm.isOpenDetergent = 0);
             let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId, isOpenDetergent: this.deviceEditForm.isOpenDetergent });
             payload.detergentJson = JSON.stringify(this.detergentJson);
             batchEditDetergentFun(payload).then(() => {
               this.$Message.success('批量编辑成功');
               this.visible = false;
-              this.$emit('closeBatchDeviceEdit', this.visible)
-            })
+              this.$emit('closeBatchDeviceEdit', this.visible);
+            });
           }
-
         } else {
           this.$Message.error('请填写完整信息');
           return false;
         }
       });
     },
-    resetForm (formName) {
+    resetForm(formName) {
       this.$refs[formName].resetFields();
       this.visible = false;
-      this.$emit('closeBatchDeviceEdit', this.visible)
+      this.$emit('closeBatchDeviceEdit', this.visible);
     }
   },
   watch: {
-    deviceEditdetailForm: function (val) {
+    deviceEditdetailForm: function(val) {
       this.deviceEditForm = val;
       this.deviceEditForm.functionJson = val.functionList; //直接无法校验
       this.deviceEditForm.detergentJson = val.detergentFunctionList;
-    },
-  },
-}
+    }
+  }
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .device-type {
   color: #8c8c8c;
   padding-top: 16px;
-  border-top: 1px solid $under_line;
   span {
     padding: 0 25px;
   }

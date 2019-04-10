@@ -47,7 +47,7 @@
               <p class="rowstyle" style="font-size:10px;">(优惠券平台承担1.00)</p>
               <div slot="reference" class="name-wrapper">
                 <span size="medium">{{ scope.row.markPrice }}
-                  <svg-icon icon-class="xialajiantouxia" /></span>
+                  <svg-icon icon-class="xialajiantoushang" class="arrow" /></span>
               </div>
             </el-popover>
           </template>
@@ -95,7 +95,7 @@
         </ul>
       </el-dialog>
       <!-- 订单补偿 -->
-      <el-dialog title="补偿券发放" :visible.sync="compensateDialogVisible" @close="resetForm('compensateFrom')" width="540px" top="20px">
+      <el-dialog title="补偿券发放" :visible.sync="compensateDialogVisible" @close="resetCompensateForm('compensateFrom')" width="540px" top="20px">
         <el-form ref="compensateFrom" :model="compensateFrom" :rules="compensateFormRules" class="add-shop-from" label-width="120px">
           <el-form-item label="发放用户：" class="shop-name">
             <span>{{compensateFrom.phone}}</span>
@@ -346,41 +346,9 @@ export default {
   }
 };
 </script>
-<style rel="stylesheet/scss" lang="scss">
-.order-page .add-shop-from .el-form-item__label {
-  color: rgba(23, 26, 46, 0.45);
-}
-</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.rowstyle {
-  color: $menuText;
-  cursor: pointer;
-}
-.deatil-list {
-  padding-bottom: 15px;
-  li {
-    height: 40px;
-    line-height: 40px;
-    border-top: 1px solid $under_line;
-    span {
-      color: rgba(23, 26, 46, 0.45);
-      display: inline-block;
-      width: 70px;
-    }
-  }
-}
-.status-clire {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: #2fc25b;
-  opacity: 0.85;
-  border-radius: 20px;
-  margin-right: 8px;
-}
 .add-shop-from {
-  border-top: 1px solid $under_line;
   padding-top: 24px;
   padding-bottom: 24px;
 }
@@ -388,6 +356,11 @@ export default {
   width: 20px;
   height: 20px;
   margin-right: 20px;
+}
+.arrow {
+  width: 9px;
+  margin-left: 5px;
+  margin-top: 8px;
 }
 </style>
  

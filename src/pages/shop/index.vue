@@ -432,16 +432,15 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.rowstyle {
-  color: $menuText;
-  cursor: pointer;
-}
 .deatil-list {
   padding-bottom: 15px;
+  :last-child {
+    border: none;
+  }
   li {
     height: 40px;
     line-height: 40px;
-    border-top: 1px solid $under_line;
+    border-bottom: 1px solid $under_line;
     span {
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
@@ -459,7 +458,6 @@ export default {
   margin-right: 8px;
 }
 .add-shop-from {
-  border-top: 1px solid $under_line;
   padding-top: 24px;
   padding-bottom: 24px;
 }

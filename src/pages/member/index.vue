@@ -52,7 +52,7 @@
         <ul class="deatil-list">
           <li><span class="lable">人员姓名：</span><span class="content">{{detailData.realName}}</span></li>
           <li><span class="lable">负责店铺：</span><span class="content">{{detailData.operateShopNames}}</span></li>
-          <li>
+          <li style="border:none;">
             <span class="lable">权限选择：</span><span class="content">
               <div class="pid-list" v-for="(item,index) in detailPermissionsData" :key="index">
                 <span v-if="item.name==='首页'||item.name==='报表'">{{item.name}}</span>
@@ -283,15 +283,11 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.rowstyle {
-  color: $menuText;
-  cursor: pointer;
-}
 .deatil-list {
   padding-bottom: 15px;
   li {
     padding: 12px;
-    border-top: 1px solid $under_line;
+    border-bottom: 1px solid $under_line;
     .lable {
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
@@ -304,21 +300,10 @@ export default {
     }
   }
 }
-.status-clire {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: #2fc25b;
-  opacity: 0.85;
-  border-radius: 20px;
-  margin-right: 8px;
-}
 .add-shop-from {
-  border-top: 1px solid $under_line;
   padding-top: 24px;
   padding-bottom: 24px;
 }
-
 .pid-list {
   .pid-title {
     font-size: 12px;

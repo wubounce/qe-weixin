@@ -345,12 +345,7 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.rowstyle {
-  color: $menuText;
-  cursor: pointer;
-}
 .add-shop-from {
-  border-top: 1px solid $under_line;
   padding-top: 24px;
   padding-bottom: 24px;
 }

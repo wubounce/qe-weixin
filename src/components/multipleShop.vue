@@ -3,43 +3,41 @@
     <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:placeholder}}
       <svg-icon icon-class="xialajiantouxia" class="filter-shop-arrow" /></span>
     <transition name="el-zoom-in-top">
-      <div class="shop-filter" v-show="visibleModel">
-        <div class="el-select-dropdown el-popper" x-placement="bottom-start" style="width:565px;">
-          <div class="el-scrollbar">
-            <div>
-              <div class="all-content">
-                <div class="all-content-left">
-                  <div class="shop-search-text">
-                    <el-input v-model="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索" @input="getSearchShop"></el-input>
-                  </div>
-                  <ul class="el-scrollbar__view">
-                    <el-checkbox-group v-model="checkedList">
-                      <li v-for="(item,index) in shopList" :key="index" :class="['shop-list',{'checked-active':item.active}]">
-                        <el-checkbox :label="item.shopId" @change="handleCheakedBg(item,index)">{{item.shopName}}</el-checkbox><span></span>
-                      </li>
-                    </el-checkbox-group>
-                  </ul>
+      <div class="el-select-dropdown el-popper" v-show="visibleModel" x-placement="bottom-start" style="width:565px;">
+        <div class="el-scrollbar">
+          <div>
+            <div class="all-content">
+              <div class="all-content-left">
+                <div class="shop-search-text">
+                  <el-input v-model="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索" @input="getSearchShop"></el-input>
                 </div>
-                <div class="checked-shop-list">
-                  <h3>已选店铺 ({{checkedList.length}})</h3>
-                  <ul class="el-scrollbar__view" style="margin-right: -17px;">
-                    <li v-for="(item,index) in checkedListName" :key="index" :class="['shop-list',{'checked-active':item.active}]">
-                      {{item}}
-                      <svg-icon icon-class="erjiguanbi" class="close-icon" @click="deleteCheckedSHop(item,index)" />
+                <ul class="el-scrollbar__view">
+                  <el-checkbox-group v-model="checkedList">
+                    <li v-for="(item,index) in shopList" :key="index" :class="['shop-list',{'checked-active':item.active}]">
+                      <el-checkbox :label="item.shopId" @change="handleCheakedBg(item,index)">{{item.shopName}}</el-checkbox><span></span>
                     </li>
-                  </ul>
-                </div>
+                  </el-checkbox-group>
+                </ul>
               </div>
-              <div class="action">
-                <p>
-                  <span style="margin-right:24px;color:rgba(0,0,0,0.65);" @click="resetCheckedShop">重置</span>
-                  <span @click="getCheckedShop">确定</span>
-                </p>
+              <div class="checked-shop-list">
+                <h3>已选店铺 ({{checkedList.length}})</h3>
+                <ul class="el-scrollbar__view" style="margin-right: -17px;">
+                  <li v-for="(item,index) in checkedListName" :key="index" :class="['shop-list',{'checked-active':item.active}]">
+                    {{item}}
+                    <svg-icon icon-class="erjiguanbi" class="close-icon" @click="deleteCheckedSHop(item,index)" />
+                  </li>
+                </ul>
               </div>
             </div>
+            <div class="action">
+              <p>
+                <span style="margin-right:24px;color:rgba(0,0,0,0.65);" @click="resetCheckedShop">重置</span>
+                <span @click="getCheckedShop">确定</span>
+              </p>
+            </div>
           </div>
-          <div x-arrow="" class="popper__arrow" style="left: 35px;"></div>
         </div>
+        <div x-arrow="" class="popper__arrow" style="left: 35px;"></div>
       </div>
     </transition>
   </div>
@@ -118,13 +116,14 @@ export default {
       });
       this.$emit('input', this.checkedList);
       this.$emit('change', this.checkedList);
+      this.visibleModel = false;
     },
     getCheckedShop() {
-      this.visibleModel = false;
       this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
       this.shopFilterName = this.checkedListName.join(',');
       this.$emit('input', this.checkedList);
       this.$emit('change', this.checkedList);
+      this.visibleModel = false;
     }
   },
   watch: {
@@ -172,14 +171,14 @@ export default {
   margin-right: 12px;
   margin-top: 8px;
 }
-.shop-filter {
-  min-width: 565px;
-  transform-origin: center top;
-  z-index: 2009;
-  position: absolute;
-  left: 0px;
-  top: 30px;
-}
+// .shop-filter {
+//   min-width: 565px;
+//   transform-origin: center top;
+//   z-index: 2009;
+//   position: absolute;
+//   left: 0px;
+//   top: 30px;
+// }
 .el-select-dropdown__item {
   padding: 0 24px;
   height: 34px;

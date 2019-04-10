@@ -98,7 +98,10 @@ a:hover {
   padding: 24px 32px 6px 32px;
   border-radius: 2px;
 }
-
+.rowstyle {
+  color: $menuText;
+  cursor: pointer;
+}
 .table-content {
   background: #fff;
   padding: 24px 32px 24px 32px;
@@ -107,8 +110,8 @@ a:hover {
   .table-header-action {
     padding-bottom: 16px;
   }
-  .el-table [class^='el-icon-'] {
-    font-size: 18px;
-    padding-right: 20px;
-  }
+}
+.el-table [class^='el-icon-'] {
+  font-size: 18px;
+  padding-right: 20px;
 }

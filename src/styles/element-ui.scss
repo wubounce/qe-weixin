@@ -86,7 +86,9 @@
 }
 
 .el-dialog__header {
-  padding: 24px 32px !important;
+  margin: 0 32px !important;
+  border-bottom: 1px solid $under_line;
+  padding: 24px 0px;
 }
 .el-dialog__body {
   padding: 0 32px !important;

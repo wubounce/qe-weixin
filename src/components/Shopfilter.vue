@@ -3,30 +3,28 @@
     <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:placeholder}}
       <svg-icon icon-class="xialajiantouxia" class="filter-shop-arrow" /></span>
     <transition name="el-zoom-in-top">
-      <div class="shop-filter" v-show="visibleModel">
-        <div class=" el-select-dropdown el-popper" x-placement="bottom-start">
-          <div class="el-scrollbar">
-            <div style="margin-right: -17px;">
-              <div class="shop-search-text" style="">
-                <el-input v-model="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索" @input="getSearchShop"></el-input>
-              </div>
-              <ul class="el-scrollbar__view">
-                <el-checkbox-group v-model="checkedList">
-                  <li v-for="(item,index) in shopList" :key="index" :class="['shop-list',{'checked-active':item.active}]">
-                    <el-checkbox :label="item.shopId" @change="handleCheakedBg(item,index)">{{item.shopName}}</el-checkbox><span></span>
-                  </li>
-                </el-checkbox-group>
-              </ul>
-              <div class="action">
-                <p>
-                  <span style="margin-right:24px;color:rgba(0,0,0,0.65);" @click="resetCheckedShop">重置</span>
-                  <span @click="getCheckedShop">确定</span>
-                </p>
-              </div>
+      <div class=" el-select-dropdown el-popper" v-show="visibleModel" x-placement="bottom-start">
+        <div class="el-scrollbar">
+          <div style="margin-right: -17px;">
+            <div class="shop-search-text" style="">
+              <el-input v-model="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索" @input="getSearchShop"></el-input>
+            </div>
+            <ul class="el-scrollbar__view">
+              <el-checkbox-group v-model="checkedList">
+                <li v-for="(item,index) in shopList" :key="index" :class="['shop-list',{'checked-active':item.active}]">
+                  <el-checkbox :label="item.shopId" @change="handleCheakedBg(item,index)">{{item.shopName}}</el-checkbox><span></span>
+                </li>
+              </el-checkbox-group>
+            </ul>
+            <div class="action">
+              <p>
+                <span style="margin-right:24px;color:rgba(0,0,0,0.65);" @click="resetCheckedShop">重置</span>
+                <span @click="getCheckedShop">确定</span>
+              </p>
             </div>
           </div>
-          <div x-arrow="" class="popper__arrow" style="left: 35px;"></div>
         </div>
+        <div x-arrow="" class="popper__arrow" style="left: 35px;"></div>
       </div>
     </transition>
   </div>
@@ -147,14 +145,6 @@ export default {
   float: right;
   margin-right: 12px;
   margin-top: 8px;
-}
-.shop-filter {
-  min-width: 280px;
-  transform-origin: center top;
-  z-index: 2009;
-  position: absolute;
-  left: 0px;
-  top: 30px;
 }
 .el-select-dropdown__item {
   padding: 0 24px;

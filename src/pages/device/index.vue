@@ -453,56 +453,11 @@ export default {
   }
 };
 </script>
-<style lang="scss">
-.el-vue-search-box-container {
-  border-radius: 4px !important;
-  box-shadow: none !important;
-  border: 1px solid rgba(0, 0, 0, 0.15) !important;
-  width: 468px !important;
-  height: 32px !important;
-  line-height: 32px !important;
-}
-.add-shop-from {
-  .shop-name .el-input__inner {
-    width: 468px !important;
-  }
-  .el-radio {
-    margin-right: 15px;
-  }
-  .el-radio + .el-radio {
-    margin-left: 0px;
-  }
-}
-.device-edit-wrap {
-  .el-input__inner {
-    width: 100% !important;
-  }
-  .edit-device-name {
-    .el-input__inner {
-      width: 220px !important;
-    }
-  }
-  .edit-waterLevel {
-    margin-bottom: 0 !important;
-    .el-form-item__content {
-      margin-left: 0 !important;
-    }
-  }
-  .edit-isOpenDetergent {
-    margin-bottom: 16px 0;
-  }
-}
-</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.rowstyle {
-  color: $menuText;
-  cursor: pointer;
-}
 .detail-base-title {
   font-size: 16px;
   padding: 10px 0;
-  border-top: 1px solid $under_line;
   font-weight: normal;
 }
 .deatil-list {
@@ -526,11 +481,6 @@ export default {
   opacity: 0.85;
   border-radius: 20px;
   margin-right: 8px;
-}
-.add-shop-from {
-  border-top: 1px solid $under_line;
-  padding-top: 24px;
-  padding-bottom: 24px;
 }
 [class^='icon-'] {
   width: 20px;
@@ -568,7 +518,6 @@ export default {
   border-radius: 1px;
 }
 .chose-start-fun {
-  border-top: 1px solid $under_line;
   color: $comment;
   padding: 23px 0 16px 0;
   font-weight: normal;

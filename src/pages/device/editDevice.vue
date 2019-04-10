@@ -95,71 +95,45 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceAddorEditFun } from '@/service/device'
+import { deviceAddorEditFun } from '@/service/device';
 export default {
-  props: ["deviceEditdetailForm", "visible"],
-  data () {
+  props: ['deviceEditdetailForm', 'visible'],
+  data() {
     var validatorFunctionPrice = (rule, value, callback) => {
       let reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/; //可带二位小数的正整数
       if (!reg.test(value)) {
-        return callback(new Error("最多保留2位小数"));
+        return callback(new Error('最多保留2位小数'));
       } else if (Number(value) > 99) {
-        return callback(new Error("请输入0-99之间的数字"));
+        return callback(new Error('请输入0-99之间的数字'));
       } else {
         callback();
       }
     };
     return {
       deviceEditTab: 'first',
-      waterLevelList: [
-        { value: '1', name: '极低水位' },
-        { value: '2', name: '低水位' },
-        { value: '3', name: '中水位' },
-        { value: '4', name: '高水位' },
-      ],
+      waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       deviceEditForm: this.deviceEditdetailForm,
       functionJson: this.deviceEditdetailForm.functionList, //直接无法校验
       detergentJson: this.deviceEditdetailForm.detergentFunctionList,
       deviceEditFormRules: {
-        machineName: [
-          { required: true, message: '请填写设备名称', trigger: 'blur' }
-        ],
-        needMinutes: [
-          { required: true, message: '请填写耗时', trigger: 'blur' },
-          { pattern: /^([1-9]\d{0,3})$/, message: "请输入1-9999之间的数字", trigger: "blur" }
-        ],
-        functionPrice: [
-          { required: true, message: "请填写原价", trigger: "blur" },
-          { validator: validatorFunctionPrice, trigger: "blur" }
-        ],
-        functionCode: [
-          { required: true, message: '请填写脉冲', trigger: 'blur' },
-          { pattern: /^([1-9]\d{0,1})$/, message: "请输入1-99之间的数字", trigger: "blur" }
-        ],
-        detergentLiquid: [
-          { required: true, message: '请填写用量', trigger: 'blur' },
-          { pattern: /^([1-9]\d{0,1})$/, message: "请输入1-99之间的数字", trigger: "blur" }
-        ],
-        detergentPrice: [
-          { required: true, message: "请填写洗衣液价格", trigger: "blur" },
-          { validator: validatorFunctionPrice, trigger: "blur" }
-        ],
-      },
-    }
+        machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
+        needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
+        functionPrice: [{ required: true, message: '请填写原价', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
+        functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }]
+      }
+    };
   },
-  components: {
-
-  },
-  mounted () {
-
-  },
+  components: {},
+  mounted() {},
   methods: {
-    onEditDecive (formName) {
-      this.$refs[formName].validate((valid) => {
+    onEditDecive(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           let ifOpenLen = 0;
-          this.deviceEditForm.isOpenDetergentStatus === true ? this.deviceEditForm.isOpenDetergent = 1 : this.deviceEditForm.isOpenDetergent = 0;
-          this.functionJson.forEach((item) => {
+          this.deviceEditForm.isOpenDetergentStatus === true ? (this.deviceEditForm.isOpenDetergent = 1) : (this.deviceEditForm.isOpenDetergent = 0);
+          this.functionJson.forEach(item => {
             if (item.ifOpenStatus === false) {
               item.ifOpen = 1;
               ifOpenLen = ifOpenLen + 1;
@@ -174,37 +148,39 @@ export default {
           let payload = Object.assign({}, this.deviceEditForm);
           payload.functionJson = JSON.stringify(this.functionJson);
           payload.detergentJson = JSON.stringify(this.detergentJson);
-          delete payload.functionList
-          delete payload.detergentFunctionList
+          delete payload.functionList;
+          delete payload.detergentFunctionList;
           deviceAddorEditFun(payload).then(() => {
             this.$Message.success('编辑成功');
             this.visible = false;
-            this.$emit('closeDeviceEdit', this.visible)
-          })
-
+            this.$emit('closeDeviceEdit', this.visible);
+          });
         } else {
           this.$Message.error('请填写完整信息');
           return false;
         }
       });
     },
-    resetForm (formName) {
+    resetForm(formName) {
       this.$refs[formName].resetFields();
       this.visible = false;
-      this.$emit('closeDeviceEdit', this.visible)
+      this.$emit('closeDeviceEdit', this.visible);
     }
   },
   watch: {
-    deviceEditdetailForm: function (val) {
+    deviceEditdetailForm: function(val) {
       this.deviceEditForm = val;
       this.deviceEditForm.functionJson = val.functionList; //直接无法校验
       this.deviceEditForm.detergentJson = val.detergentFunctionList;
-    },
-  },
-}
+    }
+  }
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+.edit-device-name {
+  padding-top: 16px;
+}
 .action {
   text-align: right;
   padding: 16px 0 24px 0;
