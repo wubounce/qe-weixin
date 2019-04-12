@@ -9,7 +9,7 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": ""
+      "icon": "shouye"
     },
     {
       "menuId": 11,
@@ -19,7 +19,7 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "baobiao",
       "children": [
         {
           "menuId": 10,
@@ -64,7 +64,7 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "dianpuguanli",
       "children": [
         {
           "menuId": 104,
@@ -87,7 +87,7 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "shebeiguanli",
       "children": [
         {
           "menuId": 104,
@@ -121,7 +121,7 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "dingdanguanli",
       "children": [
         {
           "menuId": 104,
@@ -144,7 +144,7 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "yingxiaoguanli",
       "children": [
         {
           "menuId": 104,
@@ -200,7 +200,7 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "renyuanguanli",
       "children": [
         {
           "menuId": 104,

@@ -60,7 +60,7 @@ export default [
         path: 'index',
         component: () => import('@/pages/home/index'),
         name: 'index',
-        meta: { title: '首页', icon: 'dashboard', noCache: true, affix: true }
+        meta: { title: '首页', icon: 'shouye', noCache: true, affix: true }
       }
     ]
   },
@@ -69,25 +69,25 @@ export default [
     component: Layout,
     redirect: '/report/profit',
     name: 'report',
-    meta: { title: '报表', icon: 'dashboard', noCache: true },
+    meta: { title: '报表', icon: 'baobiao', noCache: true },
     children: [
       {
         path: 'profit',
         component: () => import('@/pages/report/index'),
         name: 'profit',
-        meta: { title: '营收报表', icon: 'dashboard', noCache: true }
+        meta: { title: '营收报表', noCache: true }
       },
       {
         path: 'timeaverage',
         component: () => import('@/pages/report/timEaverage'),
         name: 'timeaverage',
-        meta: { title: '时段平均报表', icon: 'dashboard', noCache: true }
+        meta: { title: '时段平均报表', noCache: true }
       },
       {
         path: 'balanceLog',
         component: () => import('@/pages/report/balanceLog'),
         name: 'balanceLog',
-        meta: { title: '流水明细', icon: 'dashboard', noCache: true }
+        meta: { title: '流水明细', noCache: true }
       }
     ]
   },
@@ -96,13 +96,13 @@ export default [
     component: Layout,
     redirect: '/shopmanagement/list',
     name: 'shopmanagement',
-    meta: { title: '店铺管理', icon: 'dashboard', noCache: true },
+    meta: { title: '店铺管理', icon: 'dianpuguanli', noCache: true },
     children: [
       {
         path: 'list',
         component: () => import('@/pages/shop/index'),
         name: 'shoplist',
-        meta: { title: '店铺列表', icon: 'dashboard', noCache: true }
+        meta: { title: '店铺列表', noCache: true }
       }
     ]
   },
@@ -111,19 +111,19 @@ export default [
     component: Layout,
     redirect: '/devicemanagement/list',
     name: 'devicemanagement',
-    meta: { title: '设备管理', icon: 'dashboard', noCache: true },
+    meta: { title: '设备管理', icon: 'shebeiguanli', noCache: true },
     children: [
       {
         path: 'list',
         component: () => import('@/pages/device/index'),
         name: 'devicelist',
-        meta: { title: '设备列表', icon: 'dashboard', noCache: true }
+        meta: { title: '设备列表', noCache: true }
       },
       {
         path: 'batchStart',
         component: () => import('@/pages/device/batchStart'),
         name: 'batchStart',
-        meta: { title: '设备批量启动', icon: 'dashboard', noCache: true }
+        meta: { title: '设备批量启动', noCache: true }
       }
     ]
   },
@@ -132,13 +132,13 @@ export default [
     component: Layout,
     redirect: '/ordermanagement/list',
     name: 'ordermanagement',
-    meta: { title: '订单管理', icon: 'dashboard', noCache: true },
+    meta: { title: '订单管理', icon: 'dingdanguanli', noCache: true },
     children: [
       {
         path: 'list',
         component: () => import('@/pages/order/index'),
         name: 'orderlist',
-        meta: { title: '订单列表', icon: 'dashboard', noCache: true }
+        meta: { title: '订单列表', noCache: true }
       }
     ]
   },
@@ -147,13 +147,13 @@ export default [
     component: Layout,
     redirect: '/membermanagement/list',
     name: 'membermanagement',
-    meta: { title: '人员管理', icon: 'dashboard', noCache: true },
+    meta: { title: '人员管理', icon: 'renyuanguanli', noCache: true },
     children: [
       {
         path: 'list',
         component: () => import('@/pages/member/index'),
         name: 'memberlist',
-        meta: { title: '人员列表', icon: 'dashboard', noCache: true }
+        meta: { title: '人员列表', noCache: true }
       }
     ]
   },
@@ -162,31 +162,31 @@ export default [
     component: Layout,
     redirect: '/marketingmanagement/discount',
     name: 'marketingmanagement',
-    meta: { title: '营销管理', icon: 'dashboard', noCache: true },
+    meta: { title: '营销管理', icon: 'yingxiaoguanli', noCache: true },
     children: [
       {
         path: 'discount',
         component: () => import('@/pages/marketing/tLimitedDiscount'),
         name: 'discount',
-        meta: { title: '限时优惠', icon: 'dashboard', noCache: true }
+        meta: { title: '限时优惠', noCache: true }
       },
       {
         path: 'couponsent',
         component: () => import('@/pages/marketing/couponSent'),
         name: 'couponsent',
-        meta: { title: '优惠券发放', icon: 'dashboard', noCache: true }
+        meta: { title: '优惠券发放', noCache: true }
       },
       {
         path: 'couponactive',
         component: () => import('@/pages/marketing/couponActive'),
         name: 'couponactive',
-        meta: { title: '优惠券活动', icon: 'dashboard', noCache: true }
+        meta: { title: '优惠券活动', noCache: true }
       },
       {
         path: 'couponrecord',
         component: () => import('@/pages/marketing/couponRecord'),
         name: 'couponrecord',
-        meta: { title: '优惠券记录', icon: 'dashboard', noCache: true }
+        meta: { title: '优惠券记录', noCache: true }
       }
     ]
   },

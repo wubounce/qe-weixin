@@ -20,7 +20,8 @@
     overflow: hidden;
     //reset element-ui css
     .horizontal-collapse-transition {
-      transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
+      transition: 0s width ease-in-out, 0s padding-left ease-in-out,
+        0s padding-right ease-in-out;
     }
     .el-scrollbar__bar.is-vertical {
       right: 0px;
@@ -43,16 +44,13 @@
       border: none;
       height: 100%;
       width: 100% !important;
-      .el-menu-item {
-        padding-left: 24px !important;
-      }
-      .el-submenu__title {
-        padding-left: 24px !important;
-      }
+      // .el-menu-item {
+      //   padding-left: 48px !important;
+      // }
+      // .el-submenu__title {
+      //   padding-left: 24px !important;
+      // }
     }
-    // .is-active > .el-submenu__title{
-    //   color: #f4f4f5!important;
-    // }
   }
   .hideSidebar {
     .sidebar-container {
