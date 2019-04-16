@@ -112,7 +112,7 @@ export default {
       waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       checkBatchFuntion: 1,
       deviceEditForm: this.deviceEditdetailForm,
-      functionJson: [], //直接无法校验
+      functionJson: this.deviceEditdetailForm.functionList, //直接无法校验
       detergentJson: this.deviceEditdetailForm.detergentFunctionList,
       deviceEditFormRules: {
         machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
@@ -196,7 +196,6 @@ export default {
   }
 };
 </script>
-
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .device-type {

@@ -121,3 +121,11 @@
   padding: 30px 15px !important;
   text-align: center;
 }
+
+.el-tabs__nav-wrap::after {
+  height: 0px !important;
+}
+.el-switch.is-checked .el-switch__core {
+  border-color: #2fc25b !important;
+  background-color: #2fc25b !important;
+}

@@ -164,7 +164,6 @@ export default {
       this.getMemberDataToTable();
     },
     async getMemberDataToTable() {
-      this.memberDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await operatorListFun(payload);
       this.memberDataToTable = res.items;
@@ -242,7 +241,7 @@ export default {
           let mIds = [...this.checkpermissionslist, ...this.parentIds]; //权限父级id
           mIds = Array.from(new Set([...mIds])); //去重
           payload.mIds = mIds.join(',');
-          payload.id ? updateOperatorInfoFun(payload) : addOperatorFun(payload);
+          payload.id ? await updateOperatorInfoFun(payload) : await addOperatorFun(payload);
           this.$Message.success('操作成功！');
           this.addMemberDialogVisible = false;
           this.getMemberDataToTable();

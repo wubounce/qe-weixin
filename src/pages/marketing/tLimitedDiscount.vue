@@ -43,13 +43,15 @@
         </el-table-column>
         <el-table-column header-align="left" prop="week" label="活动日">
           <template slot-scope="scope">
-            <span>{{scope.row.week?scope.row.week:'1,2,3' | week}}</span>
+            <span>{{scope.row.week}}</span>
+            <!-- <span>{{scope.row.week?scope.row.week:'' | week}}</span> -->
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="time" label="每日活动时段"></el-table-column>
-        <el-table-column header-align="left" prop="discount" label="优惠折扣">
+        <el-table-column header-align="left" prop="discountVO" label="优惠折扣">
           <template slot-scope="scope">
-            <span>{{scope.row.discount | tofixd}} 折</span>
+            <!-- <span>{{scope.row.discountVO | tofixd}} 折</span> -->
+            <span>{{scope.row.discountVO}} 折</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="expired" label="活动状态">
@@ -59,7 +61,7 @@
         </el-table-column>
         <el-table-column header-align="left" label="开启/关闭">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.switchStatus"></el-switch>
+            <el-switch v-model="scope.row.switchStatus" @change="updataeStatus(scope.row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column header-align="left" label="操作">
@@ -124,7 +126,7 @@ import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
 import multipleShop from '@/components/multipleShop';
 import activeWeek from './activeWeek';
-import { timeMarketListFun, addOruPdateFun, marketlistParentTypeIdFun, delMarketFun, detailMarketFun } from '@/service/market';
+import { timeMarketListFun, addOruPdateFun, marketlistParentTypeIdFun, delMarketFun, detailMarketFun, updataeStatusFun } from '@/service/market';
 export default {
   mixins: [PagerMixin],
   components: {
@@ -279,7 +281,7 @@ export default {
       });
       this.addMaketFrom = {
         timeId: res.id,
-        week: res.noWeek,
+        week: Number(res.noWeek),
         time: [time[0], time[1]],
         date: [startTime, endTime],
         parentTypeIds: res.parentTypeMap && res.parentTypeIds ? res.parentTypeMap[0].parentTypeId : '全部',
@@ -289,6 +291,9 @@ export default {
       };
       if (weeklist.length > 1) {
         this.addMaketFrom.week = 10;
+        this.weekFilterVisible = true;
+      } else {
+        this.weekFilterVisible = false;
       }
       this.getMarketlistParentType();
       return Promise.resolve();
@@ -328,6 +333,17 @@ export default {
           this.$message.success('删除成功');
           this.getTimeMaketingDataToTable();
         });
+      });
+    },
+    updataeStatus(row) {
+      if (row.switchStatus === true) {
+        row.status = 0;
+      } else {
+        row.status = 1;
+      }
+      let payload = Object.assign({}, { timeId: row.id, status: row.status });
+      updataeStatusFun(payload).then(() => {
+        this.$message.success('操作成功');
       });
     }
   },

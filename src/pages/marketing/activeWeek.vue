@@ -53,6 +53,9 @@ export default {
   watch: {
     visible: function(val) {
       this.visibleModel = val;
+    },
+    value: function(val) {
+      this.customWeekCheckList = val;
     }
   }
 };

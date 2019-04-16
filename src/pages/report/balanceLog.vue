@@ -36,9 +36,9 @@
       <el-table :data="tableDataList" show-summary style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
-        <el-table-column header-align="left" prop="refundMoney" label="用户账号"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="金额"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="来源类型"></el-table-column>
+        <el-table-column header-align="left" prop="" label="用户账号"></el-table-column>
+        <el-table-column header-align="left" prop="" label="金额"></el-table-column>
+        <el-table-column header-align="left" prop="" label="来源类型"></el-table-column>
       </el-table>
     </div>
   </div>

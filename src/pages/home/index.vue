@@ -8,8 +8,9 @@
             <li>
               <p class="title">今日收益 (元)</p>
               <p class="num">￥{{frofitCount.todayMoney}}</p>
-              <p class="pio up-arrows">+3.22%
-                <svg-icon icon-class="shangzhang" />
+              <p :class="['pio',{'up-arrows':String(frofitCount.yoy).includes('+'),'down-arrows':String(frofitCount.yoy).includes('-')}]">
+                {{frofitCount.yoy}}%
+                <svg-icon :icon-class="String(frofitCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
             <li>
@@ -33,8 +34,9 @@
             <li>
               <p class="title">今日订单数</p>
               <p class="num">{{orderCount.todayCount}}</p>
-              <p class="pio">+3.22%
-                <svg-icon icon-class="shangzhang" />
+              <p :class="['pio',{'up-arrows':String(orderCount.yoy).includes('+'),'down-arrows':String(orderCount.yoy).includes('-')}]">
+                {{orderCount.yoy}}%
+                <svg-icon :icon-class="String(orderCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
             <li>
@@ -61,15 +63,17 @@
             <li>
               <p class="title">今日下单用户数</p>
               <p class="num">{{userCount.todayUserCount}}</p>
-              <p class="pio down-arrows">+3.22%
-                <svg-icon icon-class="xiajiang" />
+              <p :class="['pio',{'up-arrows':String(userCount.yoyAddUser).includes('+'),'down-arrows':String(userCount.yoyAddUser).includes('-')}]">
+                {{userCount.yoyAddUser}}%
+                <svg-icon :icon-class="String(userCount.yoyAddUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
             <li>
               <p class="title">今日新增用户数</p>
               <p class="num">{{userCount.todayAddUserCount}}</p>
-              <p class="pio">+3.22%
-                <svg-icon icon-class="shangzhang" />
+              <p :class="['pio',{'up-arrows':String(userCount.yoyUser).includes('+'),'down-arrows':String(userCount.yoyUser).includes('-')}]">
+                {{userCount.yoyUser}}%
+                <svg-icon :icon-class="String(userCount.yoyUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
             <li>
@@ -93,8 +97,9 @@
             <li>
               <p class="title">今日设备活跃率 </p>
               <p class="num">{{deviceCount.deviceActiveRatio}}%</p>
-              <p class="pio">+3.22%
-                <svg-icon icon-class="shangzhang" />
+              <p :class="['pio',{'up-arrows':String(deviceCount.yoy).includes('+'),'down-arrows':String(deviceCount.yoy).includes('-')}]">
+                {{deviceCount.yoy}}
+                <svg-icon :icon-class="String(deviceCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
           </ul>
@@ -228,7 +233,7 @@ export default {
       delete res.all; //图表删除总数
       delete res.timeout; //图表删除总数
       for (var i in res) {
-        let tmp = this.pietypeData.push({
+        this.pietypeData.push({
           value: res[i],
           name: MachineStatus[i]
         });
