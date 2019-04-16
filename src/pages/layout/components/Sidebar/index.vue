@@ -19,8 +19,6 @@ export default {
   computed: {
     ...mapGetters(['sidebar']),
     routes() {
-      console.log(this.$store.state.user.access);
-
       return this.$store.state.user.access;
     },
     onRoutes() {

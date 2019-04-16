@@ -70,10 +70,10 @@
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
               <el-tooltip content="退款" placement="top" effect="dark" v-show="scope.row.orderStatus === 2">
-                <i class="el-icon-edit" @click="handleOrderRefund(scope.row)"></i>
+                <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
               </el-tooltip>
               <el-tooltip content="补偿券" placement="top" effect="dark" v-show="scope.row.shopState === 2">
-                <i class="el-icon-delete" @click="handleCompensate(scope.row)"></i>
+                <svg-icon icon-class="youhuiquan" class="icon-qidong" @click="handleCompensate(scope.row)" />
               </el-tooltip>
             </div>
           </template>
@@ -83,7 +83,7 @@
       <!-- 退款详情 -->
       <el-dialog title="退款详情" :visible.sync="detailDialogVisible" width="540px">
         <ul class="deatil-list">
-          <li><span>用户账号：</span>{{detailData.userPhone}}</li>
+          <li><span>用户账号：</span>{{detailData.phone}}</li>
           <li><span>退款金额：</span>{{detailData.payPrice}}元</li>
           <li><span>订单编号：</span>{{detailData.orderNo}}</li>
           <li><span>支付方式：</span>{{detailData.payType | PayType}}</li>
@@ -351,6 +351,22 @@ export default {
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
+}
+.deatil-list {
+  padding-bottom: 15px;
+  :last-child {
+    border: none;
+  }
+  li {
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid $under_line;
+    span {
+      color: rgba(23, 26, 46, 0.45);
+      display: inline-block;
+      width: 70px;
+    }
+  }
 }
 [class^='icon-'] {
   width: 20px;

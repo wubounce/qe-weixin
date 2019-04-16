@@ -24,18 +24,19 @@
       </p>
     </div>
     <div>
-      <div class="chart-title">
+      <div class="chart-title detail-table">
         <span>详细数据</span>
+        <el-button icon="el-icon-download" style="float: right;">导出</el-button>
       </div>
       <el-table :data="tableDataList" show-summary style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)"></el-table-column>
-        <el-table-column header-align="left" prop="date" label="洗衣液收益"></el-table-column>
-        <el-table-column header-align="left" prop="name" label="VIP收益"></el-table-column>
+        <el-table-column header-align="left" prop="" label="订单收益(含洗衣液)"></el-table-column>
+        <el-table-column header-align="left" prop="" label="洗衣液收益"></el-table-column>
+        <el-table-column header-align="left" prop="" label="VIP收益"></el-table-column>
         <el-table-column header-align="left" prop="refundMoney" label="退款金额"></el-table-column>
-        <el-table-column header-align="left" prop="date" label="支付宝收益"></el-table-column>
-        <el-table-column header-align="left" prop="name" label="总收益"></el-table-column>
+        <el-table-column header-align="left" prop="" label="支付宝收益"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="总收益"></el-table-column>
       </el-table>
     </div>
   </div>

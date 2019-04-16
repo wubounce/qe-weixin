@@ -64,7 +64,6 @@ const user = {
       return new Promise(resolve => {
         menuSelectFun().then(res => {
           // let permsList = getTrees(res, 0);
-          // console.log(permsList);
           commit('SET_ACCESS', menusData.data);
           commit('SET_HAS_PRES_INFO', true);
           resolve(res);

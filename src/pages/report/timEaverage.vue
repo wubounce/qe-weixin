@@ -31,6 +31,7 @@
     <div class="report-detail">
       <div class="chart-title">
         <span>详细数据</span>
+        <el-button icon="el-icon-download" style="float: right;">导出</el-button>
       </div>
       <el-table :data="tableDataList" show-summary style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>

@@ -232,12 +232,12 @@ export default {
       //获取二级类型
       let payload = { shopIds: this.addMaketFrom.shopIds.join(',') };
       let res = await marketlistParentTypeIdFun(payload);
-      // this.machineParentType = res.length > 0 ? [{ parentTypeId: '全部', parentTypeName: '全部' }, ...res] : [];
-      this.machineParentType = res;
+      this.machineParentType = res.length > 0 ? [{ parentTypeId: '全部', parentTypeName: '全部' }, ...res] : [];
     },
     async getTimeMaketingDataToTable() {
       //获取列表
       let payload = Object.assign({}, this.searchData);
+      console.log(payload);
       let res = await timeMarketListFun(payload);
       res.items.forEach(item => {
         item.noDiscountStart = item.noDiscountStart ? moment(item.noDiscountStart).format('YYYY-MM-DD') : '';
@@ -279,7 +279,7 @@ export default {
         week: res.noWeek,
         time: [time[0], time[1]],
         date: [startTime, endTime],
-        parentTypeIds: res.parentTypeMap[0].parentTypeId,
+        parentTypeIds: res.parentTypeMap && res.parentTypeIds ? res.parentTypeMap[0].parentTypeId : '全部',
         shopIds: beshopIds,
         discount: res.discount,
         weekCheckList: weeklist
@@ -300,7 +300,7 @@ export default {
           payload.endTime = payload.date ? payload.date[1] : null;
           payload.date = null;
           if (payload.week === 10) payload.week = payload.weekCheckList.join(',');
-          payload.parentTypeIds = `'${payload.parentTypeIds}'`;
+          payload.parentTypeIds = payload.parentTypeIds == '全部' ? '' : `'${payload.parentTypeIds}'`;
           addOruPdateFun(payload).then(() => {
             this.$Message.success('操作成功');
             this.getTimeMaketingDataToTable();

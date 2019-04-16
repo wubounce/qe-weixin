@@ -7,18 +7,18 @@
           <ul class="profit-sub">
             <li>
               <p class="title">今日收益 (元)</p>
-              <p class="num">￥{{todayMoney}}</p>
-              <p class="pio">+3.22%
+              <p class="num">￥{{frofitCount.todayMoney}}</p>
+              <p class="pio up-arrows">+3.22%
                 <svg-icon icon-class="shangzhang" />
               </p>
             </li>
             <li>
               <p class="title">当月收益 (元)</p>
-              <p class="num">￥{{monthMoney}}</p>
+              <p class="num">￥{{frofitCount.monthMoney}}</p>
             </li>
             <li>
               <p class="title">总收益 (元)</p>
-              <p class="num">￥{{allMoney}}</p>
+              <p class="num">￥{{frofitCount.allMoney}}</p>
             </li>
           </ul>
         </div>
@@ -32,18 +32,18 @@
           <ul class="profit-sub">
             <li>
               <p class="title">今日订单数</p>
-              <p class="num">50.00</p>
+              <p class="num">{{orderCount.todayCount}}</p>
               <p class="pio">+3.22%
                 <svg-icon icon-class="shangzhang" />
               </p>
             </li>
             <li>
               <p class="title">当月订单数</p>
-              <p class="num"> 79,550.00</p>
+              <p class="num">{{orderCount.monthCount}}</p>
             </li>
             <li>
               <p class="title">总订单数</p>
-              <p class="num">679,550.00</p>
+              <p class="num">{{orderCount.totalCount}}</p>
             </li>
           </ul>
         </div>
@@ -60,25 +60,25 @@
           <ul class="profit-sub">
             <li>
               <p class="title">今日下单用户数</p>
-              <p class="num">50.00</p>
-              <p class="pio">+3.22%
-                <svg-icon icon-class="shangzhang" />
+              <p class="num">{{userCount.todayUserCount}}</p>
+              <p class="pio down-arrows">+3.22%
+                <svg-icon icon-class="xiajiang" />
               </p>
             </li>
             <li>
               <p class="title">今日新增用户数</p>
-              <p class="num">79,550.00</p>
+              <p class="num">{{userCount.todayAddUserCount}}</p>
               <p class="pio">+3.22%
                 <svg-icon icon-class="shangzhang" />
               </p>
             </li>
             <li>
               <p class="title">今日新增VIP</p>
-              <p class="num">679,550.00</p>
+              <p class="num">{{userCount.countAddVip}}</p>
             </li>
             <li>
               <p class="title">VIP总数</p>
-              <p class="num">679,550.00</p>
+              <p class="num">{{userCount.countVip}}</p>
             </li>
           </ul>
         </div>
@@ -92,7 +92,7 @@
           <ul class="profit-sub">
             <li>
               <p class="title">今日设备活跃率 </p>
-              <p class="num">￥50.00</p>
+              <p class="num">{{deviceCount.deviceActiveRatio}}%</p>
               <p class="pio">+3.22%
                 <svg-icon icon-class="shangzhang" />
               </p>
@@ -134,16 +134,17 @@
 </template>
 
 <script>
-import { ParentTypeFun, countMachineFun, timeProfitFun, totalProfitFun } from '@/service/index';
+import { ParentTypeFun, countMachineFun, timeProfitFun, totalProfitFun, orderCountFun, userCountFun, deviceActiveRatiotFun } from '@/service/index';
 import { calMax, calMin } from '@/utils/tools';
 import { MachineStatus } from '@/utils/mapping';
 export default {
   name: 'home',
   data() {
     return {
-      allMoney: null, //总收益
-      monthMoney: null, //当月收益
-      todayMoney: null, //今日收益
+      frofitCount: {},
+      orderCount: {},
+      userCount: {},
+      deviceCount: {},
       linechart: null,
       piechart: null,
       lineMax: null,
@@ -164,7 +165,10 @@ export default {
     });
   },
   created() {
-    this.totalProfitFun();
+    this.getTotalProfit();
+    this.getOrderCount();
+    this.getUserCount();
+    this.getdeviceActiveRatiot();
     this.getmachineParentType();
     this.getProfitDate();
     this.getMachineCount();
@@ -174,12 +178,25 @@ export default {
       this.linechart = echarts.init(document.getElementById('linechart'));
       this.piechart = echarts.init(document.getElementById('piechart'));
     },
-    async totalProfitFun() {
+    async getTotalProfit() {
       //总收益
       let res = await totalProfitFun();
-      this.allMoney = res.allMoney; //总收益
-      this.monthMoney = res.monthMoney; //当月收益
-      this.todayMoney = res.todayMoney; //今日收益
+      this.frofitCount = res;
+    },
+    async getOrderCount() {
+      //订单
+      let res = await orderCountFun();
+      this.orderCount = res;
+    },
+    async getdeviceActiveRatiot() {
+      //设备
+      let res = await deviceActiveRatiotFun();
+      this.deviceCount = res;
+    },
+    async getUserCount() {
+      //用户
+      let res = await userCountFun();
+      this.userCount = res;
     },
     async getmachineParentType() {
       //获取设备类型
@@ -526,9 +543,12 @@ export default {
         font-weight: 500;
         color: $menuText;
         line-height: 20px;
-        .svg-icon {
-          fill: $menuText;
-        }
+      }
+      .up-arrows {
+        color: $menuText;
+      }
+      .down-arrows {
+        color: #2fc25b;
       }
     }
   }

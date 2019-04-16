@@ -95,7 +95,7 @@
       </el-dialog>
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
-        <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="150px">
+        <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="150px" v-if="addShopDialogVisible">
           <el-form-item label="店铺名称：" class="shop-name" prop="shopName">
             <el-input v-model="addShopFrom.shopName" placeholder="店铺名称需为2-16个字，只支持中英文、_和-"></el-input>
           </el-form-item>
@@ -237,7 +237,7 @@ export default {
       addShopRules: {
         shopName: [{ required: true, trigger: 'blur', message: '请输入店铺名称' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z_-]{2,16}$/, message: '店铺名称需为2-16个字，只支持中英文、_和-', trigger: 'blur' }],
         shopType: [{ required: true, message: '请选择店铺类型', trigger: 'change' }],
-        areas: [{ required: true, type: 'array', message: '请选择区域', trigger: 'change' }],
+        areas: [{ type: 'array', required: true, message: '请选择区域', trigger: 'change' }],
         address: [{ required: true, message: '请填写详细地址', trigger: 'blur' }],
         orderLimitMinutes: [{ required: true, message: '请填写预约时长（分钟）', trigger: 'blur' }, { pattern: /^[1-9]+\d*$/, message: '预约时长请填写1到9的数字', trigger: 'blur' }],
         workTime: [{ required: true, message: '请选择营业时间', trigger: 'change' }],
@@ -344,7 +344,6 @@ export default {
     onSearchResult(pois) {
       this.center = [pois[0].lng, pois[0].lat];
       this.marker.position = [pois[0].lng, pois[0].lat];
-      console.log(pois);
       this.addShopFrom.lng = pois[0].lng;
       this.addShopFrom.lat = pois[0].lat;
       this.addShopFrom.organization = pois[0].name;
