@@ -1,5 +1,47 @@
 // import store from '@/store';
 import qs from 'qs';
+import axios from 'axios';
+/**
+ * 导出excel
+ *
+ */
+
+export const exportExcel = (url, fileName, opt) => {
+  axios
+    .post(url, opt, {
+      responseType: 'blob',
+      // responseType: 'arraybuffer',
+      timeout: 60000
+    })
+    .then(res => {
+      let disposition = res.headers['content-disposition']
+        ? String(res.headers['content-disposition'])
+        : '';
+      let name = null;
+      if (disposition) {
+        let header = disposition.indexOf('=');
+        name =
+          header !== -1
+            ? decodeURIComponent(disposition.substring(header).replace('=', ''))
+            : fileName;
+      } else {
+        name = fileName;
+      }
+      let blob = (blob = new Blob([res.data], {
+        type:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'
+      })); //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
+      if (window.navigator.msSaveOrOpenBlob) {
+        navigator.msSaveBlob(blob, name);
+      } else {
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = name;
+        link.click();
+        window.URL.revokeObjectURL(link.href);
+      }
+    });
+};
 
 export const forEach = (arr, fn) => {
   if (!arr.length || !fn) return;
@@ -98,7 +140,19 @@ const getDate = (timeStamp, startType) => {
   const minutes = getHandledValue(d.getMinutes());
   const second = getHandledValue(d.getSeconds());
   let resStr = '';
-  if (startType === 'year') resStr = year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + second;
+  if (startType === 'year')
+    resStr =
+      year +
+      '-' +
+      month +
+      '-' +
+      date +
+      ' ' +
+      hours +
+      ':' +
+      minutes +
+      ':' +
+      second;
   else resStr = month + '-' + date + ' ' + hours + ':' + minutes;
   return resStr;
 };
@@ -127,13 +181,17 @@ export const getRelativeTime = timeStamp => {
   // 少于等于59秒
   if (diff <= 59) resStr = diff + '秒' + dirStr;
   // 多于59秒，少于等于59分钟59秒
-  else if (diff > 59 && diff <= 3599) resStr = Math.floor(diff / 60) + '分钟' + dirStr;
+  else if (diff > 59 && diff <= 3599)
+    resStr = Math.floor(diff / 60) + '分钟' + dirStr;
   // 多于59分钟59秒，少于等于23小时59分钟59秒
-  else if (diff > 3599 && diff <= 86399) resStr = Math.floor(diff / 3600) + '小时' + dirStr;
+  else if (diff > 3599 && diff <= 86399)
+    resStr = Math.floor(diff / 3600) + '小时' + dirStr;
   // 多于23小时59分钟59秒，少于等于29天59分钟59秒
-  else if (diff > 86399 && diff <= 2623859) resStr = Math.floor(diff / 86400) + '天' + dirStr;
+  else if (diff > 86399 && diff <= 2623859)
+    resStr = Math.floor(diff / 86400) + '天' + dirStr;
   // 多于29天59分钟59秒，少于364天23小时59分钟59秒，且传入的时间戳早于当前
-  else if (diff > 2623859 && diff <= 31567859 && IS_EARLY) resStr = getDate(timeStamp);
+  else if (diff > 2623859 && diff <= 31567859 && IS_EARLY)
+    resStr = getDate(timeStamp);
   else resStr = getDate(timeStamp, 'year');
   return resStr;
 };
@@ -213,7 +271,8 @@ export const objEqual = (obj1, obj2) => {
   const keysArr2 = Object.keys(obj2);
   if (keysArr1.length !== keysArr2.length) return false;
   else if (keysArr1.length === 0 && keysArr2.length === 0) return true;
-  /* eslint-disable-next-line */ else return !keysArr1.some(key => obj1[key] != obj2[key]);
+  /* eslint-disable-next-line */ else
+    return !keysArr1.some(key => obj1[key] != obj2[key]);
 };
 
 /**

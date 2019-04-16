@@ -53,6 +53,10 @@ export default {
         return [];
       }
     },
+    isTimeMaket: {
+      type: String,
+      default: ''
+    },
     placeholder: {
       type: String,
       default: ''
@@ -64,6 +68,7 @@ export default {
       state: '',
       checkedList: this.value,
       checkedListName: [],
+      isEditTime: this.isTimeMaket,
       shopList: [],
       shopListBak: [],
       visibleModel: this.visible
@@ -76,8 +81,8 @@ export default {
     getFilterShop() {
       this.visibleModel = true;
     },
-    async getShopList(shopName = '') {
-      let payload = { shopName: shopName };
+    async getShopList(shopName = '', isTimeMaket = this.isEditTime) {
+      let payload = { shopName: shopName, timeId: isTimeMaket };
       let res = await shopListFun(payload);
       this.shopList = res;
       this.shopListBak = res;
@@ -128,6 +133,10 @@ export default {
   },
   watch: {
     value: function(val) {
+      this.checkedList = val;
+      this.getShopList();
+    },
+    isTimeMaket: function(val) {
       this.checkedList = val;
       this.getShopList();
     }

@@ -79,7 +79,7 @@
     <el-dialog :title="addOrEditMaketTitle" :visible.sync="addMaketDialogVisible" @close="resetAddOrEditMaketFrom('addMaketFrom')" width="620px" height="768px">
       <el-form ref="addMaketFrom" :model="addMaketFrom" :rules="addMaketFromRules" class="add-shop-from" label-width="120px" v-if="addMaketDialogVisible">
         <el-form-item label="适用店铺：" prop="shopIds">
-          <multiple-shop v-model="addMaketFrom.shopIds" @change="getShopFilter" placeholder="请选择店铺"></multiple-shop>
+          <multiple-shop v-model="addMaketFrom.shopIds" @change="getShopFilter" :isTimeMaket="isTimeMaket" placeholder="请选择店铺"></multiple-shop>
         </el-form-item>
         <el-form-item label="适用类型：" prop="parentTypeIds">
           <el-select v-model="addMaketFrom.parentTypeIds" placeholder="请先选择店铺" :disabled="hasShop">
@@ -141,6 +141,7 @@ export default {
       },
       timeMaketingDataToTable: [],
       addOrEditMaketTitle: '新增优惠',
+      isTimeMaket: '123',
       addMaketDialogVisible: false,
       weekFilterVisible: false,
       addMaketFrom: {
@@ -236,8 +237,8 @@ export default {
     },
     async getTimeMaketingDataToTable() {
       //获取列表
+      this.timeMaketingDataToTable = [];
       let payload = Object.assign({}, this.searchData);
-      console.log(payload);
       let res = await timeMarketListFun(payload);
       res.items.forEach(item => {
         item.noDiscountStart = item.noDiscountStart ? moment(item.noDiscountStart).format('YYYY-MM-DD') : '';
@@ -253,9 +254,11 @@ export default {
     },
     async openAddBDDialog(row = {}) {
       this.addOrEditMaketTitle = '新增优惠';
+      this.isTimeMaket = '123';
       this.addMaketDialogVisible = true;
       if (row.id) {
         this.addOrEditMaketTitle = '编辑优惠';
+        this.isTimeMaket = '';
         this.getMaketDetail(row).then(() => {
           this.addMaketDialogVisible = true;
         });
