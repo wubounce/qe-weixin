@@ -54,7 +54,11 @@
         </el-table-column>
         <el-table-column header-align="left" prop="payPrice" label="实付金额(元)" width="120"></el-table-column>
         <el-table-column header-align="left" prop="isReserve" label="收益金额(元) " width="120"></el-table-column>
-        <el-table-column header-align="left" prop="payType" label="支付方式"></el-table-column>
+        <el-table-column header-align="left" prop="payType" label="支付方式">
+          <template slot-scope="scope">
+            <span>{{scope.row.payType | PayType }}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="createTime" label="下单时间" width="180"></el-table-column>
         <el-table-column header-align="left" prop="payTime" label="支付时间" width="180"></el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="180px">

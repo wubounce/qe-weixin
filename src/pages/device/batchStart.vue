@@ -23,7 +23,6 @@
           <svg-icon icon-class="daochu" class="daochu" /> 导出</el-button>
       </div>
       <el-table :data="batchStartDataToTable" style="width: 100%">
-        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="所属店铺" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
@@ -222,6 +221,7 @@ export default {
           addBatchStartFun(payload).then(() => {
             this.$message.success('添加成功');
             this.$refs[formName].resetFields();
+            this.$refs[formName].clearValidate();
             this.getBatchStartDataToTable();
             this.addDeviceBatchStartDialogVisible = false;
           });
@@ -235,6 +235,7 @@ export default {
       this.deviceBatchStartForm.id = row.id;
       this.deviceBatchStartForm.machineParentTypeId = row.machineParentTypeId;
       this.deviceBatchStartForm.shopId = row.shopId;
+      this.deviceBatchStartForm.standardFunctionId = row.standardFunctionId;
       let payload = { machineParentTypeId: row.machineParentTypeId, shopId: row.shopId };
       let res = await getFunctionListFun(payload);
       this.functionEditList = res;

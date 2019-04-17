@@ -24,7 +24,7 @@
     </el-form>
     <div class="table-content">
       <div class="table-header-action">
-        <el-button type="primary" icon="el-icon-plus" @click="openAddBDDialog()">新增活动</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addActiveDialogVisible=true">新增活动</el-button>
       </div>
       <el-table :data="couponSentDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
@@ -71,7 +71,7 @@
         <el-table-column prop="faceValue" label="适用店铺"></el-table-column>
         <el-table-column prop="faceValue" label="面额(元)/折扣" width="100px"></el-table-column>
         <el-table-column prop="faceValue" label="条件"></el-table-column>
-        <el-table-column prop="createTime" label="有效期"></el-table-column>
+        <el-table-column prop="createTime" label="有效期" width="140px"></el-table-column>
       </el-table>
     </el-dialog>
     <!-- 参与用户 -->
@@ -86,7 +86,7 @@
       </el-table>
     </el-dialog>
     <!-- 新增活动 -->
-    <el-dialog title="新增活动" :visible.sync="sentCouponDialogVisible" width="600px">
+    <el-dialog title="新增活动" :visible.sync="addActiveDialogVisible" width="768px" top="5vh">
       <h3 class="detail-base-title">活动信息</h3>
       <el-form ref="sentCouponFrom" :model="sentCouponFrom" label-width="85px" label-position="left" class="sent-coupon-from">
         <el-form-item label="活动名称：" prop="name">
@@ -95,7 +95,7 @@
         <el-form-item label="活动时间：" prop="name">
           <el-date-picker size="small" v-model="searchData.name" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
           </el-date-picker>
-        </el-form-item>
+        </el-form-item>.
         <el-form-item label="活动类型：" prop="name">
           <el-radio-group v-model="sentCouponFrom.resource">
             <el-radio :label="0">满减券</el-radio>
@@ -118,7 +118,7 @@
         </el-form-item>
         <h3 class="detail-base-title" style="border:none">优惠券信息</h3>
         <div class="table-header-action" style="padding-bottom: 15px;">
-          <el-button type="primary" icon="el-icon-plus">添加优惠券</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="couponActiveDialogVisible=true">添加优惠券</el-button>
         </div>
         <el-table :data="couponSentDataToTable" style="width: 100%">
           <el-table-column prop="faceValue" label="券类型"></el-table-column>
@@ -126,7 +126,7 @@
           <el-table-column prop="faceValue" label="适用店铺"></el-table-column>
           <el-table-column prop="faceValue" label="面额(元)/折扣" width="100px"></el-table-column>
           <el-table-column prop="faceValue" label="条件"></el-table-column>
-          <el-table-column prop="createTime" label="有效期"></el-table-column>
+          <el-table-column prop="createTime" label="有效期" width="140px"></el-table-column>
           <el-table-column header-align="left" label="操作" fixed="right" width="100px">
             <template slot-scope="scope">
               <el-tooltip content="编辑" placement="top" effect="dark">
@@ -138,6 +138,78 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-form-item class="sent-coupon-from-action">
+          <el-button type="primary" @click="resetSearchForm('searchForm')">确 定</el-button>
+          <el-button @click="resetSearchForm('searchForm')">取 消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!-- 新增活动 -->
+    <el-dialog :visible.sync="couponActiveDialogVisible" width="540px">
+      <div slot="title" class="dialog-footer btn-footer">
+        <p>新增活动优惠券</p>
+        <p class="add-coupon-tip">说明：自动发放的优惠券只能在发券店铺这一个店铺内使用</p>
+      </div>
+      <el-form ref="sentCouponFrom" :model="sentCouponFrom" label-width="85px" label-position="left" class="sent-coupon-from">
+        <el-form-item label="券类型：" prop="name">
+          <el-radio-group v-model="sentCouponFrom.resource">
+            <el-radio :label="0">满减券</el-radio>
+            <el-radio :label="1">折扣券</el-radio>
+            <el-radio :label="2">免费券</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="适用类型：">
+          <el-checkbox-group v-model="sentCouponFrom.type">
+            <el-checkbox :label="0" name="type">通用</el-checkbox>
+            <el-checkbox :label="1" name="type">洗衣机</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="面额：">
+          <div class="add-discount">
+            <div>
+              <el-input v-model="sentCouponFrom.discount" clearable></el-input>
+              <span style="position: absolute;left: 125px;color:#bfbfbf;">元</span>
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item label="折扣 ：">
+          <div class="add-discount">
+            <div>
+              <el-input v-model="sentCouponFrom.discount" clearable placeholder="优惠折扣"></el-input>
+              <span style="position: absolute;left: 125px;color:#bfbfbf;">元</span>
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item label="条件：">
+          <div class="add-discount">
+            <div>
+              <el-input v-model="sentCouponFrom.discount" clearable placeholder="优惠券金额"></el-input>
+              <span style="position: absolute;left: 125px;color:#bfbfbf;">元</span>
+            </div>
+            <div style="color:#bfbfbf;margin-left: 30px;">例:满 1 元可用</div>
+          </div>
+        </el-form-item>
+        <el-form-item label="有效期：">
+          <div class="add-discount">
+            <div>
+              <el-input v-model="sentCouponFrom.discount" clearable placeholder=""></el-input>
+              <span style="position: absolute;left: 125px;color:#bfbfbf;">天</span>
+            </div>
+            <div style="color:#bfbfbf;margin-left: 30px;">有效期至2019-03-15</div>
+          </div>
+        </el-form-item>
+        <el-form-item label="有效时段：" prop="type">
+          <el-date-picker size="small" v-model="searchData.name" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="发放数量：" prop="type">
+          <div class="add-discount">
+            <div>
+              <el-input v-model="sentCouponFrom.discount" clearable placeholder=""></el-input>
+              <span style="position: absolute;left: 125px;color:#bfbfbf;">张</span>
+            </div>
+          </div>
+        </el-form-item>
         <el-form-item class="sent-coupon-from-action">
           <el-button type="primary" @click="resetSearchForm('searchForm')">确 定</el-button>
           <el-button @click="resetSearchForm('searchForm')">取 消</el-button>
@@ -170,9 +242,10 @@ export default {
       sentUserDetailData: {},
       searchSentUserFrom: {},
 
-      sentCouponDialogVisible: true,
+      addActiveDialogVisible: false,
       sentCouponFrom: {},
-      detailDialogVisible: false
+      detailDialogVisible: false,
+      couponActiveDialogVisible: false
     };
   },
   filters: {
@@ -263,6 +336,10 @@ export default {
     }
   }
 }
+.sent-coupon-from {
+  padding-top: 24px;
+  overflow: hidden;
+}
 .sent-coupon-from-action {
   padding-top: 16px;
   border-top: 1px solid $under_line;
@@ -275,5 +352,11 @@ export default {
   position: absolute;
   left: 229px;
   top: 0;
+}
+.add-coupon-tip {
+  font-size: 12px;
+  font-weight: 400;
+  color: $menuText;
+  line-height: 20px;
 }
 </style>

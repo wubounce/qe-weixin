@@ -1,39 +1,39 @@
 <template>
-  <el-form :model="deviceEditForm" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
+  <el-form :model="deviceEditForm" :rules="deviceEditFormRules" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
     <el-form-item prop="machineName" label="设备名称" label-width="80px" class="edit-device-name">
       <el-input v-model="deviceEditForm.machineName"></el-input>
     </el-form-item>
     <el-tabs v-model="deviceEditTab">
       <el-tab-pane label="功能设置" name="first">
-        <el-table :data="functionJson" style="width: 100%">
+        <el-table :data="deviceEditForm.functionList" style="width: 100%">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
-              <el-form-item :prop="'functionJson.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
-                <el-input v-model="functionJson[scope.$index].needMinutes">
+              <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
+                <el-input v-model="scope.row.needMinutes">
                 </el-input>
               </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="functionPrice" label="原价/元">
             <template slot-scope="scope">
-              <el-form-item :prop="'functionJson.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
-                <el-input v-model="functionJson[scope.$index].functionPrice">
+              <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
+                <el-input v-model="scope.row.functionPrice">
                 </el-input>
               </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="functionCode" label="脉冲数" v-if="deviceEditForm.communicateType == 0">
             <template slot-scope="scope">
-              <el-form-item :prop="'functionJson.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
-                <el-input v-model="functionJson[scope.$index].functionCode">
+              <el-form-item :prop="'functionList.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
+                <el-input v-model="scope.row.functionCode">
                 </el-input>
               </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="ifOpenStatus" label="状态">
             <template slot-scope="scope">
-              <el-switch v-model="functionJson[scope.$index].ifOpenStatus">
+              <el-switch v-model="scope.row.ifOpenStatus">
               </el-switch>
             </template>
           </el-table-column>
@@ -44,20 +44,20 @@
           <el-switch v-model="deviceEditForm.isOpenDetergentStatus">
           </el-switch>
         </el-form-item>
-        <el-table :data="detergentJson" style="width: 100%">
+        <el-table :data="deviceEditForm.detergentFunctionList" style="width: 100%">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="detergentLiquid" label="用量/ml">
             <template slot-scope="scope">
-              <el-form-item :prop="'detergentJson.' + scope.$index + '.detergentLiquid'" :rules='deviceEditFormRules.detergentLiquid'>
-                <el-input v-model="detergentJson[scope.$index].detergentLiquid">
+              <el-form-item :prop="'detergentFunctionList.' + scope.$index + '.detergentLiquid'" :rules='deviceEditFormRules.detergentLiquid'>
+                <el-input v-model="scope.row.detergentLiquid">
                 </el-input>
               </el-form-item>
             </template>
           </el-table-column>
           <el-table-column prop="functionPrice" label="原价/元">
             <template slot-scope="scope">
-              <el-form-item :prop="'detergentJson.' + scope.$index + '.detergentPrice'" :rules='deviceEditFormRules.detergentPrice'>
-                <el-input v-model="detergentJson[scope.$index].detergentPrice">
+              <el-form-item :prop="'detergentFunctionList.' + scope.$index + '.detergentPrice'" :rules='deviceEditFormRules.detergentPrice'>
+                <el-input v-model="scope.row.detergentPrice">
                 </el-input>
               </el-form-item>
             </template></el-table-column>
@@ -70,10 +70,10 @@
               <span>水位设置</span>
             </template>
           </el-table-column>
-          <el-table-column prop="needMinutes" label="属性值">
+          <el-table-column prop="waterLevel" label="属性值">
             <template slot-scope="scope">
               <el-form-item prop="waterLevel" class="edit-waterLevel">
-                <el-select v-model="deviceEditForm.waterLevel" placeholder="请选择">
+                <el-select v-model="scope.row.waterLevel" placeholder="请选择">
                   <el-option v-for="(item,index) in waterLevelList" :key="index" :label="item.name" :value="item.value"></el-option>
                 </el-select>
               </el-form-item>
@@ -113,8 +113,6 @@ export default {
       deviceEditTab: 'first',
       waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       deviceEditForm: this.deviceEditdetailForm,
-      functionJson: this.deviceEditdetailForm.functionList, //直接无法校验
-      detergentJson: this.deviceEditdetailForm.detergentFunctionList,
       deviceEditFormRules: {
         machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
         needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
@@ -133,7 +131,7 @@ export default {
         if (valid) {
           let ifOpenLen = 0;
           this.deviceEditForm.isOpenDetergentStatus === true ? (this.deviceEditForm.isOpenDetergent = 1) : (this.deviceEditForm.isOpenDetergent = 0);
-          this.functionJson.forEach(item => {
+          this.deviceEditForm.functionList.forEach(item => {
             if (item.ifOpenStatus === false) {
               item.ifOpen = 1;
               ifOpenLen = ifOpenLen + 1;
@@ -141,13 +139,13 @@ export default {
               item.ifOpen = 0;
             }
           });
-          if (ifOpenLen === this.functionJson.length) {
+          if (ifOpenLen === this.deviceEditForm.functionList.length) {
             this.$Message.error('请至少开启一项功能');
             return false;
           }
           let payload = Object.assign({}, this.deviceEditForm);
-          payload.functionJson = JSON.stringify(this.functionJson);
-          payload.detergentJson = JSON.stringify(this.detergentJson);
+          payload.functionJson = JSON.stringify(this.deviceEditForm.functionList);
+          payload.detergentJson = JSON.stringify(this.deviceEditForm.detergentFunctionList);
           delete payload.functionList;
           delete payload.detergentFunctionList;
           deviceAddorEditFun(payload).then(() => {
@@ -162,6 +160,7 @@ export default {
       });
     },
     resetForm(formName) {
+      this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
       this.visible = false;
       this.$emit('closeDeviceEdit', this.visible);
@@ -170,8 +169,6 @@ export default {
   watch: {
     deviceEditdetailForm: function(val) {
       this.deviceEditForm = val;
-      this.deviceEditForm.functionJson = val.functionList; //直接无法校验
-      this.deviceEditForm.detergentJson = val.detergentFunctionList;
     }
   }
 };

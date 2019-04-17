@@ -51,27 +51,27 @@
       <el-table :data="voucherListDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="faceValue" label="面额(元)/折扣" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="条件" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="" label="条件" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="merchantType" label="券类型">
           <template slot-scope="scope">
             <span>{{scope.row.merchantType | CouponType}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="phone" label="用户账号"></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="优惠金额(元)"></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="适用店铺" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="适用类型"></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="有效期"></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="有效时段"></el-table-column>
+        <el-table-column header-align="left" prop="" label="优惠金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="" label="适用店铺" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="" label="适用类型"></el-table-column>
+        <el-table-column header-align="left" prop="" label="有效期"></el-table-column>
+        <el-table-column header-align="left" prop="" label="有效时段"></el-table-column>
         <el-table-column header-align="left" prop="createTime" label="创建时间 " width="160"></el-table-column>
         <el-table-column header-align="left" prop="status" label="券状态 ">
           <template slot-scope="scope">
             <span>{{scope.row.status | CouponStatusType}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="相关活动 "></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="来源类型 "></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="创建人"></el-table-column>
+        <el-table-column header-align="left" prop="" label="相关活动 "></el-table-column>
+        <el-table-column header-align="left" prop="" label="来源类型 "></el-table-column>
+        <el-table-column header-align="left" prop="" label="创建人"></el-table-column>
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>

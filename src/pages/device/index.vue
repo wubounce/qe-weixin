@@ -100,125 +100,125 @@
               </div>
             </div>
           </template>
-</el-table-column>
-<el-table-column header-align="left" prop="profit" label="累计收益(元)">
-  <template slot-scope="scope">
-  <span>{{scope.row.profit | numFormat}}</span>
-</template>
-</el-table-column>
-<el-table-column header-align="left" label="操作" fixed="right" width="300px">
-  <template slot-scope="scope">
-  <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState===4">
-    <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
-  </el-tooltip>
-  <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'">
-    <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
-  </el-tooltip>
-  <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.machineState===1 && scope.row.subTypeName !== '通用脉冲充电桩'||scope.row.machineState===4 && scope.row.subTypeName !== '通用脉冲充电桩'">
-    <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
-  </el-tooltip>
-  <el-tooltip content="编辑" placement="top" effect="dark">
-    <svg-icon icon-class="bianji" class="icon-bianji" @click="handleDeviceEdit(scope.row)" />
-  </el-tooltip>
-  <el-tooltip content="异常日志" placement="top" effect="dark">
-    <svg-icon icon-class="yichangrizhi" class="icon-yichangrizhi" @click="errorLogDialogVisible=true" />
-  </el-tooltip>
-</template>
-</el-table-column>
-</el-table>
-<Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
-<!-- 设备详情 -->
-<el-dialog title="设备详情" :visible.sync="detailDialogVisible" @close="detailActiveTab='first'" width="540px" top="50px">
-  <h3 class="detail-base-title">基本信息</h3>
-  <ul class="deatil-list">
-    <li><span>设备名称：</span>{{detailData.machineName}}</li>
-    <li><span>所属店铺：</span>{{detailData.shopName}}</li>
-    <li><span>设备类型：</span>{{detailData.parentTypeName}}</li>
-    <li><span>设备型号：</span>{{detailData.subTypeName}}</li>
-    <li><span>通信类型：</span>{{detailData.communicateType | communicateType}}</li>
-    <li><span>公司：</span>{{detailData.company}}</li>
-    <li><span>NQT：</span>{{detailData.nqt}}</li>
-    <li><span>IMEI：</span>{{detailData.imei}}</li>
-    <li><span>创建人：</span>{{detailData.createUser}}</li>
-    <li><span>创建时间：</span>{{detailData.createTime}}</li>
-  </ul>
-  <h3 class="detail-base-title" style="border:none">功能属性</h3>
-  <el-tabs v-model="detailActiveTab">
-    <el-tab-pane label="功能设置" name="first">
-      <el-table :data="detailData.functionList" style="width: 100%">
-        <el-table-column prop="functionName" label="功能"></el-table-column>
-        <el-table-column prop="needMinutes" label="耗时/分钟"></el-table-column>
-        <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
-        <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
-        <el-table-column prop="ifOpen" label="状态">
+        </el-table-column>
+        <el-table-column header-align="left" prop="profit" label="累计收益(元)">
           <template slot-scope="scope">
-  <span>{{scope.row.ifOpen | ifOpenType}}</span>
-</template>
+            <span>{{scope.row.profit | numFormat}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column header-align="left" label="操作" fixed="right" width="300px">
+          <template slot-scope="scope">
+            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState===4">
+              <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
+            </el-tooltip>
+            <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'">
+              <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
+            </el-tooltip>
+            <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.machineState===1 && scope.row.subTypeName !== '通用脉冲充电桩'||scope.row.machineState===4 && scope.row.subTypeName !== '通用脉冲充电桩'">
+              <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
+            </el-tooltip>
+            <el-tooltip content="编辑" placement="top" effect="dark">
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="handleDeviceEdit(scope.row)" />
+            </el-tooltip>
+            <el-tooltip content="异常日志" placement="top" effect="dark">
+              <svg-icon icon-class="yichangrizhi" class="icon-yichangrizhi" @click="errorLogDialogVisible=true" />
+            </el-tooltip>
+          </template>
         </el-table-column>
       </el-table>
-    </el-tab-pane>
-    <el-tab-pane label="洗衣液设置" name="second" v-if="detailData.parentTypeName === '洗衣机'">
-      <el-table :data="detailData.detergentFunctionList" style="width: 100%">
-        <el-table-column prop="functionName" label="功能"></el-table-column>
-        <el-table-column prop="detergentLiquid" label="用量/ml"></el-table-column>
-        <el-table-column prop="detergentPrice" label="原价/元"></el-table-column>
-      </el-table>
-    </el-tab-pane>
-    <el-tab-pane label="其他属性设置" name="third" v-if="detailData.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
-      <el-table :data="detailData.waterLevel" style="width: 100%">
-        <el-table-column prop="functionName" label="属性名称">
-          <template slot-scope="scope">
-  <span>水位设置</span>
-</template>
-        </el-table-column>
-        <el-table-column prop="waterLevel" label="属性值">
-          <template slot-scope="scope">
-  <span>{{scope.row | waterStatus}}</span>
-</template>
-        </el-table-column>
-        <el-table-column prop="functionPrice" label="属性说明">
-          <template slot-scope="scope">
-  <span>控制洗衣模式最大</span>
-</template>
-        </el-table-column>
-      </el-table>
-    </el-tab-pane>
-  </el-tabs>
-</el-dialog>
-<!-- 设备异常状态日志 -->
-<el-dialog title="异常状态日志" :visible.sync="errorLogDialogVisible" width="1100px">
-  <el-table :data="errorLogDeviceList" style="width: 100%" height="670">
-    <el-table-column header-align="left" label="序号" width="60" type="index"></el-table-column>
-    <el-table-column prop="machineName" label="设备名" min-width="180" show-overflow-tooltip></el-table-column>
-    <el-table-column prop="machineTypeName" label="设备类型" width="180"></el-table-column>
-    <el-table-column prop="address" min-width="180" label="设备型号" show-overflow-tooltip></el-table-column>
-  </el-table>
-</el-dialog>
-<!-- 设备异常状态日志 -->
-<el-dialog title="启动设备" :visible.sync="deviceStertDialogVisible" width="540px">
-  <h5 class="chose-start-fun">选择设备启动的模式</h5>
-  <el-table :data="detailData.functionList" style="width: 100%">
-    <el-table-column prop="functionName" label="功能"></el-table-column>
-    <el-table-column prop="needMinutes" label="耗时/分钟" v-if="detailData.subTypeName !== '通用脉冲充电桩'"></el-table-column>
-    <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
-    <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
-    <el-table-column label="操作">
-      <template slot-scope="scope">
-  <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineId,scope.row)">启动</el-button>
-</template>
-    </el-table-column>
-  </el-table>
-</el-dialog>
-<!-- 编辑设备  -->
-<el-dialog title="编辑设备" :visible.sync="deviceEditDialogVisible" width="768px">
-  <edit-device :deviceEditdetailForm="deviceEditdetailForm" :visible="deviceEditDialogVisible" @closeDeviceEdit="closeDeviceEdit" v-if="deviceEditDialogVisible"></edit-device>
-</el-dialog>
-<!-- 批量编辑设备  -->
-<el-dialog title="编辑设备" :visible.sync="batchDEditDeviceDialogVisible" width="768px">
-  <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :visible="batchDEditDeviceDialogVisible" @closeBatchDeviceEdit="closeBatchDeviceEdit" v-if="batchDEditDeviceDialogVisible"></batch-edit>
-</el-dialog>
-</div>
-</div>
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
+      <!-- 设备详情 -->
+      <el-dialog title="设备详情" :visible.sync="detailDialogVisible" @close="detailActiveTab='first'" width="540px" top="50px">
+        <h3 class="detail-base-title">基本信息</h3>
+        <ul class="deatil-list">
+          <li><span>设备名称：</span>{{detailData.machineName}}</li>
+          <li><span>所属店铺：</span>{{detailData.shopName}}</li>
+          <li><span>设备类型：</span>{{detailData.parentTypeName}}</li>
+          <li><span>设备型号：</span>{{detailData.subTypeName}}</li>
+          <li><span>通信类型：</span>{{detailData.communicateType | communicateType}}</li>
+          <li><span>公司：</span>{{detailData.company}}</li>
+          <li><span>NQT：</span>{{detailData.nqt}}</li>
+          <li><span>IMEI：</span>{{detailData.imei}}</li>
+          <li><span>创建人：</span>{{detailData.createUser}}</li>
+          <li><span>创建时间：</span>{{detailData.createTime}}</li>
+        </ul>
+        <h3 class="detail-base-title" style="border:none">功能属性</h3>
+        <el-tabs v-model="detailActiveTab">
+          <el-tab-pane label="功能设置" name="first">
+            <el-table :data="detailData.functionList" style="width: 100%">
+              <el-table-column prop="functionName" label="功能"></el-table-column>
+              <el-table-column prop="needMinutes" label="耗时/分钟"></el-table-column>
+              <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
+              <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
+              <el-table-column prop="ifOpen" label="状态">
+                <template slot-scope="scope">
+                  <span>{{scope.row.ifOpen | ifOpenType}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="洗衣液设置" name="second" v-if="detailData.parentTypeName === '洗衣机'">
+            <el-table :data="detailData.detergentFunctionList" style="width: 100%">
+              <el-table-column prop="functionName" label="功能"></el-table-column>
+              <el-table-column prop="detergentLiquid" label="用量/ml"></el-table-column>
+              <el-table-column prop="detergentPrice" label="原价/元"></el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="其他属性设置" name="third" v-if="detailData.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
+            <el-table :data="detailData.waterLevel" style="width: 100%">
+              <el-table-column prop="functionName" label="属性名称">
+                <template slot-scope="scope">
+                  <span>水位设置</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="waterLevel" label="属性值">
+                <template slot-scope="scope">
+                  <span>{{scope.row | waterStatus}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="functionPrice" label="属性说明">
+                <template slot-scope="scope">
+                  <span>控制洗衣模式最大</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+        </el-tabs>
+      </el-dialog>
+      <!-- 设备异常状态日志 -->
+      <el-dialog title="异常状态日志" :visible.sync="errorLogDialogVisible" width="1100px">
+        <el-table :data="errorLogDeviceList" style="width: 100%" height="670">
+          <el-table-column header-align="left" label="序号" width="60" type="index"></el-table-column>
+          <el-table-column prop="machineName" label="设备名" min-width="180" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="machineTypeName" label="设备类型" width="180"></el-table-column>
+          <el-table-column prop="address" min-width="180" label="设备型号" show-overflow-tooltip></el-table-column>
+        </el-table>
+      </el-dialog>
+      <!-- 设备异常状态日志 -->
+      <el-dialog title="启动设备" :visible.sync="deviceStertDialogVisible" width="540px">
+        <h5 class="chose-start-fun">选择设备启动的模式</h5>
+        <el-table :data="detailData.functionList" style="width: 100%">
+          <el-table-column prop="functionName" label="功能"></el-table-column>
+          <el-table-column prop="needMinutes" label="耗时/分钟" v-if="detailData.subTypeName !== '通用脉冲充电桩'"></el-table-column>
+          <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
+          <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineId,scope.row)">启动</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+      <!-- 编辑设备  -->
+      <el-dialog title="编辑设备" :visible.sync="deviceEditDialogVisible" width="768px">
+        <edit-device :deviceEditdetailForm="deviceEditdetailForm" :visible="deviceEditDialogVisible" @closeDeviceEdit="closeDeviceEdit" v-if="deviceEditDialogVisible"></edit-device>
+      </el-dialog>
+      <!-- 批量编辑设备  -->
+      <el-dialog title="批量编辑设备" :visible.sync="batchDEditDeviceDialogVisible" width="768px">
+        <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :visible="batchDEditDeviceDialogVisible" @closeBatchDeviceEdit="closeBatchDeviceEdit" v-if="batchDEditDeviceDialogVisible"></batch-edit>
+      </el-dialog>
+    </div>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
@@ -341,13 +341,10 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
-      this.deviceEditdetailForm = {};
       this.deviceEditdetailForm = Object.assign({}, res);
-      this.deviceEditdetailForm.functionJson = res.functionList;
-      this.deviceEditdetailForm.detergentJson = res.detergentFunctionList;
-      this.deviceEditdetailForm.isOpenDetergent == 1 ? (this.deviceEditdetailForm.isOpenDetergentStatus = true) : (this.deviceEditdetailForm.isOpenDetergentStatus = false);
+      this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
       this.deviceEditdetailForm.functionList.forEach(item => {
-        item.ifOpen === 0 ? (item.ifOpenStatus = true) : (item.ifOpenStatus = false);
+        item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
       return Promise.resolve();
     },
