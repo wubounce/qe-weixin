@@ -46,7 +46,7 @@
     </el-form>
     <div class="table-content">
       <div class="table-header-action">
-        <el-button icon="el-icon-download">导出</el-button>
+        <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
       <el-table :data="voucherListDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
@@ -81,7 +81,8 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
-import { voucherListFun } from '@/service/voucher';
+import { voucherListFun, listApi } from '@/service/voucher';
+import { exportExcel } from '@/service/common';
 import { CouponStatusType, CouponType } from '@/utils/mapping';
 export default {
   mixins: [PagerMixin],
@@ -139,6 +140,14 @@ export default {
       let res = await voucherListFun(payload);
       this.voucherListDataToTable = res.page.items;
       this.total = res.page.total;
+    },
+    exportTable() {
+      let payload = Object.assign({}, this.searchData);
+      payload.startDate = payload.time ? payload.time[0] : null;
+      payload.endDate = payload.time ? payload.time[1] : null;
+      payload.time = null;
+      payload.excel = true;
+      exportExcel(listApi, '优惠券记录.xlsx', payload);
     }
   }
 };

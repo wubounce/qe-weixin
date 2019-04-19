@@ -60,6 +60,9 @@
 .el-table__header-wrapper th {
   background: #fafafa !important;
 }
+.el-table .cell {
+  line-height: 33px !important;
+}
 .el-table__footer-wrapper tbody td {
   color: $menuText !important;
   border-bottom: 0 !important;

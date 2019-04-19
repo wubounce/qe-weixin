@@ -12,6 +12,16 @@ export const MachineStatus = {
   all: '总数'
 };
 
+export const sourceType = {
+  0: '订单',
+  1: 'vip卡'
+};
+
+export const earningType = {
+  0: '收入',
+  3: '退款'
+};
+
 // 通信类型
 export const communicateType = {
   0: '脉冲',

@@ -19,7 +19,7 @@
       <div class="table-header-action">
         <el-button type="primary" @click="addDeviceBatchStartDialogVisible=true">
           <svg-icon icon-class="qidong" class="batch-bianji" fill='#fff' /> 批量启动 </el-button>
-        <el-button>
+        <el-button @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" /> 导出</el-button>
       </div>
       <el-table :data="batchStartDataToTable" style="width: 100%">
@@ -103,7 +103,8 @@
 
 <script type="text/ecmascript-6">
 import { getlistParentTypeFun } from '@/service/device';
-import { listBatchStartFun, batchStartNowFun, updateBatchStartFun, getFunctionListFun, delBatchStartFun, addBatchStartFun } from '@/service/todoList';
+import { listBatchStartFun, batchStartNowFun, updateBatchStartFun, getFunctionListFun, delBatchStartFun, addBatchStartFun, listBatchStartApi } from '@/service/todoList';
+import { exportExcel } from '@/service/common';
 import { listShopBatchStartFun } from '@/service/device';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
@@ -277,6 +278,11 @@ export default {
           this.getBatchStartDataToTable();
         });
       });
+    },
+    exportTable() {
+      let payload = Object.assign({}, this.searchData);
+      payload.excel = true;
+      exportExcel(listBatchStartApi, '设备批量启动列表.xlsx', payload);
     }
   }
 };

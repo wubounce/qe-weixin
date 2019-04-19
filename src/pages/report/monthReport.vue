@@ -2,7 +2,7 @@
   <div class="date-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="earing-search">
       <el-form-item label="年份筛选：" prop="time">
-        <el-date-picker v-model="searchData.time" type="monthrange" align="right" unlink-panels range-separator="~" start-placeholder="开始月份" end-placeholder="结束月份" value-format="yyyy-MM">
+        <el-date-picker v-model="searchData.time" type="monthrange" align="right" unlink-panels :clearable="false" range-separator="~" start-placeholder="开始月份" end-placeholder="结束月份" value-format="yyyy-MM">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="店铺筛选：" prop="shopIds">
@@ -26,24 +26,25 @@
     <div>
       <div class="chart-title detail-table">
         <span>详细数据</span>
-        <el-button icon="el-icon-download" style="float: right;">导出</el-button>
+        <el-button icon="el-icon-download" style="float: right;" @click="exportTable()">导出</el-button>
       </div>
       <el-table :data="tableDataList" show-summary style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
-        <el-table-column header-align="left" prop="" label="订单收益(含洗衣液)"></el-table-column>
-        <el-table-column header-align="left" prop="" label="洗衣液收益"></el-table-column>
-        <el-table-column header-align="left" prop="" label="VIP收益"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)"></el-table-column>
+        <el-table-column header-align="left" prop="detergentMoney" label="洗衣液收益"></el-table-column>
+        <el-table-column header-align="left" prop="vipMoney" label="VIP收益"></el-table-column>
         <el-table-column header-align="left" prop="refundMoney" label="退款金额"></el-table-column>
-        <el-table-column header-align="left" prop="" label="支付宝收益"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="总收益"></el-table-column>
+        <el-table-column header-align="left" prop="alipayMoney" label="支付宝收益"></el-table-column>
+        <el-table-column header-align="left" prop="totalMoney" label="总收益"></el-table-column>
       </el-table>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { dayReportFun } from '@/service/report';
+import { dayReportFun, dayReportApi } from '@/service/report';
+import { exportExcel } from '@/service/common';
 import { calMax, calMin } from '@/utils/tools';
 import ShopFilter from '@/components/Shopfilter';
 import PagerMixin from '@/mixins/PagerMixin';
@@ -120,6 +121,10 @@ export default {
       let k = a.date.replace(/\-/g, '');
       let h = b.date.replace(/\-/g, '');
       return h - k;
+    },
+    exportTable() {
+      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), dateLevel: 2, excel: true });
+      exportExcel(dayReportApi, '月报表.xlsx', payload);
     }
   },
   computed: {

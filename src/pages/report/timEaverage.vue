@@ -2,7 +2,7 @@
   <div class="date-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="日期筛选：" prop="time">
-        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
+        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="店铺筛选：" prop="shopIds">
@@ -31,7 +31,7 @@
     <div class="report-detail">
       <div class="chart-title">
         <span>详细数据</span>
-        <el-button icon="el-icon-download" style="float: right;">导出</el-button>
+        <el-button icon="el-icon-download" style="float: right;" @click="exportTable()">导出</el-button>
       </div>
       <el-table :data="tableDataList" show-summary style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
@@ -44,7 +44,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { dayReportFun } from '@/service/report';
+import { dayReportFun, dayReportApi } from '@/service/report';
+import { exportExcel } from '@/service/common';
 import { ParentTypeFun } from '@/service/index';
 import { calMax, calMin } from '@/utils/tools';
 import ShopFilter from '@/components/Shopfilter';
@@ -131,6 +132,10 @@ export default {
       let k = a.date.replace(/\-/g, '');
       let h = b.date.replace(/\-/g, '');
       return h - k;
+    },
+    exportTable() {
+      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), dateLevel: 2, excel: true });
+      exportExcel(dayReportApi, '时段平均报表.xlsx', payload);
     }
   },
   computed: {

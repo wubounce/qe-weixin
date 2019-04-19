@@ -40,7 +40,7 @@
       <div class="table-header-action">
         <el-button type="primary" @click="handleBatchEdit">
           <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' /> 批量编辑 </el-button>
-        <el-button>
+        <el-button @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" /> 导出</el-button>
       </div>
       <el-table :data="deviceDataToTable" style="width: 100%" @selection-change="handleSelectionChange">
@@ -222,7 +222,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun } from '@/service/device';
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList } from '@/service/device';
+import { exportExcel } from '@/service/common';
 import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType, waterStatus } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
@@ -448,6 +449,11 @@ export default {
     closeBatchDeviceEdit(res) {
       this.batchDEditDeviceDialogVisible = false;
       this.getDeviceDataToTable();
+    },
+    exportTable() {
+      let payload = Object.assign({}, this.searchData);
+      payload.excel = true;
+      exportExcel(deviceList, '设备列表.xlsx', payload);
     }
   }
 };

@@ -17,9 +17,6 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/">
-            <el-dropdown-item>消息中心</el-dropdown-item>
-          </router-link>
           <router-link to="/changepwd">
             <el-dropdown-item>修改密码</el-dropdown-item>
           </router-link>

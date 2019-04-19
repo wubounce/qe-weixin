@@ -160,28 +160,6 @@
         {
           "menuId": 104,
           "parentId": 0,
-          "name": "优惠券发放",
-          "url": "couponsent",
-          "perms": "mer:index",
-          "type": 0,
-          "orderNum": 0,
-          "kind": null,
-          "icon": ""
-        },
-        {
-          "menuId": 104,
-          "parentId": 0,
-          "name": "优惠券活动",
-          "url": "couponactive",
-          "perms": "mer:index",
-          "type": 0,
-          "orderNum": 0,
-          "kind": null,
-          "icon": ""
-        },
-        {
-          "menuId": 104,
-          "parentId": 0,
           "name": "优惠券记录",
           "url": "couponrecord",
           "perms": "mer:index",

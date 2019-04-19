@@ -23,7 +23,7 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="addShopDialogVisible=true;">新增店铺</el-button>
-        <el-button icon="el-icon-download">导出</el-button>
+        <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
       <el-table :data="shopDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
@@ -150,7 +150,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun } from '@/service/shop';
+import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi } from '@/service/shop';
+import { exportExcel } from '@/service/common';
 import { deviceListFun } from '@/service/device';
 import { isReserveType, isHasVipType, isDiscountType, deviceStatus, deviceColorStatus } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
@@ -404,6 +405,15 @@ export default {
           this.getShopDataToTable();
         });
       });
+    },
+    exportTable() {
+      let payload = Object.assign({}, this.searchData);
+      payload.provinceId = payload.areas[0];
+      payload.cityId = payload.areas[1];
+      payload.districtId = payload.areas[2];
+      payload.areas = [];
+      payload.excel = true;
+      exportExcel(manageListApi, '店铺列表.xlsx', payload);
     }
   }
 };

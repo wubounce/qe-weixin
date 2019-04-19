@@ -3,7 +3,7 @@
  */
 import fetch from '@/service/http';
 
-const timeMarketListApi = 'timeMarket/list'; // 获取时段营销列表 method 'post'
+export const timeMarketListApi = 'timeMarket/list'; // 获取时段营销列表 method 'post'
 const addOruPdateApi = 'timeMarket/saveTimeMarketApp'; // 添加/更新时段营销 method 'post'
 const delMarketApi = 'timeMarket/deleteTimeMarket'; // 删除时段营销 method 'post'
 const DetailMarketApi = 'timeMarket/timeMarketDetail'; // 时段营销详情 method 'post'
@@ -17,7 +17,8 @@ const updataeStatusApi = '/timeMarket/updateTimeStatus'; //修改营销停用启
 const marketlistParentTypeId = '/timeMarket/listParentTypeId'; //vip卡-可选择的店铺
 
 // 获取时段营销列表
-export const timeMarketListFun = payload => fetch.post(timeMarketListApi, payload);
+export const timeMarketListFun = payload =>
+  fetch.post(timeMarketListApi, payload);
 
 // 添加/更新时段营销
 export const addOruPdateFun = payload => fetch.post(addOruPdateApi, payload);
@@ -46,7 +47,9 @@ export const delVipFun = payload => fetch.post(delVipApi, payload);
 export const vipShopsFun = payload => fetch.post(vipShopsApi, payload);
 
 //vip卡-可选择的店铺
-export const marketlistParentTypeIdFun = payload => fetch.post(marketlistParentTypeId, payload);
+export const marketlistParentTypeIdFun = payload =>
+  fetch.post(marketlistParentTypeId, payload);
 
 //vip卡-可选择的店铺
-export const updataeStatusFun = payload => fetch.post(updataeStatusApi, payload);
+export const updataeStatusFun = payload =>
+  fetch.post(updataeStatusApi, payload);

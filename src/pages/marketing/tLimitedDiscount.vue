@@ -23,7 +23,7 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="openAddBDDialog()">新增优惠</el-button>
-        <el-button icon="el-icon-download">导出</el-button>
+        <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
       <el-table :data="timeMaketingDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
@@ -126,7 +126,8 @@ import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
 import multipleShop from '@/components/multipleShop';
 import activeWeek from './activeWeek';
-import { timeMarketListFun, addOruPdateFun, marketlistParentTypeIdFun, delMarketFun, detailMarketFun, updataeStatusFun } from '@/service/market';
+import { timeMarketListFun, addOruPdateFun, marketlistParentTypeIdFun, delMarketFun, detailMarketFun, updataeStatusFun, timeMarketListApi } from '@/service/market';
+import { exportExcel } from '@/service/common';
 export default {
   mixins: [PagerMixin],
   components: {
@@ -291,9 +292,6 @@ export default {
       };
       if (weeklist.length > 1) {
         this.addMaketFrom.week = 10;
-        this.weekFilterVisible = true;
-      } else {
-        this.weekFilterVisible = false;
       }
       this.getMarketlistParentType();
       return Promise.resolve();
@@ -345,6 +343,11 @@ export default {
       updataeStatusFun(payload).then(() => {
         this.$message.success('操作成功');
       });
+    },
+    exportTable() {
+      let payload = Object.assign({}, this.searchData);
+      payload.excel = true;
+      exportExcel(timeMarketListApi, '限时优惠.xlsx', payload);
     }
   },
   watch: {
