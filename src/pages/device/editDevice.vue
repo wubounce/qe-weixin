@@ -97,7 +97,18 @@
 <script type="text/ecmascript-6">
 import { deviceAddorEditFun } from '@/service/device';
 export default {
-  props: ['deviceEditdetailForm', 'visible'],
+  props: {
+    deviceEditdetailForm: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    visible: {
+      type: Boolean,
+      default: null
+    }
+  },
   data() {
     var validatorFunctionPrice = (rule, value, callback) => {
       let reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/; //可带二位小数的正整数

@@ -9,7 +9,7 @@
               <p class="title">今日收益 (元)</p>
               <p class="num">￥{{frofitCount.todayMoney}}</p>
               <p :class="['pio',{'up-arrows':String(frofitCount.yoy).includes('+'),'down-arrows':String(frofitCount.yoy).includes('-')}]">
-                {{frofitCount.yoy}}%
+                {{frofitCount.yoy}}
                 <svg-icon :icon-class="String(frofitCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
@@ -35,7 +35,7 @@
               <p class="title">今日订单数</p>
               <p class="num">{{orderCount.todayCount}}</p>
               <p :class="['pio',{'up-arrows':String(orderCount.yoy).includes('+'),'down-arrows':String(orderCount.yoy).includes('-')}]">
-                {{orderCount.yoy}}%
+                {{orderCount.yoy}}
                 <svg-icon :icon-class="String(orderCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
@@ -64,7 +64,7 @@
               <p class="title">今日下单用户数</p>
               <p class="num">{{userCount.todayUserCount}}</p>
               <p :class="['pio',{'up-arrows':String(userCount.yoyAddUser).includes('+'),'down-arrows':String(userCount.yoyAddUser).includes('-')}]">
-                {{userCount.yoyAddUser}}%
+                {{userCount.yoyAddUser}}
                 <svg-icon :icon-class="String(userCount.yoyAddUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
@@ -72,7 +72,7 @@
               <p class="title">今日新增用户数</p>
               <p class="num">{{userCount.todayAddUserCount}}</p>
               <p :class="['pio',{'up-arrows':String(userCount.yoyUser).includes('+'),'down-arrows':String(userCount.yoyUser).includes('-')}]">
-                {{userCount.yoyUser}}%
+                {{userCount.yoyUser}}
                 <svg-icon :icon-class="String(userCount.yoyUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>

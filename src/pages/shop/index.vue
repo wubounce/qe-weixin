@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="店铺名称：" prop="name">
-        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
+      <el-form-item label="店铺名称：" prop="shopName">
+        <el-input v-model="searchData.shopName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="店铺类型：" prop="type">
         <el-select v-model="searchData.type" clearable placeholder="请选择">
@@ -22,7 +22,7 @@
     </el-form>
     <div class="table-content">
       <div class="table-header-action">
-        <el-button type="primary" icon="el-icon-plus" @click="addShopDialogVisible=true;">新增店铺</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="onAddorEditShop">新增店铺</el-button>
         <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
       <el-table :data="shopDataToTable" style="width: 100%">
@@ -32,7 +32,7 @@
             <span class="rowstyle" @click="lookShopDetail(scope.row);detailDialogVisible = true;">{{scope.row.shopName}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="count" label="店铺地址" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="shopAddress" label="店铺地址" min-width="180" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="shopType" label="店铺类型"></el-table-column>
         <el-table-column header-align="left" prop="machineCount" label="设备数量">
           <template slot-scope="scope">
@@ -46,10 +46,10 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" label="操作">
+        <el-table-column header-align="left" fixed="right" label="操作">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <i class="el-icon-edit" @click="oneditShop(scope.row)"></i>
+              <i class="el-icon-edit" @click="onAddorEditShop(scope.row)"></i>
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
               <i class="el-icon-delete" @click="handleDelete(scope.row.shopId)"></i>
@@ -80,9 +80,9 @@
       <el-dialog :title="deviceDialogTitle" :visible.sync="deviceDialogVisible" width="1100px">
         <el-table :data="deviceList" style="width: 100%" height="670">
           <el-table-column header-align="left" label="序号" width="60" type="index"></el-table-column>
-          <el-table-column prop="machineName" label="设备名" min-width="180" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="machineTypeName" label="设备类型" width="180"></el-table-column>
-          <el-table-column prop="address" min-width="180" label="设备型号" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="machineName" label="设备名" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="machineTypeName" label="设备类型"></el-table-column>
+          <el-table-column prop="subTypeName" label="设备型号" show-overflow-tooltip></el-table-column>
           <el-table-column prop="machineState" label="设备状态">
             <template slot-scope="scope">
               <div>
@@ -90,7 +90,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="address" label="添加时间"></el-table-column>
+          <el-table-column prop="createTime" label="添加时间"></el-table-column>
         </el-table>
       </el-dialog>
       <!-- 新增编辑店铺 -->
@@ -167,7 +167,7 @@ export default {
     let self = this;
     return {
       searchData: {
-        name: '',
+        shopName: '',
         type: '',
         areas: [],
         address: ''
@@ -310,26 +310,6 @@ export default {
       let payload = { shopId: row.shopId };
       let res = await shopDetailFun(payload);
       this.detailData = res;
-      this.addShopFrom.shopId = res.shopId;
-      this.addShopFrom.isReserve = String(res.isReserve);
-      this.addShopFrom.workTime = res.workTime.split('-');
-      this.addShopFrom.shopName = res.shopName;
-      this.addShopFrom.shopType = Number(res.shopTypeId);
-      this.addShopFrom.provinceId = res.provinceId;
-      this.addShopFrom.cityId = res.cityId;
-      this.addShopFrom.districtId = res.districtId;
-      this.addShopFrom.address = res.address;
-      this.addShopFrom.lat = res.lat;
-      this.addShopFrom.lng = res.lng;
-      this.addShopFrom.orderLimitMinutes = res.orderLimitMinutes;
-      this.addShopFrom.organization = res.organization;
-      this.addShopFrom.serviceTelephone = res.serviceTelephone;
-      // 地区组件
-      this.addShopFrom.areas = [res.provinceId, res.cityId, res.districtId];
-      // 地图相关
-      this.center = [res.lng, res.lat];
-      this.marker.position = [res.lng, res.lat];
-      return Promise.resolve();
     },
     async getDeciveFromShop(row) {
       if (row.machineCount === 0) {
@@ -361,11 +341,52 @@ export default {
         this.isOffAndOnReservePlaceholder = '请填写1到9的数字';
       }
     },
-    oneditShop(row) {
-      this.lookShopDetail(row).then(() => {
+    async onAddorEditShop(row = {}) {
+      this.addOrEditShopTitle = '新增店铺';
+      this.addShopFrom = {
+        shopId: '',
+        areas: [],
+        isReserve: '0',
+        workTime: ['00:00', '23:59'],
+        shopName: '',
+        shopType: '',
+        provinceId: '',
+        cityId: '',
+        districtId: '',
+        address: '',
+        lat: '',
+        lng: '',
+        orderLimitMinutes: '',
+        organization: '',
+        serviceTelephone: ''
+      };
+      if (row.shopId) {
+        this.addOrEditShopTitle = '编辑店铺';
+        let payload = { shopId: row.shopId };
+        let res = await shopDetailFun(payload);
+        this.addShopFrom.shopId = res.shopId;
+        this.addShopFrom.isReserve = String(res.isReserve);
+        this.addShopFrom.workTime = res.workTime.split('-');
+        this.addShopFrom.shopName = res.shopName;
+        this.addShopFrom.shopType = Number(res.shopTypeId);
+        this.addShopFrom.provinceId = res.provinceId;
+        this.addShopFrom.cityId = res.cityId;
+        this.addShopFrom.districtId = res.districtId;
+        this.addShopFrom.address = res.address;
+        this.addShopFrom.lat = res.lat;
+        this.addShopFrom.lng = res.lng;
+        this.addShopFrom.orderLimitMinutes = res.orderLimitMinutes;
+        this.addShopFrom.organization = res.organization;
+        this.addShopFrom.serviceTelephone = res.serviceTelephone;
+        // 地区组件
+        this.addShopFrom.areas = [res.provinceId, res.cityId, res.districtId];
+        // 地图相关
+        this.center = [res.lng, res.lat];
+        this.marker.position = [res.lng, res.lat];
+        this.searchOption.city = res.cityName;
         this.offAndOnReserve(this.addShopFrom.isReserve);
-        this.addShopDialogVisible = true;
-      });
+      }
+      this.addShopDialogVisible = true;
     },
     onSubmitShopFrom(formName) {
       this.$refs[formName].validate(async valid => {

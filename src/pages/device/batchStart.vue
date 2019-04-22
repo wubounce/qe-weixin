@@ -1,8 +1,10 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="所属店铺：" prop="shopIds">
-        <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
+      <el-form-item label="所属店铺：" prop="shopId">
+        <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="设备类型：" prop="parentTypeId">
         <el-select v-model="searchData.parentTypeId" clearable placeholder="请选择">
@@ -28,8 +30,8 @@
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
         <el-table-column header-align="left" prop="functionName" label="启动模式"></el-table-column>
         <el-table-column header-align="left" prop="beginTime" label="启动时间"></el-table-column>
-        <el-table-column header-align="left" prop="imei" label="创建人"></el-table-column>
-        <el-table-column header-align="left" prop="imei" label="创建时间"></el-table-column>
+        <el-table-column header-align="left" prop="createUserName" label="创建人"></el-table-column>
+        <el-table-column header-align="left" prop="createTime" label="创建时间"></el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
             <el-tooltip content="启动" placement="top" effect="dark">
@@ -105,6 +107,7 @@
 import { getlistParentTypeFun } from '@/service/device';
 import { listBatchStartFun, batchStartNowFun, updateBatchStartFun, getFunctionListFun, delBatchStartFun, addBatchStartFun, listBatchStartApi } from '@/service/todoList';
 import { exportExcel } from '@/service/common';
+import { shopListFun } from '@/service/report';
 import { listShopBatchStartFun } from '@/service/device';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
@@ -118,9 +121,10 @@ export default {
   data() {
     return {
       searchData: {
-        shopIds: [],
+        shopId: '',
         parentTypeId: ''
       },
+      shopList: [],
       batchStartDataToTable: [],
       machineParentTypeList: [],
       deviceStertDialogVisible: false,
@@ -162,11 +166,16 @@ export default {
   computed: {},
   mounted() {},
   created() {
+    this.getShopList();
     this.getmachineParentType();
     this.getBatchStartDataToTable();
     this.getshopBatchStartList();
   },
   methods: {
+    async getShopList() {
+      let res = await shopListFun();
+      this.shopList = res;
+    },
     async getmachineParentType() {
       //获取设备类型
       let res = await getlistParentTypeFun({ onlyMine: true });

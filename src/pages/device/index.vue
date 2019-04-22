@@ -4,11 +4,13 @@
       <el-form-item label="设备名称：" prop="name">
         <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="IMEI：" prop="nameOrImei">
-        <el-input v-model="searchData.nameOrImei" clearable placeholder="请输入"></el-input>
+      <el-form-item label="IMEI：" prop="imei">
+        <el-input v-model="searchData.imei" clearable placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="所属店铺：" prop="shopIds">
-        <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
+      <el-form-item label="所属店铺：" prop="shopId">
+        <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="设备状态：" prop="machineState">
         <el-select v-model="searchData.machineState" clearable placeholder="请选择">
@@ -53,7 +55,7 @@
         </el-table-column>
         <el-table-column header-align="left" prop="shopName" label="所属店铺" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
-        <el-table-column header-align="left" prop="machineCount" label="设备型号"></el-table-column>
+        <el-table-column header-align="left" prop="subTypeName" label="设备型号" min-width="160"></el-table-column>
         <el-table-column header-align="left" prop="machineState" label="状态">
           <template slot-scope="scope">
             <span class="status-clire" :style="machineStateBgColor(scope.row.machineState)"></span>{{scope.row.machineState | deviceStatus}}
@@ -215,7 +217,7 @@
       </el-dialog>
       <!-- 批量编辑设备  -->
       <el-dialog title="批量编辑设备" :visible.sync="batchDEditDeviceDialogVisible" width="768px">
-        <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :visible="batchDEditDeviceDialogVisible" @closeBatchDeviceEdit="closeBatchDeviceEdit" v-if="batchDEditDeviceDialogVisible"></batch-edit>
+        <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" :visible="batchDEditDeviceDialogVisible" @closeBatchDeviceEdit="closeBatchDeviceEdit" v-if="batchDEditDeviceDialogVisible"></batch-edit>
       </el-dialog>
     </div>
   </div>
@@ -224,6 +226,7 @@
 <script type="text/ecmascript-6">
 import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList } from '@/service/device';
 import { exportExcel } from '@/service/common';
+import { shopListFun } from '@/service/report';
 import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType, waterStatus } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
@@ -242,13 +245,14 @@ export default {
     return {
       searchData: {
         name: '',
-        nameOrImei: '',
-        shopIds: [],
+        imei: '',
+        shopId: '',
         machineState: '',
         parentTypeId: '',
         subTypeId: '',
         communicateType: ''
       },
+      shopList: [],
       deviceDataToTable: [],
 
       detailDialogVisible: false,
@@ -261,6 +265,7 @@ export default {
 
       deviceStertDialogVisible: false,
       multipleSelection: [],
+      multipleSelectionMachineIds: [],
 
       //编辑
       deviceEditDialogVisible: false,
@@ -299,11 +304,16 @@ export default {
   },
   mounted() {},
   created() {
+    this.getShopList();
     this.getmachineParentType();
     this.getmachineSubType();
     this.getDeviceDataToTable();
   },
   methods: {
+    async getShopList() {
+      let res = await shopListFun();
+      this.shopList = res;
+    },
     async getmachineParentType() {
       //获取设备类型
       let res = await getlistParentTypeFun({ onlyMine: true });
@@ -435,13 +445,17 @@ export default {
         });
         return false;
       }
-      if (this.multipleSelection.length > 1) {
-        this.$alert(`一次只能勾选一个店铺进行批量编辑`, '提示', {
+      let allSame = this.multipleSelection.every((item, index, arr) => {
+        return item.subTypeName ? item.subTypeName === arr[0].subTypeName : false;
+      });
+      if (allSame === false) {
+        this.$alert(`请选择相同设备型号进行批量编辑`, '提示', {
           showClose: false,
           confirmButtonText: '确定'
         });
         return false;
       }
+      this.multipleSelectionMachineIds = this.multipleSelection.map(item => item.machineId);
       this.lookShopDetail(this.multipleSelection[0]).then(data => {
         this.batchDEditDeviceDialogVisible = true;
       });

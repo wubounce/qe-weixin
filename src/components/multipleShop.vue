@@ -31,6 +31,7 @@
             </div>
             <div class="action">
               <p>
+                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange" style="float:left">全选</el-checkbox>
                 <span style="margin-right:24px;color:rgba(0,0,0,0.65);" @click="resetCheckedShop">重置</span>
                 <span @click="getCheckedShop">确定</span>
               </p>
@@ -70,8 +71,10 @@ export default {
       checkedListName: [],
       isEditTime: this.isTimeMaket,
       shopList: [],
-      shopListBak: [],
-      visibleModel: this.visible
+      visibleModel: this.visible,
+      checkAll: false,
+      isIndeterminate: true,
+      shopTypeIds: []
     };
   },
   created() {
@@ -84,13 +87,23 @@ export default {
     async getShopList(shopName = '', isTimeMaket = this.isEditTime) {
       let payload = { shopName: shopName, timeId: isTimeMaket };
       let res = await shopListFun(payload);
+      res.forEach(item => {
+        this.shopTypeIds.push(item.shopId);
+      });
       this.shopList = res;
-      this.shopListBak = res;
       this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
       this.shopFilterName = this.checkedListName.join(',');
       this.shopList = this.shopList.map(item => {
         return { shopId: item.shopId, shopName: item.shopName, active: false };
       });
+    },
+    handleCheckAllChange(val) {
+      this.checkedList = val ? this.shopTypeIds : [];
+      this.isIndeterminate = false;
+      this.shopList.forEach(item => {
+        val ? this.$set(item, 'active', true) : this.$set(item, 'active', false);
+      });
+      this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
     },
     handleCheakedBg(item, val) {
       if (item.active) {
@@ -98,6 +111,9 @@ export default {
       } else {
         this.$set(item, 'active', true);
       }
+      let checkedCount = val.length;
+      this.checkAll = checkedCount === this.shopTypeIds.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.shopTypeIds.length;
       this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
       this.shopFilterName = this.checkedListName.join(',');
     },
@@ -108,6 +124,7 @@ export default {
       this.shopList.forEach(item => {
         if (item.shopName === shopname) this.$set(item, 'active', false);
       });
+      this.isIndeterminate = true;
     },
     getSearchShop(val) {
       this.getShopList(val);

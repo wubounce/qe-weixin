@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchData" :model="searchData" class="header-search">
-      <el-form-item label="人员姓名 ：" prop="name">
-        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
+      <el-form-item label="人员姓名 ：" prop="search">
+        <el-input v-model="searchData.search" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="负责店铺：" prop="shopIds">
         <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
@@ -106,7 +106,7 @@ export default {
   data() {
     return {
       searchData: {
-        name: '',
+        search: '',
         shopIds: []
       },
       shopList: [],
@@ -165,6 +165,7 @@ export default {
     },
     async getMemberDataToTable() {
       let payload = Object.assign({}, this.searchData);
+      payload.shopIds = this.searchData.shopIds.join(',');
       let res = await operatorListFun(payload);
       this.memberDataToTable = res.items;
       this.memberDataToTable.forEach(item => {

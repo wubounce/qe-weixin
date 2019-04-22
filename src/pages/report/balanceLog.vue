@@ -127,6 +127,7 @@ export default {
       payload.startDate = this.searchData.time[0];
       payload.endDate = this.searchData.time[1];
       payload.time = [];
+      payload.shopIds = this.searchData.shopIds.join(',');
       let res = await balanceLogFlowListFun(payload);
       this.tableDataList = res.items;
       this.profitMoney = res.profitMoney;
@@ -138,6 +139,7 @@ export default {
       payload.startDate = this.searchData.time[0];
       payload.endDate = this.searchData.time[1];
       payload.time = [];
+      payload.shopIds = this.searchData.shopIds.join(',');
       payload.excel = true;
       exportExcel(balanceLogFlowListApi, '流水明细.xlsx', payload);
     }

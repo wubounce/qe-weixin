@@ -110,7 +110,24 @@
 <script type="text/ecmascript-6">
 import { getFunctionSetListFun, batchEditFun, batchEditDetergentFun } from '@/service/device';
 export default {
-  props: ['deviceEditdetailForm', 'visible'],
+  props: {
+    deviceEditdetailForm: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    },
+    visible: {
+      type: Boolean,
+      default: null
+    },
+    multipleSelectionMachineIds: {
+      type: String,
+      default: () => {
+        return [];
+      }
+    }
+  },
   data() {
     var validatorFunctionPrice = (rule, value, callback) => {
       let reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/; //可带二位小数的正整数
@@ -179,6 +196,7 @@ export default {
             let payload = Object.assign(
               {},
               {
+                machineIds: this.multipleSelectionMachineIds.join(','),
                 subTypeId: this.deviceEditForm.subTypeId,
                 shopId: this.deviceEditForm.shopId,
                 functionTempletType: this.deviceEditForm.functionTempletType,
@@ -197,6 +215,7 @@ export default {
             let payload = Object.assign(
               {},
               {
+                machineIds: this.multipleSelectionMachineIds.join(','),
                 subTypeId: this.deviceEditForm.subTypeId,
                 shopId: this.deviceEditForm.shopId,
                 isOpenDetergent: this.deviceEditForm.isOpenDetergent,

@@ -17,7 +17,18 @@ import { Message } from 'element-ui';
 
 window.VueAMap.initAMapApiLoader({
   key: '613b0f15bea16ba4bb84c1c9cde9ae88',
-  plugin: ['Autocomplete', 'PlaceSearch', 'Scale', 'OverView', 'ToolBar', 'MapType', 'PolyEditor', 'CircleEditor', 'Geolocation', 'Geocoder']
+  plugin: [
+    'AMap.Autocomplete',
+    'AMap.PlaceSearch',
+    'AMap.Scale',
+    'AMap.OverView',
+    'AMap.ToolBar',
+    'AMap.MapType',
+    'AMap.PolyEditor',
+    'AMap.CircleEditor',
+    'AMap.Geolocation',
+    'AMap.Geocoder'
+  ]
 });
 /* eslint-disable */
 Vue.config.productionTip = true;
