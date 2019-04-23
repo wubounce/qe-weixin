@@ -16,7 +16,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="日期筛选：" prop="time">
-        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
+        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:ss:mm" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -38,22 +38,28 @@
         <el-table-column header-align="left" prop="machineName" label="设备" width="160" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineFunctionName" label="功能模式"></el-table-column>
         <el-table-column header-align="left" prop="markPrice" label="原价(元)"></el-table-column>
-        <el-table-column header-align="left" prop="detergentPayPrice" label="洗衣液价格(元)" width="120"></el-table-column>
-        <el-table-column header-align="left" prop="isReserve" label="优惠金额(元)" width="120">
+        <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120"></el-table-column>
+        <el-table-column header-align="left" prop="" label="优惠金额(元)" width="120">
           <template slot-scope="scope">
-            <el-popover trigger="hover" placement="bottom">
-              <p>VIP会员卡{{ scope.row.discountPrice }}</p>
-              <p>平台优惠券{{ scope.row.voucherPrice }}</p>
-              <p class="rowstyle" style="font-size:10px;">(优惠券平台承担1.00)</p>
-              <div slot="reference" class="name-wrapper">
-                <span size="medium">{{ scope.row.markPrice }}
-                  <svg-icon icon-class="xialajiantoushang" class="arrow" /></span>
+            <el-popover ref="popover" trigger="hover" placement="bottom">
+              <p v-if="scope.row.discountType==1 && scope.row.discountPrice>0">VIP会员卡{{ scope.row.discountPrice }}</p>
+              <p v-if="scope.row.discountType==2 && scope.row.discountPrice>0 || scope.row.discountType===null&&scope.row.discountPrice>0">限时优惠{{ scope.row.discountPrice }}</p>
+              <div v-if="scope.row.source!=3&&scope.row.voucherPrice>0">
+                <span>平台优惠券{{ scope.row.voucherPrice }}</span>
+                <p class="rowstyle" style="font-size:10px;" v-if="scope.row.platformPayPrice>0">(优惠券平台承担{{scope.row.platformPayPrice}})</p>
               </div>
+              <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券{{scope.row.voucherPrice}}</p>
             </el-popover>
+            <div v-popover:popover class="name-wrapper">
+              <span size="medium">
+                <span>{{ scope.row.discountTotalPirce}}</span>
+                <svg-icon icon-class="xialajiantoushang" class="arrow" v-if="scope.row.discountTotalPirce>0" />
+              </span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="payPrice" label="实付金额(元)" width="120"></el-table-column>
-        <el-table-column header-align="left" prop="isReserve" label="收益金额(元) " width="120"></el-table-column>
+        <el-table-column header-align="left" prop="profitPrice" label="收益金额(元) " width="120"></el-table-column>
         <el-table-column header-align="left" prop="payType" label="支付方式">
           <template slot-scope="scope">
             <span>{{scope.row.payType | PayType }}</span>
@@ -226,7 +232,8 @@ export default {
         validDays: [{ required: true, trigger: 'blur', message: '请填写有效期', validator: validateValidDays }],
         compensateNumber: [{ required: true, trigger: 'blur', message: '请填写发放数量', validator: validateCompensateNumber }]
       },
-      machineParentTypeList: []
+      machineParentTypeList: [],
+      hh: false
     };
   },
   filters: {
@@ -272,11 +279,25 @@ export default {
     },
     async getOrderDataToTable() {
       let payload = Object.assign({}, this.searchData);
-      payload.startDate = payload.time ? payload.time[0] : null;
-      payload.endDate = payload.time ? payload.time[1] : null;
+      payload.startTime = payload.time ? payload.time[0] : null;
+      payload.endTime = payload.time ? payload.time[1] : null;
       payload.time = null;
       let res = await orderListFun(payload);
-      this.orederDataToTable = res.items;
+      this.orederDataToTable = res.items || [];
+      this.orederDataToTable.forEach(item => {
+        let tmp = null;
+        if (item.discountPrice && item.voucherPrice) {
+          tmp = Number(item.discountPrice) + Number(item.voucherPrice);
+        }
+        if (item.discountPrice && item.discountPrice > 0 && (!item.voucherPrice || item.voucherPrice < 0)) {
+          tmp = Number(item.discountPrice);
+        }
+        if ((!item.discountPrice || item.discountPrice < 0) && (item.voucherPrice && item.voucherPrice > 0)) {
+          tmp = Number(item.voucherPrice);
+        }
+        tmp = Number(tmp).toFixed(2);
+        this.$set(item, 'discountTotalPirce', tmp);
+      });
       this.total = res.total;
     },
     async lookShopDetail(row) {

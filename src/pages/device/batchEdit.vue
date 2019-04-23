@@ -95,7 +95,7 @@
       <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce">
         <div class="add-discount">
           <el-input v-model="deviceEditForm.waterMachinePirce" placeholder="例：1"></el-input>
-          <span style="position: absolute;left: 220px;color:#bfbfbf;">元/L</span>
+          <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
         </div>
       </el-form-item>
     </div>
@@ -151,8 +151,7 @@ export default {
         functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }]
-      },
-      waterMachinePirce: ''
+      }
     };
   },
   components: {},
@@ -196,7 +195,7 @@ export default {
             let payload = Object.assign(
               {},
               {
-                machineIds: this.multipleSelectionMachineIds.join(','),
+                machineIdList: this.multipleSelectionMachineIds,
                 subTypeId: this.deviceEditForm.subTypeId,
                 shopId: this.deviceEditForm.shopId,
                 functionTempletType: this.deviceEditForm.functionTempletType,
@@ -215,7 +214,7 @@ export default {
             let payload = Object.assign(
               {},
               {
-                machineIds: this.multipleSelectionMachineIds.join(','),
+                machineIdList: this.multipleSelectionMachineIds,
                 subTypeId: this.deviceEditForm.subTypeId,
                 shopId: this.deviceEditForm.shopId,
                 isOpenDetergent: this.deviceEditForm.isOpenDetergent,

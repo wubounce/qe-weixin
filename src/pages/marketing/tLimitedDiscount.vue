@@ -1,16 +1,19 @@
 <template>
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="优惠适用店铺：" prop="name">
-        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
-      </el-form-item>
-      <el-form-item label="活动状态：" prop="status">
-        <el-select v-model="searchData.status" clearable placeholder="请选择">
-          <el-option label="开启"></el-option>
+      <el-form-item label="优惠适用店铺：" prop="shopId">
+        <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="开启/关闭：" prop="type">
-        <el-select v-model="searchData.type" clearable placeholder="请选择">
+      <el-form-item label="活动状态：" prop="expired">
+        <el-select v-model="searchData.expired" clearable placeholder="请选择">
+          <el-option value="" label="全部"></el-option>
+          <el-option v-for="(name, id) in CouponAcctiveStatusType" :key="id" :label="name" :value="id"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="开启/关闭：" prop="status">
+        <el-select v-model="searchData.status" clearable placeholder="请选择">
           <el-option value="0" label="开启"></el-option>
           <el-option value="1" label="关闭"></el-option>
         </el-select>
@@ -43,22 +46,16 @@
         </el-table-column>
         <el-table-column header-align="left" prop="week" label="活动日">
           <template slot-scope="scope">
-            <span>{{scope.row.week}}</span>
-            <!-- <span>{{scope.row.week?scope.row.week:'' | week}}</span> -->
+            <span>{{scope.row.noWeek?scope.row.noWeek:'' | week}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="time" label="每日活动时段"></el-table-column>
+        <el-table-column header-align="left" prop="noTime" label="每日活动时段"></el-table-column>
         <el-table-column header-align="left" prop="discountVO" label="优惠折扣">
           <template slot-scope="scope">
-            <!-- <span>{{scope.row.discountVO | tofixd}} 折</span> -->
-            <span>{{scope.row.discountVO}} 折</span>
+            <span>{{scope.row.discountVO | discountToFIexd}} 折</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="expired" label="活动状态">
-          <template slot-scope="scope">
-            <span>{{scope.row.expired===2 ? '过期':''}}</span>
-          </template>
-        </el-table-column>
+        <el-table-column header-align="left" prop="expired" label="活动状态" :formatter="formatterExpired"></el-table-column>
         <el-table-column header-align="left" label="开启/关闭">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.switchStatus" @change="updataeStatus(scope.row)"></el-switch>
@@ -127,7 +124,9 @@ import PagerMixin from '@/mixins/PagerMixin';
 import multipleShop from '@/components/multipleShop';
 import activeWeek from './activeWeek';
 import { timeMarketListFun, addOruPdateFun, marketlistParentTypeIdFun, delMarketFun, detailMarketFun, updataeStatusFun, timeMarketListApi } from '@/service/market';
+import { shopListFun } from '@/service/report';
 import { exportExcel } from '@/service/common';
+import { CouponAcctiveStatusType } from '@/utils/mapping';
 export default {
   mixins: [PagerMixin],
   components: {
@@ -138,10 +137,11 @@ export default {
   data() {
     return {
       searchData: {
-        name: '',
+        shopId: '',
         status: '',
-        type: ''
+        expired: ''
       },
+      shopList: [],
       timeMaketingDataToTable: [],
       addOrEditMaketTitle: '新增优惠',
       isTimeMaket: '123',
@@ -158,42 +158,36 @@ export default {
         weekCheckList: []
       },
       addMaketFromRules: {
-        shopIds: [
-          {
-            required: true,
-            type: 'array',
-            trigger: 'change',
-            message: '请选择适用店铺'
-          }
-        ],
+        shopIds: [{ required: true, type: 'array', trigger: 'change', message: '请选择适用店铺' }],
         parentTypeIds: [{ required: true, trigger: 'change', message: '请填写适用类型' }],
-        date: [
-          {
-            required: true,
-            type: 'array',
-            trigger: 'change',
-            message: '请选择优惠日期'
-          }
-        ],
+        date: [{ required: true, type: 'array', trigger: 'change', message: '请选择优惠日期' }],
         week: [{ required: true, trigger: 'blur', message: '请选择活动日' }],
-        time: [
-          {
-            required: true,
-            type: 'array',
-            trigger: 'change',
-            message: '请选择每日活动时间段'
-          }
-        ],
-        discount: [{ required: true, message: '请输入折扣', trigger: 'blur' }]
+        time: [{ required: true, type: 'array', trigger: 'change', message: '请选择每日活动时间段' }],
+        discount: [{ required: true, message: '请输入折扣', trigger: 'blur' }, { pattern: /^[0-9]{1}(\.[0-9])?$/, message: '折扣请填写1到9的数字,可保留一位小数', trigger: 'blur' }]
       },
       machineParentType: [],
       hasShop: true
     };
   },
+  filters: {
+    discountToFIexd: val => {
+      return Number(val).toFixed(1);
+    }
+  },
+  computed: {
+    CouponAcctiveStatusType() {
+      return CouponAcctiveStatusType;
+    }
+  },
   created() {
+    this.getShopList();
     this.getTimeMaketingDataToTable();
   },
   methods: {
+    async getShopList() {
+      let res = await shopListFun();
+      this.shopList = res;
+    },
     handlePagination(data) {
       this.searchData = Object.assign(this.searchData, data);
       this.getTimeMaketingDataToTable();
@@ -211,6 +205,9 @@ export default {
       if (val.length >= 1) {
         this.getMarketlistParentType();
       }
+    },
+    formatterExpired(row, column) {
+      return CouponAcctiveStatusType[row.expired];
     },
     getcustomWeekCheckList(data) {
       this.addMaketFrom.weekCheckList = data[0];
@@ -243,15 +240,17 @@ export default {
       this.timeMaketingDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await timeMarketListFun(payload);
-      res.items.forEach(item => {
-        item.noDiscountStart = item.noDiscountStart ? moment(item.noDiscountStart).format('YYYY-MM-DD') : '';
-        item.noDiscountEnd = item.noDiscountEnd ? moment(item.noDiscountEnd).format('YYYY-MM-DD') : '';
-        if (item.status === 0) {
-          item.switchStatus = true;
-        } else {
-          item.switchStatus = false;
-        }
-      });
+      if (res.items) {
+        res.items.forEach(item => {
+          item.noDiscountStart = item.noDiscountStart ? moment(item.noDiscountStart).format('YYYY-MM-DD') : '';
+          item.noDiscountEnd = item.noDiscountEnd ? moment(item.noDiscountEnd).format('YYYY-MM-DD') : '';
+          if (item.status === 0) {
+            item.switchStatus = true;
+          } else {
+            item.switchStatus = false;
+          }
+        });
+      }
       this.timeMaketingDataToTable = res.items;
       this.total = res.total;
     },
@@ -287,7 +286,7 @@ export default {
         date: [startTime, endTime],
         parentTypeIds: res.parentTypeMap && res.parentTypeIds ? res.parentTypeMap[0].parentTypeId : '全部',
         shopIds: beshopIds,
-        discount: res.discount,
+        discount: (res.discountVO / 10).toFixed(1),
         weekCheckList: weeklist
       };
       if (weeklist.length > 1) {

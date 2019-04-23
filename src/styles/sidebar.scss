@@ -26,12 +26,12 @@
     .el-scrollbar__bar.is-vertical {
       right: 0px;
     }
-    .scrollbar-wrapper {
-      overflow-x: hidden !important;
-      .el-scrollbar__view {
-        height: 100%;
-      }
-    }
+    // .scrollbar-wrapper {
+    //   overflow-x: hidden !important;
+    //   .el-scrollbar__view {
+    //     height: 100%;
+    //   }
+    // }
     .is-horizontal {
       display: none;
     }
@@ -44,14 +44,20 @@
       border: none;
       height: 100%;
       width: 100% !important;
-      // .el-menu-item {
-      //   padding-left: 48px !important;
-      // }
-      // .el-submenu__title {
-      //   padding-left: 24px !important;
-      // }
+      .el-menu-item {
+        height: 40px;
+        line-height: 40px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+      .submenu-title-noDropdown {
+        color: #262626;
+      }
+      .el-menu-item.is-active {
+        color: $menuText !important;
+      }
     }
   }
+
   .hideSidebar {
     .sidebar-container {
       width: 80px !important;
@@ -89,18 +95,6 @@
       }
     }
   }
-  // .sidebar-container .nest-menu .el-submenu>.el-submenu__title,
-  // .sidebar-container .el-submenu .el-menu-item {
-  //   min-width: 227px !important;
-  //   background-color: $subMenuBg !important;
-  //   &:hover {
-  //     background-color: $menuHover !important;
-  //   }
-  // }
-  .el-menu--collapse .el-menu .el-submenu {
-    min-width: 227px !important;
-  }
-
   //适配移动端
   .mobile {
     .main-container {
@@ -129,6 +123,10 @@
   & > .el-menu {
     .svg-icon {
       margin-right: 16px;
+    }
+    .el-menu-item {
+      height: 40px !important;
+      line-height: 40px !important;
     }
   }
 }

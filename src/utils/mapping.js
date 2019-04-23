@@ -114,24 +114,6 @@ export const ApplyType = {
   3: '支出'
 };
 
-// 人员管理禁用启用
-export const memberIsLock = {
-  0: true,
-  1: false
-};
-
-// 优惠券类型
-export const CouponType = {
-  1: '补偿券'
-};
-// 优惠券状态
-export const CouponStatusType = {
-  0: '未使用',
-  1: '已使用',
-  2: '已过期',
-  3: '冻结'
-};
-
 // 预约功能状态
 export const isReserveType = {
   0: '已开通',
@@ -146,4 +128,35 @@ export const isHasVipType = {
 export const isDiscountType = {
   false: '未设置',
   true: '已设置'
+};
+
+// 优惠券类型
+export const CouponType = {
+  1: '补偿券'
+};
+// 优惠券状态
+export const CouponStatusType = {
+  0: '未使用',
+  1: '已使用',
+  2: '已过期'
+};
+
+// 限时优惠活动状态
+export const CouponAcctiveStatusType = {
+  0: '未开始',
+  1: '进行中',
+  2: '已过期'
+};
+
+//优惠券来源类型
+export const couponSourceType = {
+  0: '订单补偿',
+  1: '发券',
+  2: '活动'
+};
+
+// 人员管理禁用启用
+export const memberIsLock = {
+  0: true,
+  1: false
 };

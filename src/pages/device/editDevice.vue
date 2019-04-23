@@ -5,7 +5,22 @@
     </el-form-item>
     <el-tabs v-model="deviceEditTab">
       <el-tab-pane label="功能设置" name="first">
-        <el-table :data="deviceEditForm.functionList" style="width: 100%">
+        <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce" v-if="deviceEditForm.subTypeName === '彩亿KSQ_QIEKJ_01'">
+          <div class="add-discount">
+            <el-input v-model="deviceEditForm.waterMachinePirce" placeholder="例：1"></el-input>
+            <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
+          </div>
+        </el-form-item>
+        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.subTypeName === '彩亿KSQ_QIEKJ_01'">
+          <el-table-column prop="functionName" label="出水口"></el-table-column>
+          <el-table-column prop="ifOpenStatus" label="状态">
+            <template slot-scope="scope">
+              <el-switch v-model="scope.row.ifOpenStatus">
+              </el-switch>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.subTypeName !== '彩亿KSQ_QIEKJ_01'">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
@@ -135,7 +150,9 @@ export default {
     };
   },
   components: {},
-  mounted() {},
+  mounted() {
+    this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice);
+  },
   methods: {
     onEditDecive(formName) {
       this.$refs[formName].validate(valid => {
@@ -148,6 +165,9 @@ export default {
               ifOpenLen = ifOpenLen + 1;
             } else {
               item.ifOpen = 0;
+            }
+            if (this.deviceEditForm.subTypeName === '彩亿KSQ_QIEKJ_01') {
+              item.functionPrice = this.deviceEditForm.waterMachinePirce;
             }
           });
           if (ifOpenLen === this.deviceEditForm.functionList.length) {
@@ -184,7 +204,6 @@ export default {
   }
 };
 </script>
-
 <style rel="stylesheet/scss" lang="scss" scoped>
 .edit-device-name {
   padding-top: 16px;
@@ -192,5 +211,8 @@ export default {
 .action {
   text-align: right;
   padding: 16px 0 24px 0;
+}
+.add-discount {
+  display: flex;
 }
 </style>

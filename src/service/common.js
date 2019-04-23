@@ -11,10 +11,7 @@ export const exportExcel = (url, fileName, payload) =>
       timeout: 60000
     })
     .then(res => {
-      console.log(res);
-      let disposition = res.headers['content-disposition']
-        ? String(res.headers['content-disposition'])
-        : '';
+      let disposition = String(res.headers['content-disposition']) || '';
       let name = null;
       if (disposition) {
         let header = disposition.indexOf('=');

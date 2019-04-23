@@ -4,8 +4,10 @@
       <el-form-item label="人员姓名 ：" prop="search">
         <el-input v-model="searchData.search" clearable placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="负责店铺：" prop="shopIds">
-        <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
+      <el-form-item label="负责店铺：" prop="shopId">
+        <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
@@ -24,7 +26,7 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="phone" label="手机号" width="120" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="shopNames" label="负责店铺" width="240"></el-table-column>
+        <el-table-column header-align="left" prop="shopNames" label="负责店铺" width="240" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="list" label="权限" show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-for="(item,index) in scope.row.list" :key="index">{{item.name}}<i v-if="index !== (scope.row.list.length-1)">,</i></span>
@@ -95,19 +97,18 @@ import { getTrees } from '@/utils/tools';
 import Pagination from '@/components/Pager';
 import multipleShop from '@/components/multipleShop';
 import PagerMixin from '@/mixins/PagerMixin';
-import ShopFilter from '@/components/Shopfilter';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    multipleShop,
-    ShopFilter
+    multipleShop
   },
   data() {
     return {
       searchData: {
         search: '',
-        shopIds: []
+        shopId: '',
+        like: true
       },
       shopList: [],
       detailDialogVisible: false,
@@ -147,7 +148,8 @@ export default {
   },
   methods: {
     async getShopList() {
-      this.shopList = await shopListFun();
+      let res = await shopListFun();
+      this.shopList = res;
     },
     handlePagination(data) {
       this.searchData = Object.assign(this.searchData, data);
@@ -165,7 +167,6 @@ export default {
     },
     async getMemberDataToTable() {
       let payload = Object.assign({}, this.searchData);
-      payload.shopIds = this.searchData.shopIds.join(',');
       let res = await operatorListFun(payload);
       this.memberDataToTable = res.items;
       this.memberDataToTable.forEach(item => {

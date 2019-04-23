@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="设备名称：" prop="name">
-        <el-input v-model="searchData.name" clearable placeholder="请输入"></el-input>
+      <el-form-item label="设备名称：" prop="machineName">
+        <el-input v-model="searchData.machineName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="IMEI：" prop="imei">
         <el-input v-model="searchData.imei" clearable placeholder="请输入"></el-input>
@@ -18,7 +18,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备类型：" prop="parentTypeId">
-        <el-select v-model="searchData.parentTypeId" clearable placeholder="请选择">
+        <el-select v-model="searchData.parentTypeId" @change="getmachineSubType" clearable placeholder="请选择">
           <el-option label="全部" value=""></el-option>
           <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
@@ -224,7 +224,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList } from '@/service/device';
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, getlistSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList } from '@/service/device';
 import { exportExcel } from '@/service/common';
 import { shopListFun } from '@/service/report';
 import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType, waterStatus } from '@/utils/mapping';
@@ -244,7 +244,7 @@ export default {
   data() {
     return {
       searchData: {
-        name: '',
+        machineName: '',
         imei: '',
         shopId: '',
         machineState: '',
@@ -319,9 +319,15 @@ export default {
       let res = await getlistParentTypeFun({ onlyMine: true });
       this.machineParentTypeList = res;
     },
-    async getmachineSubType() {
-      //获取设备二级类型
-      let res = await listSubTypeAllFun();
+    async getmachineSubType(val = '') {
+      let res = null;
+      this.searchData.subTypeId = '';
+      if (val) {
+        let payload = { parentTypeId: val };
+        res = await getlistSubTypeFun(payload); //获取某个设备下二级类型
+      } else {
+        res = await listSubTypeAllFun(); //获取全部设备二级类型
+      }
       this.machineSubTypeList = res;
     },
     handlePagination(data) {
@@ -337,6 +343,7 @@ export default {
     resetSearchForm(formName) {
       this.searchData.page = 1;
       this.$refs[formName].resetFields();
+      this.machineSubTypeList = [];
       this.getDeviceDataToTable();
     },
     async getDeviceDataToTable() {
@@ -446,10 +453,10 @@ export default {
         return false;
       }
       let allSame = this.multipleSelection.every((item, index, arr) => {
-        return item.subTypeName ? item.subTypeName === arr[0].subTypeName : false;
+        return (item.subTypeName === arr[0].subTypeName && item.shopName === arr[0].shopName) || false;
       });
       if (allSame === false) {
-        this.$alert(`请选择相同设备型号进行批量编辑`, '提示', {
+        this.$alert(`请勾选同一店铺下相同设备型号进行批量编辑`, '提示', {
           showClose: false,
           confirmButtonText: '确定'
         });
