@@ -238,6 +238,8 @@ export default {
           name: MachineStatus[i]
         });
       }
+      console.log(this.pietypeData);
+
       this.piechart.setOption(this.pietypeChartOPtion);
     },
     profitTimeSearch: function() {
@@ -372,7 +374,7 @@ export default {
           extraCssText: 'box-shadow:0px 5px 38px 0px rgba(0,0,0,0.1);',
           // formatter: "{a} <br/>{b}: {c} ({d}%)"//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。{d}数据会根据value值计算百分比
           formatter: function(data) {
-            return `${data.marker}${data.name}<span style="display: inline-block;width:2px;height:12px;background: #D9D9D9;margin:0 8px;"></span>${data.percent}`;
+            return `${data.marker}${data.name}<span style="display: inline-block;width:2px;height:12px;background: #D9D9D9;margin:0 8px;"></span>${data.value}`;
           }
         },
         title: {
