@@ -182,6 +182,11 @@ export default {
     initChart() {
       this.linechart = echarts.init(document.getElementById('linechart'));
       this.piechart = echarts.init(document.getElementById('piechart'));
+      const that = this;
+      window.addEventListener('resize', function() {
+        that.linechart.resize();
+        that.piechart.resize();
+      });
     },
     async getTotalProfit() {
       //总收益
@@ -238,8 +243,6 @@ export default {
           name: MachineStatus[i]
         });
       }
-      console.log(this.pietypeData);
-
       this.piechart.setOption(this.pietypeChartOPtion);
     },
     profitTimeSearch: function() {
@@ -253,6 +256,12 @@ export default {
       this.pietypeData = [];
       this.getMachineCount(this.parentTypeId);
     }
+  },
+  destroyed() {
+    window.removeEventListener('resize', function() {
+      _this.linechart.resize();
+      _this.piechart.resize();
+    });
   },
   computed: {
     lineChartOption() {
@@ -279,7 +288,7 @@ export default {
         },
         grid: {
           top: 10,
-          right: 10,
+          right: 15,
           bottom: 20,
           left: 20,
           containLabel: true
