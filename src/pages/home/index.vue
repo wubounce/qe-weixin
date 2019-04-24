@@ -63,17 +63,17 @@
             <li>
               <p class="title">今日下单用户数</p>
               <p class="num">{{userCount.todayUserCount}}</p>
-              <p :class="['pio',{'up-arrows':String(userCount.yoyAddUser).includes('+'),'down-arrows':String(userCount.yoyAddUser).includes('-')}]">
-                {{userCount.yoyAddUser}}
-                <svg-icon :icon-class="String(userCount.yoyAddUser).includes('+')? 'shangzhang':'xiajiang'" />
+              <p :class="['pio',{'up-arrows':String(userCount.yoyUser).includes('+'),'down-arrows':String(userCount.yoyUser).includes('-')}]">
+                {{userCount.yoyUser}}
+                <svg-icon :icon-class="String(userCount.yoyUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
             <li>
               <p class="title">今日新增用户数</p>
               <p class="num">{{userCount.todayAddUserCount}}</p>
-              <p :class="['pio',{'up-arrows':String(userCount.yoyUser).includes('+'),'down-arrows':String(userCount.yoyUser).includes('-')}]">
-                {{userCount.yoyUser}}
-                <svg-icon :icon-class="String(userCount.yoyUser).includes('+')? 'shangzhang':'xiajiang'" />
+              <p :class="['pio',{'up-arrows':String(userCount.yoyAddUser).includes('+'),'down-arrows':String(userCount.yoyAddUser).includes('-')}]">
+                {{userCount.yoyAddUser}}
+                <svg-icon :icon-class="String(userCount.yoyAddUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
             </li>
             <li>
