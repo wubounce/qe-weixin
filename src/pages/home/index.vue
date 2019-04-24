@@ -258,9 +258,10 @@ export default {
     }
   },
   destroyed() {
+    const that = this;
     window.removeEventListener('resize', function() {
-      _this.linechart.resize();
-      _this.piechart.resize();
+      that.linechart.resize();
+      that.piechart.resize();
     });
   },
   computed: {
