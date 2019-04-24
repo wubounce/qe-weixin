@@ -5,22 +5,25 @@
     </el-form-item>
     <el-tabs v-model="deviceEditTab">
       <el-tab-pane label="功能设置" name="first">
-        <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce" v-if="deviceEditForm.subTypeName === '彩亿KSQ_QIEKJ_01'">
-          <div class="add-discount">
-            <el-input v-model="deviceEditForm.waterMachinePirce" placeholder="例：1"></el-input>
-            <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
-          </div>
-        </el-form-item>
-        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.subTypeName === '彩亿KSQ_QIEKJ_01'">
-          <el-table-column prop="functionName" label="出水口"></el-table-column>
-          <el-table-column prop="ifOpenStatus" label="状态">
-            <template slot-scope="scope">
-              <el-switch v-model="scope.row.ifOpenStatus">
-              </el-switch>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.subTypeName !== '彩亿KSQ_QIEKJ_01'">
+        <div v-if="deviceEditForm.afterPay">
+          <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce">
+            <div class="add-discount">
+              <el-input v-model="deviceEditForm.waterMachinePirce" placeholder="例：1"></el-input>
+              <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
+            </div>
+          </el-form-item>
+          <el-table :data="deviceEditForm.functionList" style="width: 100%">
+            <el-table-column prop="functionName" label="出水口"></el-table-column>
+            <el-table-column prop="ifOpenStatus" label="状态">
+              <template slot-scope="scope">
+                <el-switch v-model="scope.row.ifOpenStatus">
+                </el-switch>
+              </template>
+            </el-table-column>
+          </el-table>
+
+        </div>
+        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.afterPay===false">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
@@ -143,6 +146,7 @@ export default {
         machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
         needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
         functionPrice: [{ required: true, message: '请填写原价', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
+        waterMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
         functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }]
@@ -151,7 +155,7 @@ export default {
   },
   components: {},
   mounted() {
-    this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice);
+    this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice || '');
   },
   methods: {
     onEditDecive(formName) {

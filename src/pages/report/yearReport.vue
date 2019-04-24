@@ -117,7 +117,7 @@ export default {
       return h - k;
     },
     exportTable() {
-      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), dateLevel: 4, excel: true });
+      let payload = Object.assign({}, { startDate: this.searchData.time, endDate: this.searchData.time, shopIds: this.searchData.shopIds.join(','), dateLevel: 3, excel: true });
       exportExcel(dayReportApi, '年报表.xlsx', payload);
     }
   },

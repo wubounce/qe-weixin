@@ -113,10 +113,10 @@
             <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState===4">
               <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
             </el-tooltip>
-            <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'">
+            <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'&& scope.row.afterPay===false">
               <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
             </el-tooltip>
-            <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.machineState===1 && scope.row.subTypeName !== '通用脉冲充电桩'||scope.row.machineState===4 && scope.row.subTypeName !== '通用脉冲充电桩'">
+            <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.machineState ===1 && scope.row.subTypeName !== '通用脉冲充电桩'&&scope.row.afterPay===false||scope.row.machineState ===4 && scope.row.subTypeName !== '通用脉冲充电桩'&&scope.row.afterPay===false">
               <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
             </el-tooltip>
             <el-tooltip content="编辑" placement="top" effect="dark">
@@ -147,7 +147,18 @@
         <h3 class="detail-base-title" style="border:none">功能属性</h3>
         <el-tabs v-model="detailActiveTab">
           <el-tab-pane label="功能设置" name="first">
-            <el-table :data="detailData.functionList" style="width: 100%">
+            <div v-if="detailData.afterPay">
+              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterMachinePirce || ''}}元/升</p>
+              <el-table :data="detailData.functionList" style="width: 100%">
+                <el-table-column prop="functionName" label="出水口"></el-table-column>
+                <el-table-column prop="ifOpen" label="状态">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.ifOpen | ifOpenType}}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <el-table :data="detailData.functionList" style="width: 100%" v-if="detailData.afterPay===false">
               <el-table-column prop="functionName" label="功能"></el-table-column>
               <el-table-column prop="needMinutes" label="耗时/分钟"></el-table-column>
               <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
@@ -359,6 +370,7 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
+      this.$set(this.detailData, 'waterMachinePirce', res.functionList[0].functionPrice || '');
       this.deviceEditdetailForm = Object.assign({}, res);
       this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
       this.deviceEditdetailForm.functionList.forEach(item => {

@@ -72,17 +72,17 @@
             <div v-if="scope.row.orderStatus === 5">
               <span class="rowstyle" @click="lookShopDetail(scope.row);detailDialogVisible=true">退款详情</span>
             </div>
-            <div v-else>
-              <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.isESource === 0 || scope.row.isESource === null">
+            <div v-if="scope.row.orderStatus === 2">
+              <el-tooltip content="复位" placement="top" effect="dark" v-show="(scope.row.afterPay===false && scope.row.isESource === 0) || (scope.row.afterPay===false&&scope.row.isESource === null)">
                 <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.isESource === 0 || scope.row.isESource === null">
+              <el-tooltip content="启动" placement="top" effect="dark" v-show="(scope.row.afterPay===false && scope.row.isESource === 0) || (scope.row.afterPay===false&&scope.row.isESource === null)">
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="退款" placement="top" effect="dark" v-show="scope.row.orderStatus === 2">
+              <el-tooltip content="退款" placement="top" effect="dark">
                 <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="补偿券" placement="top" effect="dark" v-show="scope.row.shopState === 2">
+              <el-tooltip content="补偿券" placement="top" effect="dark" v-if="scope.row.shopState === 2">
                 <svg-icon icon-class="youhuiquan" class="icon-qidong" @click="handleCompensate(scope.row)" />
               </el-tooltip>
             </div>

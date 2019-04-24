@@ -11,6 +11,7 @@ import store from './store';
 
 import filter from '@/filters/index'; // global filter
 import directive from '@/directive/index'; // global directive
+import common from '@/utils/common'; // global directive
 
 import { Message } from 'element-ui';
 // 引入vue-amap
@@ -39,6 +40,7 @@ Vue.prototype.$Message = Message;
 // });
 Vue.use(filter);
 Vue.use(directive);
+Vue.use(common);
 new Vue({
   el: '#app',
   router,
