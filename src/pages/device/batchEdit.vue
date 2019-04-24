@@ -1,6 +1,6 @@
 <template>
   <el-form :model="deviceEditForm" :rules="deviceEditFormRules" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
-    <div class="base" v-if="deviceEditForm.afterPay===false">
+    <div class="base" v-if="deviceEditForm.notQuantitative===false">
       <p class="device-type">设备类型：{{deviceEditForm.parentTypeName}}<span>|</span>设备型号：{{deviceEditForm.subTypeName}}</p>
       <el-form-item label="批量编辑选择：" class="check-batch-funtion">
         <el-radio-group v-model="checkBatchFuntion">
@@ -89,7 +89,7 @@
       </el-table>
     </div>
 
-    <div class="waterMachinePirce" v-if="deviceEditForm.afterPay">
+    <div class="waterMachinePirce" v-if="deviceEditForm.notQuantitative">
       <p class="device-type waterMachinePirce-type">设备类型：{{deviceEditForm.parentTypeName}}</p>
       <p class="device-type waterMachinePirce-type">设备型号：{{deviceEditForm.subTypeName}}</p>
       <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce">

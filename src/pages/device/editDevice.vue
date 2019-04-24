@@ -5,7 +5,7 @@
     </el-form-item>
     <el-tabs v-model="deviceEditTab">
       <el-tab-pane label="功能设置" name="first">
-        <div v-if="deviceEditForm.afterPay">
+        <div v-if="deviceEditForm.notQuantitative">
           <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce">
             <div class="add-discount">
               <el-input v-model="deviceEditForm.waterMachinePirce" placeholder="例：1"></el-input>
@@ -23,7 +23,7 @@
           </el-table>
 
         </div>
-        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.afterPay===false">
+        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.notQuantitative===false">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
