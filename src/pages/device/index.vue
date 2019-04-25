@@ -246,20 +246,39 @@
           <el-table-column prop="address" min-width="180" label="设备型号" show-overflow-tooltip></el-table-column>
         </el-table>
       </el-dialog>
-      <!-- 设备异常状态日志 -->
-      <el-dialog title="启动设备" :visible.sync="deviceStertDialogVisible" width="540px">
-        <h5 class="chose-start-fun">选择设备启动的模式</h5>
-        <el-table :data="detailData.functionList" style="width: 100%">
-          <el-table-column prop="functionName" label="功能"></el-table-column>
-          <el-table-column prop="needMinutes" label="耗时/分钟" v-if="detailData.subTypeName !== '通用脉冲充电桩'"></el-table-column>
-          <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
-          <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
-          <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineId,scope.row)">启动</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+      <!-- 启动设备 -->
+      <el-dialog title="启动设备" :visible.sync="deviceStartDialogVisible" width="540px">
+        <div v-if="detailData.parentTypeName ==='充电桩'" class="start-charge-function">
+          <el-form ref="form" :model="form" label-width="140px" class="add-shop-from">
+            <el-form-item label="选择启动充电口：">
+              <el-radio-group v-model="detailData.chargeStartfunctionId">
+                <el-radio v-for="(item,index) in detailData.functionList" :key="index" :label="item.functionId">{{item.functionName}}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="选择充电时长：">
+              <el-select v-model="detailData.chargeNeedMinutes">
+                <el-option :label="detailData.chargeNeedMinutes" :value="detailData.chargeNeedMinutes"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="startDeviceFun(detailData.machineId,{},chargeStartfunctionId)">启动</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div v-if="detailData.parentTypeName!== '充电桩'">
+          <h5 class="chose-start-fun">选择设备启动的模式</h5>
+          <el-table :data="detailData.functionList" style="width: 100%">
+            <el-table-column prop="functionName" label="功能"></el-table-column>
+            <el-table-column prop="needMinutes" label="耗时/分钟" v-if="detailData.subTypeName !== '通用脉冲充电桩'"></el-table-column>
+            <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
+            <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineId,scope.row)">启动</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </el-dialog>
       <!-- 编辑设备  -->
       <el-dialog title="编辑设备" :visible.sync="deviceEditDialogVisible" width="768px">
@@ -313,7 +332,8 @@ export default {
       machineParentTypeList: [],
       machineSubTypeList: [],
 
-      deviceStertDialogVisible: false,
+      deviceStartDialogVisible: false,
+      deviceRestDialogVisible: false,
       multipleSelection: [],
       multipleSelectionMachineIds: [],
 
@@ -411,6 +431,7 @@ export default {
       this.detailData = Object.assign({}, res);
       this.$set(this.detailData, 'waterAndChargeMachinePirce', res.functionList[0].functionPrice || '');
       this.$set(this.detailData, 'extraAttr', res.functionList[0].extraAttr || {});
+      this.$set(this.detailData, 'chargeNeedMinutes', res.functionList[0].needMinutes || {});
       this.deviceEditdetailForm = Object.assign({}, res);
       this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
       this.deviceEditdetailForm.functionList.forEach(item => {
@@ -446,7 +467,7 @@ export default {
       //启动列表
       if (row.machineState === 1) {
         this.lookShopDetail(row);
-        this.deviceStertDialogVisible = true;
+        this.deviceStartDialogVisible = true;
       }
       if (row.machineState === 2) {
         this.$confirm(`设备运行中，请先复位`, '提示', {
@@ -477,7 +498,7 @@ export default {
       //启动
       let payload = { machineId: machineId, functionId: row.functionId };
       machineStartFun(payload).then(() => {
-        this.deviceStertDialogVisible = false;
+        this.deviceStartDialogVisible = false;
         this.$message.success('启动成功');
       });
     },
@@ -531,6 +552,14 @@ export default {
   }
 };
 </script>
+<style rel="stylesheet/scss" lang="scss" scoped>
+.start-charge-function {
+  .el-radio + .el-radio {
+    margin-left: 0 !important;
+    margin-bottom: 24px;
+  }
+}
+</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .detail-base-title {
@@ -625,6 +654,10 @@ export default {
     border-bottom: 1px solid $under_line;
     padding: 0 10px;
   }
+}
+.add-shop-from {
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 </style>
  
