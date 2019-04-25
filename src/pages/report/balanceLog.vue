@@ -129,7 +129,7 @@ export default {
       payload.time = [];
       payload.shopIds = this.searchData.shopIds.join(',');
       let res = await balanceLogFlowListFun(payload);
-      this.tableDataList = res.items;
+      this.tableDataList = res.items || [];
       this.profitMoney = res.profitMoney;
       this.refundMoney = res.refundMoney;
       this.totalMoney = res.totalMoney;

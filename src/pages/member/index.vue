@@ -171,7 +171,7 @@ export default {
     async getMemberDataToTable() {
       let payload = Object.assign({}, this.searchData);
       let res = await operatorListFun(payload);
-      this.memberDataToTable = res.items||[];
+      this.memberDataToTable = res.items || [];
       this.memberDataToTable.forEach(item => {
         if (item.isLock === 0) {
           item.isLock = true;

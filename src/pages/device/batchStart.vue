@@ -208,7 +208,7 @@ export default {
       this.batchStartDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await listBatchStartFun(payload);
-      this.batchStartDataToTable = res.items;
+      this.batchStartDataToTable = res.items || [];
       this.total = res.total;
     },
     async changeBatchFuncionList(val) {

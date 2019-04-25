@@ -298,7 +298,7 @@ export default {
       payload.districtId = payload.areas[2];
       payload.areas = [];
       let res = await manageListFun(payload);
-      this.shopDataToTable = res.items;
+      this.shopDataToTable = res.items || [];
       this.shopDataToTable.forEach(item => {
         if (item.isReserve === 0) {
           item.isReserve = true;
