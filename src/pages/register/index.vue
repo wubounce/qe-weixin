@@ -75,6 +75,7 @@ export default {
       }
     };
     const validateRePassword = (rule, value, callback) => {
+      console.log(value)
       if (value) {
         callback(new Error('请再次输入密码'));
       } else if (!validatPwd(value)) {
@@ -127,7 +128,7 @@ export default {
         invitationCode: [{ required: true, trigger: 'blur', validator: validateInviteCode }],
         name: [{ required: true, trigger: 'blur', message: '请填写姓名' }, { pattern: /^[\u4e00-\u9fa5a-zA-Z]{2,20}$/, message: '姓名2-20个字符，支持中文和英文', trigger: 'blur' }],
         userAgreement: [{ required: true, trigger: 'blur', message: '请同意用户协议' }],
-        areaIds: [{ type: 'array', required: true, trigger: 'blur', validator: validateAres }]
+        areaIds: [{ required: true, trigger: 'blur', type: 'array', validator: validateAres }]
       },
       userAgreementVisible: false
     };
