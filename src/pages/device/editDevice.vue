@@ -21,9 +21,74 @@
               </template>
             </el-table-column>
           </el-table>
-
+          <p class="water-tip">1、关闭出水口开关用户则无法使用对应出水口接水 <br/>2、此型号每个脉冲出水 1000 ml</p>
         </div>
-        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.notQuantitative===false">
+        <div v-if="deviceEditForm.parentTypeName === '充电桩'">
+          <el-form-item label="充电单价：" prop="waterMachinePirce">
+            <div class="add-discount">
+              <el-input v-model="deviceEditForm.waterMachinePirce"></el-input>
+              <span style="position: absolute;left: 220px;color:#bfbfbf;">元/小时</span>
+            </div>
+          </el-form-item>
+          <!-- <el-form-item label="可选时间范围：" prop="waterMachinePirce">
+            <div class="add-discount">
+              <el-input v-model="deviceEditForm.waterMachinePirce"></el-input>
+            </div>
+          </el-form-item> -->
+          <el-form-item label="可选时间范围：">
+            <el-col :span="5">
+              <el-select v-model="value" placeholder="请选择">
+                <el-option label="sdfsd" value="1"></el-option>
+              </el-select>
+            </el-col>
+            <el-col class="line" :span="1">-</el-col>
+            <el-col :span="5">
+              <el-select v-model="value" placeholder="请选择">
+                <el-option label="sdfsd" value="1"></el-option>
+              </el-select>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="单位刻度时间：" prop="waterMachinePirce">
+            <div class="add-discount">
+              <el-select v-model="value" placeholder="请选择">
+                <el-option label="sdfsd" value="1"></el-option>
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-form-item label="推荐充电时间：" prop="waterMachinePirce">
+            <div class="add-discount">
+              <el-select v-model="value" placeholder="请选择">
+                <el-option label="sdfsd" value="1"></el-option>
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-table :data="deviceEditForm.functionList" style="width: 100%">
+            <el-table-column prop="functionName" label="充电功率范围 (瓦)"></el-table-column>
+            <el-table-column prop="ifOpenStatus" label="状态">
+              <template slot-scope="scope" slot="header"> 
+                <el-tooltip content="用户充电时间=用户选择时间 × 充电功率对应时间系数" placement="top">
+              <svg-icon icon-class="zhibiaoshuoming" />
+            </el-tooltip>
+            时间系数
+              </template>
+              <template slot-scope="scope"> 
+               <el-switch v-model="scope.row.ifOpenStatus">
+                </el-switch>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-table :data="deviceEditForm.functionList" style="width: 100%">
+            <el-table-column prop="functionName" label="充电口"></el-table-column>
+            <el-table-column prop="ifOpenStatus" label="状态">
+              <template slot-scope="scope">
+                <el-switch v-model="scope.row.ifOpenStatus">
+                </el-switch>
+              </template>
+            </el-table-column>
+          </el-table>
+          <p class="water-tip">关闭充电口开关用户则无法使用对应充电口充电</p>
+        </div>
+        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.notQuantitative===false&&deviceEditForm.parentTypeName !== '充电桩'">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
@@ -156,6 +221,8 @@ export default {
   components: {},
   mounted() {
     this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice || '');
+    let powerList = [];
+    let powerList = [];
   },
   methods: {
     onEditDecive(formName) {
@@ -209,6 +276,7 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import '~@/styles/variables.scss';
 .edit-device-name {
   padding-top: 16px;
 }
@@ -218,5 +286,10 @@ export default {
 }
 .add-discount {
   display: flex;
+}
+.water-tip {
+  color:$menuText;
+  line-height:24px;
+  padding-top:16px;
 }
 </style>
