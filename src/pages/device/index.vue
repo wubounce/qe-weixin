@@ -348,11 +348,13 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       let payload = Object.assign({}, this.searchData);
       this.getDeviceDataToTable(payload);
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.machineSubTypeList = [];
       this.getDeviceDataToTable();

@@ -282,10 +282,12 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       this.getShopDataToTable();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getShopDataToTable();
     },

@@ -157,10 +157,12 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       this.getCouponRecordDataToTable();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getCouponRecordDataToTable();
     },

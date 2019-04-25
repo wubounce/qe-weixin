@@ -189,10 +189,12 @@ export default {
     searchForm() {
       //头部搜索
       this.searchData.page = 1;
+      this.total = 0;
       this.getBatchStartDataToTable();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getBatchStartDataToTable();
     },
