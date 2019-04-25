@@ -226,7 +226,7 @@ export default {
     async menuSelect() {
       let res = await permsMenuFun(); //拼接权限菜单
       this.allMenu = res;
-      this.permissionsData = getTrees(res, 0); //兼容app
+      this.permissionsData = getTrees(res, 0).filter(item => item.name !== '营销管理'); //兼容app
     },
     handleCheck() {
       this.checkpermissionslist = this.$refs.tree.getCheckedKeys(true);

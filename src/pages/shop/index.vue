@@ -42,7 +42,7 @@
         <el-table-column header-align="left" prop="profit" label="累计收益(元)"></el-table-column>
         <el-table-column header-align="left" prop="isReserve" label="预约功能">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.isReserve">
+            <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
             </el-switch>
           </template>
         </el-table-column>
@@ -299,13 +299,6 @@ export default {
       payload.areas = [];
       let res = await manageListFun(payload);
       this.shopDataToTable = res.items || [];
-      this.shopDataToTable.forEach(item => {
-        if (item.isReserve === 0) {
-          item.isReserve = true;
-        } else {
-          item.isReserve = false;
-        }
-      });
       this.total = res.total;
     },
     async lookShopDetail(row) {
