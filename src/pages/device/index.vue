@@ -148,17 +148,56 @@
         <el-tabs v-model="detailActiveTab">
           <el-tab-pane label="功能设置" name="first">
             <div v-if="detailData.notQuantitative">
-              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterMachinePirce || ''}}元/升</p>
+              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce || ''}}元/升</p>
               <el-table :data="detailData.functionList" style="width: 100%">
                 <el-table-column prop="functionName" label="出水口"></el-table-column>
-                <el-table-column prop="ifOpen" label="状态">
+                <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
                   <template slot-scope="scope">
                     <span>{{scope.row.ifOpen | ifOpenType}}</span>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
-            <el-table :data="detailData.functionList" style="width: 100%" v-if="detailData.notQuantitative===false">
+            <div v-if="detailData.parentTypeName === '充电桩'">
+              <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce || ''}}元/升</p>
+              <p class="charge-base"><span>选时间范围：</span>{{detailData.extraAttr.max || ''}}-{{detailData.extraAttr.min || ''}}小时</p>
+              <p class="charge-base"><span>单位刻度时间：</span>{{detailData.extraAttr.step || ''}}小时</p>
+              <p class="charge-base"><span>推荐充电时间：</span>{{detailData.extraAttr.default || ''}}小时</p>
+              <div class="charge-control">
+                <h2>
+                  <span>充电功率范围 (瓦)</span>
+                  <span style="float:right">
+                    <el-tooltip content="用户充电时间=用户选择时间 × 充电功率对应时间系数" placement="top">
+                      <svg-icon icon-class="zhibiaoshuoming" />
+                    </el-tooltip>
+                    时间系数
+                  </span>
+                </h2>
+                <ul>
+                  <li>
+                    <span>低功率 1-{{detailData.extraAttr.power1}}</span>
+                    <span style="float:right">{{detailData.extraAttr.ratio1}}</span>
+                  </li>
+                  <li>
+                    <span>中功率 1-{{detailData.extraAttr.power1+1}}-{{detailData.extraAttr.power2}}</span>
+                    <span style="float:right">{{detailData.extraAttr.ratio2}}</span>
+                  </li>
+                  <li>
+                    <span>高功率 {{detailData.extraAttr.power2+1}}-{{detailData.extraAttr.power3}}</span>
+                    <span style="float:right">{{detailData.extraAttr.ratio3}}</span>
+                  </li>
+                </ul>
+              </div>
+              <el-table :data="detailData.functionList" style="width: 100%">
+                <el-table-column prop="functionName" label="出水口"></el-table-column>
+                <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.ifOpen | ifOpenType}}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <el-table :data="detailData.functionList" style="width: 100%" v-if="detailData.notQuantitative===false&&detailData.parentTypeName !== '充电桩'">
               <el-table-column prop="functionName" label="功能"></el-table-column>
               <el-table-column prop="needMinutes" label="耗时/分钟"></el-table-column>
               <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
@@ -370,7 +409,8 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
-      this.$set(this.detailData, 'waterMachinePirce', res.functionList[0].functionPrice || '');
+      this.$set(this.detailData, 'waterAndChargeMachinePirce', res.functionList[0].functionPrice || '');
+      this.$set(this.detailData, 'extraAttr', res.functionList[0].extraAttr || {});
       this.deviceEditdetailForm = Object.assign({}, res);
       this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
       this.deviceEditdetailForm.functionList.forEach(item => {
@@ -559,6 +599,32 @@ export default {
   color: $comment;
   padding: 23px 0 16px 0;
   font-weight: normal;
+}
+.charge-base {
+  line-height: 42px;
+  border-bottom: 1px solid $under_line;
+}
+.charge-control {
+  padding-bottom: 24px;
+  padding-top: 24px;
+  h2 {
+    font-size: 14px;
+    font-weight: 600;
+    height: 54px;
+    line-height: 54px;
+    background: rgba(250, 250, 250, 1);
+    border-radius: 4px 4px 0px 0px;
+    border-bottom: 1px solid $under_line;
+    padding: 0 10px;
+    color: #262626;
+  }
+
+  li {
+    height: 54px;
+    line-height: 54px;
+    border-bottom: 1px solid $under_line;
+    padding: 0 10px;
+  }
 }
 </style>
  
