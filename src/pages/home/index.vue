@@ -161,13 +161,17 @@ export default {
       changeType: 0,
       parentTypeId: '',
       lineSearchTime: [{ value: 0, lable: '今天' }, { value: 1, lable: '7天' }, { value: 2, lable: '30天' }],
-      parentTypList: []
+      parentTypList: [],
+      pieTitleOffset: '12%'
     };
   },
   mounted() {
     this.$nextTick(() => {
       this.initChart();
     });
+    if (document.body.clientWidth < 1400) {
+      this.pieTitleOffset = '5%';
+    }
   },
   created() {
     this.getTotalProfit();
@@ -408,7 +412,7 @@ export default {
           itemWidth: 8,
           itemHeight: 8,
           orient: 'vertical',
-          right: '12%',
+          right: this.pieTitleOffset,
           itemGap: 16,
           formatter: name => {
             var target;

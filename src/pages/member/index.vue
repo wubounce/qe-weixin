@@ -68,10 +68,10 @@
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditMemberTitle" :visible.sync="addMemberDialogVisible" @close="addMemberDialogVisible = false" width="760px" height="768px" top="20px">
         <el-form ref="addMemberFrom" :model="addMemberFrom" :rules="addMemberFormRules" class="add-shop-from" label-width="150px" v-if="addMemberDialogVisible">
-          <el-form-item label="手机号码：" class="shop-name" prop="phone">
+          <el-form-item label="手机号码：" class="shop-name" prop="phone" v-show="disabledEdit">
             <el-input v-model="addMemberFrom.phone" placeholder="手机号为登录人员账号，密码将自动短信发送"></el-input>
           </el-form-item>
-          <el-form-item label="人员姓名：" class="shop-name" prop="username">
+          <el-form-item label="人员姓名：" class="shop-name" prop="username" v-show="disabledEdit">
             <el-input v-model="addMemberFrom.username" placeholder="请输入人员姓名"></el-input>
           </el-form-item>
           <el-form-item label="负责店铺：" prop="operateShopIds">
@@ -135,7 +135,8 @@ export default {
         label: 'name'
       },
       parentIds: [],
-      checkpermissionslist: []
+      checkpermissionslist: [],
+      disabledEdit: true
     };
   },
   filters: {},
@@ -191,6 +192,7 @@ export default {
     },
     async openAddBDDialog(row = {}) {
       this.addOrEditMemberTitle = '新增人员';
+      this.disabledEdit = true;
       this.checkpermissionslist = [];
       this.parentIds = [];
       this.addMemberFrom = {
@@ -201,6 +203,7 @@ export default {
       };
       if (row.id) {
         this.addOrEditMemberTitle = '编辑人员';
+        this.disabledEdit = false;
         let payload = { id: row.id };
         let res = await getOperatorInfoFun(payload);
         this.addMemberFrom.id = res.id;
