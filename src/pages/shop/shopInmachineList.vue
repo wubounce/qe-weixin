@@ -7,9 +7,7 @@
       <el-table-column prop="subTypeName" label="设备型号" show-overflow-tooltip></el-table-column>
       <el-table-column prop="machineState" label="设备状态">
         <template slot-scope="scope">
-          <div>
-            <span class="status-clire" :style="classObject(scope.row.machineState)"></span>{{scope.row.machineState | deviceStatus}}
-          </div>
+          <span class="status-clire" :style="classObject(scope.row.machineState)"></span>{{scope.row.machineState | deviceStatus}}
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="添加时间"></el-table-column>
@@ -70,3 +68,15 @@ export default {
   }
 }
 </style>
+<style rel="stylesheet/scss" lang="scss" scoped>
+.status-clire {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #2fc25b;
+  opacity: 0.85;
+  border-radius: 20px;
+  margin-right: 8px;
+}
+</style>
+

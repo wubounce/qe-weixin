@@ -449,15 +449,6 @@ export default {
     }
   }
 }
-.status-clire {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: #2fc25b;
-  opacity: 0.85;
-  border-radius: 20px;
-  margin-right: 8px;
-}
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
