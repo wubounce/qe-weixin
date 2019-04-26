@@ -9,7 +9,7 @@
         </el-form-item>
         <el-form-item prop="code">
           <el-input v-model="registerForm.code" class="verify-code" name="code" type="text" @input="disabledBtn" placeholder="请输入验证码" />
-          <el-button class="get-code" v-if="!btn">{{time}}s后重新获取</el-button>
+          <el-button class="get-code" v-if="!btn" :disabled="!btn">{{time}}s后重新获取</el-button>
           <el-button class="get-code" @click="sendcode" v-if="btn">获取验证码</el-button>
         </el-form-item>
         <el-form-item prop="invitationCode">
@@ -75,8 +75,7 @@ export default {
       }
     };
     const validateRePassword = (rule, value, callback) => {
-      console.log(value)
-      if (value) {
+      if (!value) {
         callback(new Error('请再次输入密码'));
       } else if (!validatPwd(value)) {
         callback(new Error('密码6-20位，支持英文字母和数字'));
@@ -86,20 +85,18 @@ export default {
         callback();
       }
     };
-    const validateAres = (rule, value, callback) => {
-      console.log(value.length);
-      console.log(value);
-      if (value.length < 3) {
-        callback(new Error('请输入选择省市区'));
-      } else {
-        callback();
-      }
-    };
     const validateInviteCode = (rule, value, callback) => {
       if (!value) {
         callback(new Error('请输入邀请码'));
       } else if (!validatInviteCode(value)) {
         callback(new Error('请输入正确的邀请码'));
+      } else {
+        callback();
+      }
+    };
+    const validateAres = (rule, value, callback) => {
+      if (value.length < 3) {
+        callback(new Error('请输入选择省市区'));
       } else {
         callback();
       }
@@ -135,7 +132,7 @@ export default {
   },
   methods: {
     disabledBtn() {
-      if (this.registerForm.phone && this.registerForm.code && this.registerForm.invitationCode && this.registerForm.password && this.registerForm.rePassword && this.registerForm.name && this.registerForm.userAgreement && this.registerForm.areaIds.length < 3) {
+      if (this.registerForm.phone && this.registerForm.code && this.registerForm.invitationCode && this.registerForm.password && this.registerForm.rePassword && this.registerForm.name && this.registerForm.userAgreement && this.registerForm.areaIds.length >= 3) {
         this.disabled = false;
       } else {
         this.disabled = true;
@@ -209,6 +206,14 @@ export default {
           return false;
         }
       });
+    }
+  },
+  watch: {
+    'registerForm.areaIds': {
+      deep: true,
+      handler: function(val) {
+        val.length >= 3 ? (this.disabled = false) : (this.disabled = true);
+      }
     }
   }
 };
@@ -292,6 +297,7 @@ export default {
   }
   .agreement {
     color: $menuText;
+    cursor: pointer;
   }
 }
 </style>

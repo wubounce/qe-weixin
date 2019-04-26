@@ -134,7 +134,7 @@
             </el-col>
           </el-form-item>
           <el-form-item label="营业时间：" prop="workTime">
-            <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" value-format="HH:mm"> </el-time-picker>
+            <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" format="HH:mm" value-format="HH:mm"> </el-time-picker>
           </el-form-item>
           <el-form-item label="客服电话：" class="shop-name" prop="serviceTelephone">
             <el-input v-model="addShopFrom.serviceTelephone" placeholder="请填写店铺客服电话"></el-input>
@@ -330,6 +330,7 @@ export default {
         this.isOffAndOnReserve = true;
         this.addShopRules.orderLimitMinutes[0].required = false;
         this.isOffAndOnReservePlaceholder = '开启预约功能可填';
+        this.addShopFrom.orderLimitMinutes = '';
       } else {
         this.isOffAndOnReserve = false;
         this.addShopRules.orderLimitMinutes[0].required = true;

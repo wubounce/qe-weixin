@@ -98,7 +98,7 @@
           <active-week v-model="addMaketFrom.weekCheckList" @getcustomWeekCheckList="getcustomWeekCheckList(arguments)" :visible="weekFilterVisible" />
         </el-form-item>
         <el-form-item label="每日活动时段：" prop="time">
-          <el-time-picker is-range v-model="addMaketFrom.time" placeholder="请选择" value-format="HH:mm"></el-time-picker>
+          <el-time-picker is-range v-model="addMaketFrom.time" placeholder="请选择" format="HH:mm" value-format="HH:mm"></el-time-picker>
         </el-form-item>
         <el-form-item label="优惠折扣：" prop="discount">
           <div class="add-discount">

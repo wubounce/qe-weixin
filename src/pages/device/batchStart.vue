@@ -205,10 +205,12 @@ export default {
     },
     async getBatchStartDataToTable() {
       //列表
-      this.batchStartDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await listBatchStartFun(payload);
       this.batchStartDataToTable = res.items || [];
+      this.batchStartDataToTable.forEach(item => {
+        item.createTime = item.createTime ? moment(item.createTime).format('YYYY-MM-DD HH:ss:mm') : '';
+      });
       this.total = res.total;
     },
     async changeBatchFuncionList(val) {

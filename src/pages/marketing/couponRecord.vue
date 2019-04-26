@@ -21,7 +21,7 @@
       </el-form-item>
       <el-form-item label="适用类型：" prop="parentTypeId">
         <el-select v-model="searchData.parentTypeId" clearable placeholder="请选择">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="通用" value=""></el-option>
           <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -30,7 +30,7 @@
           <el-option v-for="(name, id) in couponSourceType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item> -->
-      <el-form-item label="时间： " prop="time">
+      <el-form-item label="创建时间： " prop="time">
         <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>

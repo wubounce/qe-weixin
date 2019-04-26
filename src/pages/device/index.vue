@@ -110,7 +110,7 @@
         </el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
-            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState===4">
+            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1&&scope.row.subTypeName !== '通用脉冲洗衣机'&&scope.row.notQuantitative===false||scope.row.machineState===4&&scope.row.subTypeName !== '通用脉冲洗衣机'&&scope.row.notQuantitative===false">
               <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
             </el-tooltip>
             <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'&& scope.row.notQuantitative===false">
