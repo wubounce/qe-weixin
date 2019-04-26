@@ -43,7 +43,6 @@
         <el-table-column header-align="left" prop="isReserve" label="预约功能">
           <template slot-scope="scope">
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
-            </el-switch>
           </template>
         </el-table-column>
         <el-table-column header-align="left" fixed="right" label="操作">

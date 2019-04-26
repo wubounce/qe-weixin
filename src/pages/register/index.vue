@@ -46,7 +46,7 @@
 
 <script>
 import { smscodeFun, checkPhoneFun, checkRegCodeFun, saveRegisterInfoFun } from '@/service/resetPwd';
-import { validatPhone, validatName, validatPwd, validatInviteCode } from '@/utils/validate';
+import { validatPhone, validatPwd, validatInviteCode } from '@/utils/validate';
 import Area from '@/components/Area';
 import userAgreement from './userAgreement';
 export default {
