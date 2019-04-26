@@ -12,7 +12,7 @@ const orderDetailApi = 'order/getOrderManagerDetail'; // 获取订单详情
 const compensateApi = 'voucher/compensate'; //订单补偿
 const historySelectApi = 'order/history/select'; //订单历史月份
 const getOrderSimpleApi = '/order/getOrderSimple'; //订单历史月份
-
+const isReleaseCompensateApji = '/voucher/release/judge'; // 判断是否补偿过优惠券 method 'post'
 // 订单列表
 export const orderListFun = payload => fetch.post(orderListApi, payload);
 
@@ -41,3 +41,7 @@ export const historySelectFun = payload =>
 // 获取分成
 export const getOrderSimpleFun = payload =>
   fetch.post(getOrderSimpleApi, payload);
+
+// 判断是否补偿过优惠券
+export const isReleaseCompensateFun = payload =>
+  fetch.post(isReleaseCompensateApji, payload);

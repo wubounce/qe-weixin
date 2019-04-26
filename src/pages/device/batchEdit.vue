@@ -108,7 +108,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getFunctionSetListFun, batchEditFun, batchEditDetergentFun } from '@/service/device';
+import { getFunctionSetListFun, batchEditDetergentListFun, batchEditFun, batchEditDetergentFun } from '@/service/device';
 export default {
   props: {
     deviceEditdetailForm: {
@@ -158,6 +158,7 @@ export default {
   mounted() {},
   created() {
     this.getFunctionSetList();
+    this.getbatchEditDetergentList();
   },
   methods: {
     async getFunctionSetList() {
@@ -172,6 +173,13 @@ export default {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
     },
+    async getbatchEditDetergentList() {
+      //批量编辑获取功能列表
+      let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
+      let res = await batchEditDetergentListFun(payload);
+      this.deviceEditForm.detergentFunctionList = res.list;
+      this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
+    },
     onEditDecive(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -184,7 +192,7 @@ export default {
               } else {
                 item.ifOpen = 0;
               }
-              if (this.deviceEditForm.subTypeName === '彩亿KSQ_QIEKJ_01') {
+              if (this.deviceEditForm.notQuantitative) {
                 item.functionPrice = this.deviceEditForm.waterMachinePirce;
               }
             });

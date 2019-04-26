@@ -78,20 +78,7 @@
       </el-dialog>
       <!-- 店铺设备数量 -->
       <el-dialog :title="deviceDialogTitle" :visible.sync="deviceDialogVisible" width="1100px">
-        <el-table :data="deviceList" style="width: 100%" height="670">
-          <el-table-column header-align="left" label="序号" width="60" type="index"></el-table-column>
-          <el-table-column prop="machineName" label="设备名" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="machineTypeName" label="设备类型"></el-table-column>
-          <el-table-column prop="subTypeName" label="设备型号" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="machineState" label="设备状态">
-            <template slot-scope="scope">
-              <div>
-                <span class="status-clire" :style="classObject(scope.row.machineState)"></span>{{scope.row.machineState | deviceStatus}}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="createTime" label="添加时间"></el-table-column>
-        </el-table>
+        <shop-inmachine-list :shopId="shopIdToMachine" v-if="deviceDialogVisible"></shop-inmachine-list>
       </el-dialog>
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
@@ -152,16 +139,17 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi } from '@/service/shop';
 import { exportExcel } from '@/service/common';
-import { deviceListFun } from '@/service/device';
-import { isReserveType, isHasVipType, isDiscountType, deviceStatus, deviceColorStatus } from '@/utils/mapping';
+import { isReserveType, isHasVipType, isDiscountType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import Area from '@/components/Area';
+import shopInmachineList from './shopInmachineList';
 import PagerMixin from '@/mixins/PagerMixin';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    Area
+    Area,
+    shopInmachineList
   },
   data() {
     let self = this;
@@ -177,7 +165,7 @@ export default {
       detailDialogVisible: false,
       detailData: {},
       deviceDialogVisible: false,
-      deviceList: [],
+      shopIdToMachine: '',
       deviceDialogTitle: '',
       addShopDialogVisible: false,
       addOrEditShopTitle: '新增店铺',
@@ -255,16 +243,6 @@ export default {
     },
     isDiscountType: val => {
       return isDiscountType[val];
-    },
-    deviceStatus: val => {
-      return deviceStatus[val];
-    }
-  },
-  computed: {
-    classObject: function() {
-      return function(value) {
-        return `background:${deviceColorStatus[value]}`;
-      };
     }
   },
   mounted() {},
@@ -311,10 +289,8 @@ export default {
         return false;
       }
       this.deviceDialogTitle = row.shopName;
-      let payload = { page: 1, pageSize: 9999, shopId: row.shopId };
-      let res = await deviceListFun(payload);
+      this.shopIdToMachine = row.shopId;
       this.deviceDialogVisible = true;
-      this.deviceList = res.page.items;
     },
     //搜索城市获取经纬度
     onSearchResult(pois) {

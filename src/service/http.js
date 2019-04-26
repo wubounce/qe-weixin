@@ -3,7 +3,7 @@ import qs from 'qs';
 import store from '@/store';
 import { getToken, getUserInfoInLocalstorage } from '@/utils/auth';
 import { filterData, get_sign } from '@/utils/tools';
-import { Notification } from 'element-ui';
+import { Message } from 'element-ui';
 // 创建axios实例
 const http = axios.create({
   baseURL: process.env.VUE_APP_URL, // api的base_url
@@ -45,7 +45,7 @@ http.interceptors.request.use(
     return config;
   },
   error => {
-    Notification.warning('请求超时，请重新操作');
+    Message.warning('请求超时，请重新操作');
     Promise.reject(error);
   }
 );
@@ -81,16 +81,16 @@ http.interceptors.response.use(
           location.reload();
         });
       } else {
-        Notification.error(response.data.msg);
+        Message.error(response.data.msg);
         return Promise.reject(response.data);
       }
     }
   },
   error => {
     if (error.message.includes('timeout')) {
-      Notification.warning('请求超时，请重新操作');
+      Message.warning('请求超时，请重新操作');
     } else {
-      Notification.error('服务器开小差了');
+      Message.error('服务器开小差了');
     }
     return Promise.reject(error);
   }

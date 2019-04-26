@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import { objEqual } from './tools';
 
-const TokenKey = 'Admin-Token';
+const TokenKey = 'token';
 
 /**
  * @description 本地存储和获取token

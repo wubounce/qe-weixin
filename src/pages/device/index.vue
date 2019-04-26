@@ -110,7 +110,7 @@
         </el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
-            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1&&scope.row.subTypeName !== '通用脉冲洗衣机'&&scope.row.notQuantitative===false||scope.row.machineState===4&&scope.row.subTypeName !== '通用脉冲洗衣机'&&scope.row.notQuantitative===false">
+            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1&&scope.row.machineTypeName==='洗鞋机'&&scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName !== '通用脉冲洗衣机'||scope.row.machineState===4&&scope.row.machineTypeName==='洗鞋机'&&scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName !== '通用脉冲洗衣机'">
               <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
             </el-tooltip>
             <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'&& scope.row.notQuantitative===false">
@@ -148,7 +148,7 @@
         <el-tabs v-model="detailActiveTab">
           <el-tab-pane label="功能设置" name="first">
             <div v-if="detailData.notQuantitative">
-              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterMachinePirce || ''}}元/升</p>
+              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterMachinePirce}}元/升</p>
               <el-table :data="detailData.functionList" style="width: 100%">
                 <el-table-column prop="functionName" label="出水口"></el-table-column>
                 <el-table-column prop="ifOpen" label="状态">
@@ -372,7 +372,7 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
-      this.$set(this.detailData, 'waterMachinePirce', res.functionList[0].functionPrice || '');
+      this.$set(this.detailData, 'waterMachinePirce', res.functionList[0].functionPrice || 0);
       this.deviceEditdetailForm = Object.assign({}, res);
       this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
       this.deviceEditdetailForm.functionList.forEach(item => {

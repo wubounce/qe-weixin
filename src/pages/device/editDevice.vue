@@ -155,7 +155,7 @@ export default {
   },
   components: {},
   mounted() {
-    this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice || '');
+    this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice || 0);
   },
   methods: {
     onEditDecive(formName) {
@@ -170,7 +170,7 @@ export default {
             } else {
               item.ifOpen = 0;
             }
-            if (this.deviceEditForm.subTypeName === '彩亿KSQ_QIEKJ_01') {
+            if (this.deviceEditForm.notQuantitative) {
               item.functionPrice = this.deviceEditForm.waterMachinePirce;
             }
           });
