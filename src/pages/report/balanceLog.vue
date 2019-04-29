@@ -8,8 +8,8 @@
       <el-form-item label="店铺筛选：" prop="shopIds">
         <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
       </el-form-item>
-      <el-form-item label="设备类型：" prop="machineTypeIds">
-        <el-select v-model="searchData.machineTypeIds" multiple clearable placeholder="请选择">
+      <el-form-item label="设备类型：" prop="machineTypeIdList">
+        <el-select v-model="searchData.machineTypeIdList" multiple clearable placeholder="请选择">
           <el-option v-for="(item,index) in parentTypList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -79,7 +79,7 @@ export default {
             .format('YYYY-MM-DD')
         ],
         shopIds: [],
-        machineTypeIds: [],
+        machineTypeIdList: [],
         origin: '',
         type: ''
       },

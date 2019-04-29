@@ -18,7 +18,7 @@ export const sourceType = {
 };
 
 export const earningType = {
-  0: '收入',
+  1: '收入',
   3: '退款'
 };
 
