@@ -162,7 +162,7 @@ export default {
       parentTypeId: '',
       lineSearchTime: [{ value: 0, lable: '今天' }, { value: 1, lable: '7天' }, { value: 2, lable: '30天' }],
       parentTypList: [],
-      pieTitleOffset: '12%'
+      pieTitleOffset: '10%'
     };
   },
   mounted() {

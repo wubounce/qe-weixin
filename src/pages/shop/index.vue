@@ -431,6 +431,9 @@ export default {
     margin-left: 0px;
   }
 }
+.el-vue-search-box-container .search-box-wrapper .search-btn {
+  display: none !important;
+}
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
