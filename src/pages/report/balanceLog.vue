@@ -5,13 +5,13 @@
         <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="店铺：" prop="shopIds">
+      <el-form-item label="店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择" @change="checkedShop">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="设备：" prop="machineTypeIds">
-        <el-select v-model="searchData.machineTypeIds" clearable placeholder="请选择">
+      <el-form-item label="设备：" prop="machineTypeId">
+        <el-select v-model="searchData.machineTypeId" clearable placeholder="请选择">
           <el-option v-for="(item,index) in parentTypList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -78,8 +78,8 @@ export default {
             .subtract(1, 'days')
             .format('YYYY-MM-DD')
         ],
-        shopIds: [],
-        machineTypeIds: '',
+        shopId: '',
+        machineTypeId: '',
         origin: '',
         type: ''
       },
