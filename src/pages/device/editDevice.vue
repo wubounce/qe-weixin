@@ -57,7 +57,7 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="洗衣液设置" name="second" v-if="deviceEditForm.parentTypeName === '洗衣机'">
+      <el-tab-pane label="洗衣液设置" name="second" v-if="deviceEditForm.isDetergent === 1">
         <el-form-item label="洗衣液功能" prop="isOpenDetergent" class="edit-isOpenDetergent">
           <el-switch v-model="deviceEditForm.isOpenDetergentStatus">
           </el-switch>

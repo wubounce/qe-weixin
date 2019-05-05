@@ -5,7 +5,7 @@
       <el-form-item label="批量编辑选择：" class="check-batch-funtion">
         <el-radio-group v-model="checkBatchFuntion">
           <el-radio :label="1">功能设置</el-radio>
-          <el-radio :label="2" v-if="deviceEditForm.parentTypeName === '洗衣机'">洗衣液属性</el-radio>
+          <el-radio :label="2" v-if="deviceEditForm.isDetergent === 1">洗衣液属性</el-radio>
           <el-radio :label="3" v-if="deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">其他属性</el-radio>
         </el-radio-group>
       </el-form-item>
@@ -42,7 +42,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="detergent" v-if="checkBatchFuntion === 2&&deviceEditForm.parentTypeName === '洗衣机'">
+      <div class="detergent" v-if="checkBatchFuntion === 2&&deviceEditForm.isDetergent === 1">
         <el-form-item label="洗衣液功能" prop="isOpenDetergent" class="edit-isOpenDetergent">
           <el-switch v-model="deviceEditForm.isOpenDetergentStatus">
           </el-switch>

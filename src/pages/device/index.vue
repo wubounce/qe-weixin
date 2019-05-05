@@ -171,7 +171,7 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="洗衣液设置" name="second" v-if="detailData.parentTypeName === '洗衣机'">
+          <el-tab-pane label="洗衣液设置" name="second" v-if="detailData.isDetergent === 1">
             <el-table :data="detailData.detergentFunctionList" style="width: 100%">
               <el-table-column prop="functionName" label="功能"></el-table-column>
               <el-table-column prop="detergentLiquid" label="用量/ml"></el-table-column>
