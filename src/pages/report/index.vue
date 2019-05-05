@@ -16,7 +16,7 @@ export default {
     return {
       currentView: 'dateReport', // 默认选中第一项
       num: 0,
-      tabTitle: [{ component: 'dateReport', title: '日报表' }, { component: 'monthReport', title: '月报表' }, { component: 'yearReport', title: '年报表' }]
+      tabTitle: [{ component: 'dateReport', title: '日报表' }, { component: 'monthReport', title: '月报表' }, { component: 'yearReport', title: '季度报表' }]
     };
   },
   components: {

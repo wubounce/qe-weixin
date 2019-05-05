@@ -85,34 +85,40 @@ export default {
     getFilterShop() {
       this.visibleModel = true;
     },
-    async getShopList(shopName = '', isTimeMaket = this.isEditTime) {
+    async getShopList(shopName = this.state, isTimeMaket = this.isEditTime) {
       let payload = { shopName: shopName, timeId: isTimeMaket };
       let res = await shopListFun(payload);
-      res.forEach(item => {
-        this.shopTypeIds.push(item.shopId);
-      });
       if (!shopName) this.allShopList = res;
+      this.shopTypeIds = res.map(item => item.shopId);
       this.shopList = res;
-      this.checkedListName = this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      this.checkedListName = this.getCheckedListName();
       this.allShopList.forEach(v => this.checkedList.some(k => (k == v.shopId ? this.$set(v, 'active', true) : this.$set(v, 'active', false))));
       this.shopFilterName = this.checkedListName.join(',');
+      console.log(this.shopTypeIds, this.checkedList);
+      this.indeterminateStatus();
     },
-    handleCheckAllChange(val) {
-      this.checkedList = val ? this.shopTypeIds : [];
-      let checkedCount = val.length;
+    indeterminateStatus() {
+      //全选反选状态
+      let checkedCount = this.checkedList.length;
       this.checkAll = checkedCount === this.shopTypeIds.length;
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.shopTypeIds.length;
+    },
+    getCheckedListName() {
+      return this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+    },
+    handleCheckAllChange(val) {
+      this.checkedList = val ? [...this.checkedList, ...this.shopTypeIds] : [...this.checkedList];
+      this.isIndeterminate = false;
       this.shopList.forEach(item => {
         val ? this.$set(item, 'active', true) : this.$set(item, 'active', false);
       });
-      this.checkedListName = this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      this.checkedListName = this.getCheckedListName();
     },
     handleCheakedBg(item, val) {
       item.active ? this.$set(item, 'active', false) : this.$set(item, 'active', true);
-      let checkedCount = val.length;
-      this.checkAll = checkedCount === this.shopTypeIds.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.shopTypeIds.length;
-      this.checkedListName = this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      console.log(val);
+      this.indeterminateStatus(val);
+      this.checkedListName = this.getCheckedListName();
     },
     deleteCheckedSHop(shopname, index) {
       this.checkedListName.splice(index, 1);
@@ -120,12 +126,10 @@ export default {
       this.shopList.forEach(item => {
         if (item.shopName === shopname) this.$set(item, 'active', false);
       });
-      let checkedCount = this.checkedListName.length;
-      this.checkAll = checkedCount === this.shopTypeIds.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.shopTypeIds.length;
+      this.indeterminateStatus();
     },
     getSearchShop(val) {
-      this.getShopList(val);
+      this.getShopList();
     },
     resetCheckedShop() {
       this.checkedList = [];
@@ -140,7 +144,7 @@ export default {
       this.visibleModel = false;
     },
     getCheckedShop() {
-      this.checkedListName = this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      this.checkedListName = this.getCheckedListName();
       this.shopFilterName = this.checkedListName.join(',');
       this.$emit('input', this.checkedList);
       this.$emit('change', this.checkedList);
@@ -150,11 +154,11 @@ export default {
   watch: {
     value: function(val) {
       this.checkedList = val;
-      this.getShopList();
+      // this.getShopList();
     },
     isTimeMaket: function(val) {
       this.checkedList = val;
-      this.getShopList();
+      // this.getShopList();
     }
   }
 };

@@ -80,11 +80,7 @@
           </template>
         </el-table-column>
         <!-- <el-table-column header-align="left" prop="" label="相关活动 "></el-table-column> -->
-        <el-table-column header-align="left" prop="merchantType" label="来源类型 ">
-          <template slot-scope="scope">
-            <span>订单补偿</span>
-          </template>
-        </el-table-column>
+        <el-table-column header-align="left" prop="source" label="来源类型 "></el-table-column>
         <el-table-column header-align="left" prop="realName" label="创建人"></el-table-column>
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
@@ -110,6 +106,8 @@ export default {
       searchData: {
         phone: '',
         status: '',
+        shopId: '',
+        parentTypeId: '',
         time: []
       },
       shopList: [],

@@ -10,16 +10,16 @@
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="设备：" prop="machineTypeId">
-        <el-select v-model="searchData.machineTypeId" clearable placeholder="请选择">
-          <el-option v-for="(item,index) in parentTypList" :key="index" :label="item.name" :value="item.id"></el-option>
+      <el-form-item label="设备：" prop="machineId">
+        <el-select v-model="searchData.machineId" clearable placeholder="请选择">
+          <el-option v-for="(item,index) in machineList" :key="index" :label="item.machineName" :value="item.machineId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="来源类型：" prop="origin">
+      <!-- <el-form-item label="来源类型：" prop="origin">
         <el-select v-model="searchData.origin" clearable placeholder="请选择">
           <el-option v-for="(name, id) in sourceType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="收支类型：" prop="type">
         <el-select v-model="searchData.type " clearable placeholder="请选择">
           <el-option v-for="(name, id) in earningType" :key="id" :label="name" :value="id"></el-option>
@@ -39,7 +39,11 @@
         <el-table-column header-align="left" prop="time" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="orderNo" label="订单编号"></el-table-column>
         <el-table-column header-align="left" prop="userName" label="用户账号"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="金额"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="金额">
+          <template slot-scope="scope">
+            <span>{{ scope.row.money=='0.00'||scope.row.money=='0' ? '-':scope.row.money | tofixd}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="origin" label="来源类型">
           <template slot-scope="scope">
             <span>{{scope.row.origin | sourceType}}</span>
@@ -61,7 +65,7 @@
 <script type="text/ecmascript-6">
 import { balanceLogFlowListFun, balanceLogFlowListApi, shopListFun } from '@/service/report';
 import { exportExcel } from '@/service/common';
-import { ParentTypeFun } from '@/service/index';
+import { manageSimpleListFun } from '@/service/shop';
 import { sourceType, earningType } from '@/utils/mapping';
 export default {
   components: {},
@@ -79,11 +83,11 @@ export default {
             .format('YYYY-MM-DD')
         ],
         shopId: '',
-        machineTypeId: '',
-        origin: '',
+        machineId: '',
+        origin: 0,
         type: ''
       },
-      parentTypList: []
+      machineList: []
     };
   },
   filters: {
@@ -113,7 +117,7 @@ export default {
       this.shopList = res;
     },
     checkedShop(val) {
-      this.searchData.machineTypeIds = '';
+      this.searchData.machineId = '';
       this.getmachineParentType(val);
     },
     searchForm() {
@@ -126,8 +130,8 @@ export default {
     },
     async getmachineParentType(shopId = '') {
       //获取设备类型
-      let res = await ParentTypeFun({ shopId: shopId });
-      this.parentTypList = res;
+      let res = await manageSimpleListFun({ page: 1, pageSize: 9999, shopId: shopId });
+      this.machineList = res.items || [];
     },
     async getProfitDate(shopId = '') {
       //收益数据
@@ -135,7 +139,6 @@ export default {
       payload.startDate = this.searchData.time[0];
       payload.endDate = this.searchData.time[1];
       payload.time = [];
-      payload.shopIds = this.searchData.shopIds.join(',');
       let res = await balanceLogFlowListFun(payload);
       this.tableDataList = res.items || [];
       this.profitMoney = res.profitMoney;
@@ -147,7 +150,6 @@ export default {
       payload.startDate = this.searchData.time[0];
       payload.endDate = this.searchData.time[1];
       payload.time = [];
-      payload.shopIds = this.searchData.shopIds.join(',');
       payload.excel = true;
       exportExcel(balanceLogFlowListApi, '流水明细.xlsx', payload);
     }

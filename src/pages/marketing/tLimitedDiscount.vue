@@ -49,7 +49,11 @@
             <span>{{scope.row.noWeek?scope.row.noWeek:'' | week}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="noTime" label="每日活动时段"></el-table-column>
+        <el-table-column header-align="left" prop="noTime" label="每日活动时段">
+          <template slot-scope="scope">
+            <span>{{scope.row.noTime === '00:00-23:59'? '全天':scope.row.noTime}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="discountVO" label="优惠折扣">
           <template slot-scope="scope">
             <span>{{scope.row.discountVO | discountToFIexd}} 折</span>
@@ -135,6 +139,18 @@ export default {
     activeWeek
   },
   data() {
+    const validateDiscount = (rule, value, callback) => {
+      let reg = /^[0-9]{1}(\.[0-9])?$/;
+      if (!value) {
+        return callback(new Error('折扣不能为空'));
+      } else if (!reg.test(value)) {
+        callback(new Error('折扣请填写1到9的数字,可保留一位小数'));
+      } else if (Number(value) === 0) {
+        callback(new Error('折扣请填写1到9的数字,可保留一位小数'));
+      } else {
+        callback();
+      }
+    };
     return {
       searchData: {
         shopId: '',
@@ -170,7 +186,7 @@ export default {
         date: [{ required: true, type: 'array', trigger: 'change', message: '请选择优惠日期' }],
         week: [{ required: true, trigger: 'change', message: '请选择活动日' }],
         time: [{ required: true, type: 'array', trigger: 'change', message: '请选择每日活动时间段' }],
-        discount: [{ required: true, message: '请输入折扣', trigger: 'blur' }, { pattern: /^[1-9]{1}(\.[0-9])?$/, message: '折扣请填写1到9的数字,可保留一位小数', trigger: 'blur' }]
+        discount: [{ required: true, trigger: 'blur', validator: validateDiscount }]
       },
       machineParentType: [],
       hasShop: true
@@ -299,7 +315,7 @@ export default {
         discount: (res.discountVO / 10).toFixed(1),
         weekCheckList: weeklist
       };
-      if (weeklist.length > 1) {
+      if (weeklist.length >= 1) {
         this.addMaketFrom.week = 10;
       }
       this.getMarketlistParentType();

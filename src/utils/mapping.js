@@ -87,16 +87,18 @@ export const PayType = ststus => {
       return '其他';
     case 1:
       return '支付宝';
+    case 2:
+      return '余额';
+    case 3:
+      return '微信 ';
+    case 4:
+      return '受限余额 ';
     case 11:
       return '支付宝';
     case 12:
       return '支付宝';
     case 13:
       return '支付宝';
-    case 2:
-      return '余额';
-    case 3:
-      return '微信 ';
     case 31:
       return '微信 ';
     case 32:

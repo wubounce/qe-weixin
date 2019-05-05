@@ -1,7 +1,7 @@
 <template>
   <div class="date-earing year-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="earing-search">
-      <el-form-item label="年份筛选：" prop="time">
+      <el-form-item label="时间筛选：" prop="time">
         <el-date-picker v-model="searchData.time" type="year" placeholder="选择年" :picker-options="pickerOptions" :clearable="false" value-format="yyyy"></el-date-picker>
       </el-form-item>
       <el-form-item label="店铺筛选：" prop="shopIds">
@@ -27,7 +27,7 @@
         <span>详细数据</span>
         <el-button icon="el-icon-download" style="float: right;" @click="exportTable()">导出</el-button>
       </div>
-      <el-table :data="tableDataList" show-summary style="width: 100%">
+      <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
         <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)"></el-table-column>
@@ -59,6 +59,13 @@ export default {
       orderMin: null,
       moneyMin: null,
       tableDataList: [],
+      totalAlipayMoney: '',
+      totalAllMoney: '',
+      totalCount: '',
+      totalDetergentMoney: '',
+      totalMoney: '',
+      totalRefundMoney: '',
+      totalVipMoney: '',
       oderDataList: [],
       moneyDataList: [],
       reportDate: [],
@@ -112,6 +119,13 @@ export default {
       this.orderMin = calMin(this.oderDataList); //订单Y轴最小值
       this.moneyMin = calMin(this.moneyDataList); //金额Y轴最小值
       this.tableDataList = res.list;
+      this.totalAlipayMoney = res.totalAlipayMoney;
+      this.totalAllMoney = res.totalAllMoney;
+      this.totalCount = res.totalCount;
+      this.totalDetergentMoney = res.totalDetergentMoney;
+      this.totalMoney = res.totalMoney;
+      this.totalRefundMoney = res.totalRefundMoney;
+      this.totalVipMoney = res.totalVipMoney;
       this.tableDataList.sort(this.ortId); //表格时间倒序
       this.linechart.setOption(this.lineChartOption);
     },
@@ -120,6 +134,45 @@ export default {
       let k = a.date.replace(/\-/g, '');
       let h = b.date.replace(/\-/g, '');
       return h - k;
+    },
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计';
+          return;
+        }
+        if (index === 1) {
+          sums[index] = this.totalCount;
+          return;
+        }
+        if (index === 2) {
+          sums[index] = this.totalMoney;
+          return;
+        }
+        if (index === 3) {
+          sums[index] = this.totalDetergentMoney;
+          return;
+        }
+        if (index === 4) {
+          sums[index] = this.totalVipMoney;
+          return;
+        }
+        if (index === 5) {
+          sums[index] = this.totalRefundMoney;
+          return;
+        }
+        if (index === 6) {
+          sums[index] = this.totalAlipayMoney;
+          return;
+        }
+        if (index === 7) {
+          sums[index] = this.totalAllMoney;
+          return;
+        }
+      });
+      return sums;
     },
     exportTable() {
       let payload = Object.assign({}, { startDate: this.searchData.time, endDate: this.searchData.time, shopIds: this.searchData.shopIds.join(','), dateLevel: 3, excel: true });

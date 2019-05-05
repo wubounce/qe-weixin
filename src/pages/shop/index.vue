@@ -314,6 +314,7 @@ export default {
     },
     async onAddorEditShop(row = {}) {
       this.addOrEditShopTitle = '新增店铺';
+      this.isOffAndOnReserve = false;
       this.addShopFrom = {
         shopId: '',
         areas: [],

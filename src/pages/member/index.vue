@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchData" :model="searchData" class="header-search">
-      <el-form-item label="人员姓名 ：" prop="search">
+      <el-form-item label="人员姓名/账号 ：" prop="search">
         <el-input v-model="searchData.search" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="负责店铺：" prop="shopId">
@@ -71,8 +71,8 @@
           <el-form-item label="手机号码：" class="shop-name" prop="phone" v-show="disabledEdit">
             <el-input v-model="addMemberFrom.phone" placeholder="手机号为登录人员账号，密码将自动短信发送"></el-input>
           </el-form-item>
-          <el-form-item label="人员姓名：" class="shop-name" prop="username" v-show="disabledEdit">
-            <el-input v-model="addMemberFrom.username" placeholder="请输入人员姓名"></el-input>
+          <el-form-item label="人员姓名：" class="shop-name" prop="username">
+            <el-input v-model="addMemberFrom.username" placeholder="请输入人员姓名" :disabled="!disabledEdit"></el-input>
           </el-form-item>
           <el-form-item label="负责店铺：" prop="operateShopIds">
             <multiple-shop v-model="addMemberFrom.operateShopIds" placeholder="请选择店铺"></multiple-shop>
@@ -83,7 +83,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitMemberFrom('addMemberFrom')">保存</el-button>
-            <el-button @click="addMemberDialogVisible = false">取消</el-button>
+            <el-button @click="resetAddMemberFrom('addMemberFrom');addMemberDialogVisible = false">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -214,6 +214,8 @@ export default {
         let updateOperateShopIds = res.operateShopNames ? res.operateShopNames.split(',') : [];
         this.addMemberFrom.operateShopIds = this.shopList.filter(v => updateOperateShopIds.some(k => k == v.shopName)).map(item => item.shopId);
         this.checkpermissionslist = res.list.map(item => item.menuId);
+        this.parentIds = res.list.filter(item => item.menuId <= 9).map(item => item.menuId); //在父级id中去掉首页和报表
+        this.checkpermissionslist = this.checkpermissionslist.filter(v => this.parentIds.indexOf(v) == -1); //取差集
       }
       this.addMemberDialogVisible = true;
     },
@@ -250,12 +252,18 @@ export default {
           payload.mIds = mIds.join(',');
           payload.id ? await updateOperatorInfoFun(payload) : await addOperatorFun(payload);
           this.$Message.success('操作成功！');
+          this.resetAddMemberFrom(formName);
           this.addMemberDialogVisible = false;
           this.getMemberDataToTable();
         } else {
           return false;
         }
       });
+    },
+    resetAddMemberFrom(formName) {
+      this.$refs[formName].resetFields();
+      this.$refs[formName].clearValidate();
+      this.checkpermissionslist = [];
     },
     // 删除人员
     handleDelete(row) {

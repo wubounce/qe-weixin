@@ -119,23 +119,23 @@
               <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="补偿金额(天)：" prop="compensateMoney">
-            <el-input v-model="compensateFrom.compensateMoney" placeholder="请填写"></el-input>
+          <el-form-item label="补偿金额(元)：" prop="compensateMoney">
+            <el-input v-model="compensateFrom.compensateMoney" placeholder="请填写" maxlength="5"></el-input>
           </el-form-item>
-          <el-form-item label="满减金额(天)：" prop="conditionMoney">
+          <el-form-item label="满减金额(元)：" prop="conditionMoney">
             <el-col :span="9">
-              <el-input v-model="compensateFrom.conditionMoney" placeholder="请填写"></el-input>
+              <el-input v-model="compensateFrom.conditionMoney" placeholder="请填写" maxlength="5"></el-input>
             </el-col>
             <el-col :span="15" style=" color: rgba(23, 26, 46, 0.45);">满{{compensateFrom.conditionMoney}}可用 </el-col>
           </el-form-item>
           <el-form-item label="有效期(天)：" prop="validDays">
             <el-col :span="9">
-              <el-input v-model.number="compensateFrom.validDays" placeholder="请填写"></el-input>
+              <el-input v-model="compensateFrom.validDays" placeholder="请填写" maxlength="3"></el-input>
             </el-col>
             <el-col :span="15" style=" color: rgba(23, 26, 46, 0.45);">有效期至{{validDaysEnd}}</el-col>
           </el-form-item>
           <el-form-item label="发放数量(张)：" prop="compensateNumber">
-            <el-input v-model.number="compensateFrom.compensateNumber" disabled placeholder="请填写"></el-input>
+            <el-input v-model="compensateFrom.compensateNumber" disabled placeholder="请填写" maxlength="3"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">保存</el-button>
@@ -187,6 +187,7 @@ export default {
       }
     };
     const validateValidDays = (rule, value, callback) => {
+      console.log(value);
       if (!value) {
         callback(new Error('有效期不能为空'));
       } else if (!validatNum(value)) {
@@ -231,7 +232,7 @@ export default {
         parentTypeId: [{ required: true, trigger: 'change', message: '请选择适用类型' }],
         compensateMoney: [{ trigger: 'blur', validator: validateCompensateMoney }],
         conditionMoney: [{ trigger: 'blur', validator: validateConditionMoney }],
-        validDays: [{ trigger: 'blur',  validator: validateValidDays }],
+        validDays: [{ trigger: 'blur', validator: validateValidDays }],
         compensateNumber: [{ trigger: 'blur', validator: validateCompensateNumber }]
       },
       machineParentTypeList: [],
@@ -394,8 +395,7 @@ export default {
     border: none;
   }
   li {
-    height: 40px;
-    line-height: 40px;
+    padding: 12px 0;
     border-bottom: 1px solid $under_line;
     span {
       color: rgba(23, 26, 46, 0.45);
