@@ -2,7 +2,7 @@
   <div class="date-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="earing-search">
       <el-form-item label="年份筛选：" prop="time">
-        <el-date-picker v-model="searchData.time" type="monthrange" align="right" unlink-panels :clearable="false" range-separator="~" start-placeholder="开始月份" end-placeholder="结束月份" value-format="yyyy-MM">
+        <el-date-picker v-model="searchData.time" type="monthrange" @change="checkedTime" :picker-options="pickerOptions" align="right" unlink-panels :clearable="false" range-separator="~" start-placeholder="开始月份" end-placeholder="结束月份" value-format="yyyy-MM">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="店铺筛选：" prop="shopIds">
@@ -63,6 +63,11 @@ export default {
       oderDataList: [],
       moneyDataList: [],
       reportDate: [],
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       searchData: {
         time: [
           moment()
@@ -88,6 +93,19 @@ export default {
   methods: {
     initChart() {
       this.linechart = echarts.init(document.getElementById('datelinechart'));
+    },
+    checkedTime(val) {
+      let minDate = new Date(val[0]);
+      let maxDate = new Date(val[1]);
+      let minYear = minDate.getFullYear();
+      let minMonth = minDate.getMonth() + 1;
+      let maxYear = maxDate.getFullYear();
+      let maxMonth = maxDate.getMonth() + 1;
+      let m = maxYear * 12 + maxMonth - (minYear * 12 + minMonth);
+      if (m >= 12) {
+        val = [];
+        this.$Message.error('最多查询跨度12个月');
+      }
     },
     searchForm() {
       this.getProfitDate();

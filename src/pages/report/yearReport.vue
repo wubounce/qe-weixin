@@ -2,7 +2,7 @@
   <div class="date-earing year-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="earing-search">
       <el-form-item label="年份筛选：" prop="time">
-        <el-date-picker v-model="searchData.time" type="year" placeholder="选择年" :clearable="false" value-format="yyyy"></el-date-picker>
+        <el-date-picker v-model="searchData.time" type="year" placeholder="选择年" :picker-options="pickerOptions" :clearable="false" value-format="yyyy"></el-date-picker>
       </el-form-item>
       <el-form-item label="店铺筛选：" prop="shopIds">
         <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
@@ -62,6 +62,11 @@ export default {
       oderDataList: [],
       moneyDataList: [],
       reportDate: [],
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       searchData: {
         time: moment().format('YYYY'),
         shopIds: []
