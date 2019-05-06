@@ -154,8 +154,8 @@ export default {
       // this.getShopList();
     },
     isTimeMaket: function(val) {
-      this.checkedList = val;
-      // this.getShopList();
+      this.isEditTime = val;
+      this.getShopList();
     }
   }
 };
