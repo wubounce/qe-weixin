@@ -7,7 +7,7 @@
         <div class="el-scrollbar">
           <div style="margin-right: -17px;">
             <div class="shop-search-text" style="">
-              <el-input v-model="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索" @input="getSearchShop"></el-input>
+              <el-input v-model.trim="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索"></el-input>
             </div>
             <ul class="el-scrollbar__view">
               <el-checkbox-group v-model="checkedList">
@@ -32,6 +32,7 @@
 
 <script type="text/ecmascript-6">
 import { shopListFun } from '@/service/report';
+import { delay } from '@/utils/tools';
 export default {
   props: {
     value: {
@@ -67,7 +68,7 @@ export default {
     getFilterShop() {
       this.visibleModel = true;
     },
-    async getShopList(shopName = '') {
+    async getShopList(shopName = this.state) {
       let payload = { shopName: shopName };
       let res = await shopListFun(payload);
       this.shopList = res;
@@ -84,9 +85,6 @@ export default {
       } else {
         this.$set(item, 'active', true);
       }
-    },
-    getSearchShop(val) {
-      this.getShopList(val);
     },
     resetCheckedShop() {
       this.checkedList = [];
@@ -110,6 +108,15 @@ export default {
     value: function(val) {
       this.checkedList = val;
       this.getShopList();
+    },
+    state: function(newVal) {
+      if (newVal) {
+        delay(() => {
+          this.getShopList();
+        }, 200);
+      } else {
+        this.getShopList();
+      }
     }
   }
 };
