@@ -41,7 +41,7 @@
         <el-table-column header-align="left" prop="userName" label="用户账号"></el-table-column>
         <el-table-column header-align="left" prop="money" label="金额">
           <template slot-scope="scope">
-            <span>{{ scope.row.money==0.00||scope.row.money==0 ? '-':scope.row.money | tofixd}}</span>
+            <span>{{ scope.row.money | tofixd }}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="origin" label="来源类型">
@@ -74,14 +74,7 @@ export default {
       tableDataList: [],
       shopList: [],
       searchData: {
-        time: [
-          moment()
-            .subtract(7, 'days')
-            .format('YYYY-MM-DD'),
-          moment()
-            .subtract(1, 'days')
-            .format('YYYY-MM-DD')
-        ],
+        time: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         shopId: '',
         machineId: '',
         origin: 0,

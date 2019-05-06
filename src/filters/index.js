@@ -6,7 +6,12 @@ const install = Vue => {
    * @description 保留两位小数
    */
   Vue.filter('tofixd', value => {
-    return Number(value).toFixed(2);
+    let tmp = null;
+    tmp =
+      value && Number(value) !== 0.0 && Number(value) !== 0
+        ? Number(value).toFixed(2)
+        : '-';
+    return tmp;
   });
 
   /**

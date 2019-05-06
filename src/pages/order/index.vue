@@ -51,12 +51,12 @@
               <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券{{scope.row.voucherPrice}}</p>
               <div slot="reference" class="name-wrapper">
                 <span size="medium">
-                  <span>{{ scope.row.discountTotalPirce=='0.00'||scope.row.discountTotalPirce=='0' ? '-':scope.row.discountTotalPirce}}</span>
+                  <span>{{ scope.row.discountTotalPirce | tofixd}}</span>
                   <svg-icon icon-class="xialajiantoushang" class="arrow" v-if="scope.row.discountTotalPirce>0" />
                 </span>
               </div>
             </el-popover>
-            <span v-else>{{ scope.row.discountTotalPirce=='0.00'||scope.row.discountTotalPirce=='0' ? '-':scope.row.discountTotalPirce}}</span>
+            <span v-else>{{ scope.row.discountTotalPirce | tofixd}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="payPrice" label="实付金额(元)" width="120"></el-table-column>
@@ -304,8 +304,6 @@ export default {
         tmp = Number(tmp).toFixed(2);
         this.$set(item, 'discountTotalPirce', tmp);
       });
-      console.log(this.orederDataToTable);
-
       this.total = res.total;
     },
     async lookShopDetail(row) {
