@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="multiple-shop-page">
     <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:placeholder}}
       <svg-icon icon-class="xialajiantouxia" class="filter-shop-arrow" /></span>
     <transition name="el-zoom-in-top">
@@ -22,8 +22,7 @@
               <div class="checked-shop-list">
                 <h3>已选店铺 ({{checkedList.length}})</h3>
                 <ul class="el-scrollbar__view" style="margin-right: -17px;">
-                  <li v-for="(item,index) in checkedListName" :key="index" :class="['shop-list',{'checked-active':item.active}]">
-                    {{item}}
+                  <li v-for="(item,index) in checkedListName" :key="index" :class="['shop-list',{'checked-active':item.active}]">{{item}}
                     <svg-icon icon-class="erjiguanbi" class="close-icon" @click="deleteCheckedSHop(item,index)" />
                   </li>
                 </ul>
@@ -94,7 +93,6 @@ export default {
       this.checkedListName = this.getCheckedListName();
       this.allShopList.forEach(v => this.checkedList.some(k => (k == v.shopId ? this.$set(v, 'active', true) : this.$set(v, 'active', false))));
       this.shopFilterName = this.checkedListName.join(',');
-      console.log(this.shopTypeIds, this.checkedList);
       this.indeterminateStatus();
     },
     indeterminateStatus() {
@@ -116,7 +114,6 @@ export default {
     },
     handleCheakedBg(item, val) {
       item.active ? this.$set(item, 'active', false) : this.$set(item, 'active', true);
-      console.log(val);
       this.indeterminateStatus(val);
       this.checkedListName = this.getCheckedListName();
     },
@@ -174,6 +171,9 @@ export default {
     width: 230px !important;
   }
 }
+.multiple-shop-page .shop-list .el-checkbox__label {
+  font-size: 12px !important;
+}
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
@@ -200,14 +200,6 @@ export default {
   margin-right: 12px;
   margin-top: 8px;
 }
-// .shop-filter {
-//   min-width: 565px;
-//   transform-origin: center top;
-//   z-index: 2009;
-//   position: absolute;
-//   left: 0px;
-//   top: 30px;
-// }
 .el-select-dropdown__item {
   padding: 0 24px;
   height: 34px;
@@ -232,10 +224,11 @@ export default {
   height: 34px;
   line-height: 34px;
   padding: 0 24px;
+  font-size: 12px;
 }
 .action {
   padding: 16px 24px;
-  font-size: 14px;
+  font-size: 12px;
   color: $menuText;
   cursor: pointer;
   p {

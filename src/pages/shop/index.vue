@@ -81,7 +81,7 @@
       </el-dialog>
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
-        <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="150px" v-if="addShopDialogVisible">
+        <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="160px" v-if="addShopDialogVisible">
           <el-form-item label="店铺名称：" class="shop-name" prop="shopName">
             <el-input v-model="addShopFrom.shopName" placeholder="店铺名称需为2-16个字，只支持中英文、_和-"></el-input>
           </el-form-item>
@@ -93,7 +93,7 @@
           <el-form-item label="选择区域：" prop="areas" style="width:520px;">
             <Area v-model="addShopFrom.areas" size="small" default-option="不限" />
           </el-form-item>
-          <el-form-item label="所在小区/大厦/学校：">
+          <el-form-item label="所在小区/大厦/学校：" class="map-search">
             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
             <div class="el-form-item__error" v-show="!isposition">所在小区/大厦/学校</div>
           </el-form-item>
@@ -434,6 +434,11 @@ export default {
 .el-vue-search-box-container .search-box-wrapper .search-btn {
   display: none !important;
 }
+.map-search .el-form-item__label:before {
+  content: '*';
+  color: #f56c6c;
+  margin-right: 4px;
+}
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
@@ -443,8 +448,7 @@ export default {
     border: none;
   }
   li {
-    height: 40px;
-    line-height: 40px;
+    padding: 11px;
     border-bottom: 1px solid $under_line;
     span {
       color: rgba(23, 26, 46, 0.45);
