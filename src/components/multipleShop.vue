@@ -1,5 +1,5 @@
 <template>
-  <div class="multiple-shop-page">
+  <div class="multiple-shop-page" v-clickoutside="handleClose">
     <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:placeholder}}
       <svg-icon icon-class="xialajiantouxia" class="filter-shop-arrow" /></span>
     <transition name="el-zoom-in-top">
@@ -81,6 +81,9 @@ export default {
     this.getShopList();
   },
   methods: {
+    handleClose(e) {
+      this.visibleModel = false;
+    },
     getFilterShop() {
       this.visibleModel = true;
     },
