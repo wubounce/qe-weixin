@@ -3,7 +3,8 @@
  */
 import fetch from '@/service/http';
 
-const loginApi = 'operator/webLogin'; // 登录 method 'post'
+// const loginApi = 'operator/webLogin'; // 登录 method 'post'
+const loginApi = 'operator/login'; // 登录 method 'post'
 const userDatilApi = 'operator/getOperator'; // 登录 method 'post'
 const codeLoginApi = 'operator/codeLogin'; // 手机验证码登录 method 'post'
 const sendLoginCodeApi = 'operator/sendLoginCode'; // 手机验证码登录发送验证码

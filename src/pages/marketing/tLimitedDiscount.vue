@@ -358,6 +358,7 @@ export default {
     },
     resetAddOrEditMaketFrom(formName) {
       this.addMaketFrom.weekCheckList = [];
+      this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
       this.addMaketDialogVisible = false;
     },

@@ -23,7 +23,7 @@
           </el-table>
           <p class="water-tip">1、关闭出水口开关用户则无法使用对应出水口接水 <br />2、此型号每个脉冲出水 1000 ml</p>
         </div>
-        <div v-if="deviceEditForm.parentTypeName === '充电桩'">
+        <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
           <el-form-item label="充电单价：" prop="waterAndChargeMachinePirce">
             <div class="add-discount">
               <el-input v-model="deviceEditForm.waterAndChargeMachinePirce" disabled></el-input>
@@ -81,7 +81,7 @@
               </li>
               <li>
                 <el-col :span="2">中功率</el-col>
-                <el-col :span="1">{{deviceEditForm.extraAttr.power1+1}}</el-col>
+                <el-col :span="1">{{deviceEditForm.extraAttr.power1}}</el-col>
                 <el-col class="line" :span="1">-</el-col>
                 <el-col :span="5">
                   <el-form-item prop="machineName">
@@ -92,7 +92,7 @@
               </li>
               <li>
                 <el-col :span="2">高功率</el-col>
-                <el-col :span="1">{{deviceEditForm.extraAttr.power2+1}}</el-col>
+                <el-col :span="1">{{deviceEditForm.extraAttr.power2}}</el-col>
                 <el-col class="line" :span="1">-</el-col>
                 <el-col :span="5">
                   <el-form-item prop="machineName">
@@ -114,7 +114,7 @@
           </el-table>
           <p class="water-tip">关闭充电口开关用户则无法使用对应充电口充电</p>
         </div>
-        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.notQuantitative===false&&deviceEditForm.parentTypeName !== '充电桩'">
+        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.notQuantitative===false&&deviceEditForm.subTypeId !== '435871915014357627'">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
@@ -290,8 +290,8 @@ export default {
       });
     },
     resetForm(formName) {
-      this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
+      this.$refs[formName].clearValidate();
       this.visible = false;
       this.$emit('closeDeviceEdit', this.visible);
     }

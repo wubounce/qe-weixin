@@ -261,8 +261,8 @@ export default {
       });
     },
     resetAddMemberFrom(formName) {
+      tthis.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
-      this.$refs[formName].clearValidate();
       this.checkpermissionslist = [];
     },
     // 删除人员

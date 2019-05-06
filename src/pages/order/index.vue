@@ -319,6 +319,7 @@ export default {
           let payload = Object.assign({}, this.compensateFrom);
           await compensateFun(payload);
           this.$Message.success('恭喜你，操作成功！');
+          this.$refs[formName].clearValidate();
           this.$refs[formName].resetFields();
           this.compensateDialogVisible = false;
           this.getOrderDataToTable();
@@ -328,6 +329,7 @@ export default {
       });
     },
     resetCompensateForm(formName) {
+      this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
       this.compensateDialogVisible = false;
     },

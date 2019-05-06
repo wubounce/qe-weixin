@@ -1,6 +1,6 @@
 <template>
   <el-form :model="deviceEditForm" :rules="deviceEditFormRules" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
-    <div class="base" v-if="deviceEditForm.notQuantitative===false">
+    <div class="base" v-if="deviceEditForm.notQuantitative===false&&deviceEditForm.subTypeId !== '435871915014357627'">
       <p class="device-type">设备类型：{{deviceEditForm.parentTypeName}}<span>|</span>设备型号：{{deviceEditForm.subTypeName}}</p>
       <el-form-item label="批量编辑选择：" class="check-batch-funtion">
         <el-radio-group v-model="checkBatchFuntion">
@@ -88,7 +88,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <div v-if="deviceEditForm.parentTypeName === '充电桩'">
+    <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
       <p class="device-type">设备类型：{{deviceEditForm.parentTypeName}}<span>|</span>设备型号：{{deviceEditForm.subTypeName}}</p>
       <el-form-item label="充电单价：" prop="waterAndChargeMachinePirce" class="check-batch-funtion">
         <div class="add-discount">
@@ -147,7 +147,7 @@
           </li>
           <li>
             <el-col :span="2">中功率</el-col>
-            <el-col :span="1">{{deviceEditForm.extraAttr.power1+1}}</el-col>
+            <el-col :span="1">{{deviceEditForm.extraAttr.power1}}</el-col>
             <el-col class="line" :span="1">-</el-col>
             <el-col :span="5">
               <el-form-item prop="power2">
@@ -158,7 +158,7 @@
           </li>
           <li>
             <el-col :span="2">高功率</el-col>
-            <el-col :span="1">{{deviceEditForm.extraAttr.power2+1}}</el-col>
+            <el-col :span="1">{{deviceEditForm.extraAttr.power2}}</el-col>
             <el-col class="line" :span="1">-</el-col>
             <el-col :span="5">
               <el-form-item prop="power3">
@@ -170,7 +170,7 @@
         </ul>
       </div>
     </div>
-    <div class="waterAndChargeMachinePirce" v-if="deviceEditForm.notQuantitative&&deviceEditForm.parentTypeName !== '充电桩'">
+    <div class="waterAndChargeMachinePirce" v-if="deviceEditForm.notQuantitative">
       <p class="device-type waterAndChargeMachinePirce-type">设备类型：{{deviceEditForm.parentTypeName}}</p>
       <p class="device-type waterAndChargeMachinePirce-type">设备型号：{{deviceEditForm.subTypeName}}</p>
       <el-form-item label="价格设置：" prop="waterAndChargeMachinePirce" class="water-machine-pirce">
