@@ -90,7 +90,7 @@ export default {
       if (!shopName) this.allShopList = res;
       this.shopTypeIds = res.map(item => item.shopId);
       this.shopList = res;
-      this.checkedListName = this.getCheckedListName();
+      this.checkedListName = this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
       this.allShopList.forEach(v => this.checkedList.some(k => (k == v.shopId ? this.$set(v, 'active', true) : this.$set(v, 'active', false))));
       this.shopFilterName = this.checkedListName.join(',');
       this.indeterminateStatus();
@@ -105,7 +105,8 @@ export default {
       return this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
     },
     handleCheckAllChange(val) {
-      this.checkedList = val ? [...this.checkedList, ...this.shopTypeIds] : [...this.checkedList];
+      this.checkedList = val ? this.shopTypeIds : [];
+      this.checkedList = Array.from(new Set(this.checkedList));
       this.isIndeterminate = false;
       this.shopList.forEach(item => {
         val ? this.$set(item, 'active', true) : this.$set(item, 'active', false);
@@ -155,7 +156,6 @@ export default {
     },
     isTimeMaket: function(val) {
       this.isEditTime = val;
-      this.getShopList();
     }
   }
 };

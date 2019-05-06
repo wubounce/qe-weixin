@@ -95,7 +95,7 @@
           </el-form-item>
           <el-form-item label="所在小区/大厦/学校：" class="map-search">
             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
-            <div class="el-form-item__error" v-show="!isposition">所在小区/大厦/学校</div>
+            <div class="el-form-item__error" v-show="!isposition">请填写所在小区/大厦/学校</div>
           </el-form-item>
           <el-form-item>
             <el-amap vid="amapDemo" :center="center" :zoom="zoom" :plugin="plugin" style="height: 320px;">

@@ -85,9 +85,12 @@
           <multiple-shop v-model="addMaketFrom.shopIds" @change="getShopFilter" :isTimeMaket="isTimeMaket" placeholder="请选择店铺"></multiple-shop>
         </el-form-item>
         <el-form-item label="适用类型：" prop="parentTypeIds">
-          <el-select v-model="addMaketFrom.parentTypeIds" placeholder="请先选择店铺" :disabled="hasShop">
+          <el-select v-model="addMaketFrom.parentTypeIds" placeholder="请先选择店铺" :disabled="hasShop" v-if="machineParentType.length>0">
             <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无设备</span>
             <el-option v-for="(item,index) in machineParentType" :key="index" :label="item.parentTypeName" :value="item.parentTypeId"></el-option>
+          </el-select>
+          <el-select placeholder="请先选择店铺" :disabled="hasShop" v-else>
+            <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无设备</span>
           </el-select>
         </el-form-item>
         <el-form-item label="优惠日期：" prop="date">
@@ -227,6 +230,7 @@ export default {
       this.getTimeMaketingDataToTable();
     },
     getShopFilter(val) {
+      this.addMaketFrom.parentTypeIds = '';
       if (val.length >= 1) {
         this.getMarketlistParentType();
       }
@@ -281,15 +285,14 @@ export default {
       this.total = res.total;
     },
     async openAddBDDialog(row = {}) {
-      this.addOrEditMaketTitle = '新增优惠';
-      this.isTimeMaket = '123';
-      this.addMaketDialogVisible = true;
       if (row.id) {
         this.addOrEditMaketTitle = '编辑优惠';
         this.isTimeMaket = '';
-        this.getMaketDetail(row).then(() => {
-          this.addMaketDialogVisible = true;
-        });
+        this.getMaketDetail(row);
+      } else {
+        this.addOrEditMaketTitle = '新增优惠';
+        this.isTimeMaket = '123';
+        this.addMaketDialogVisible = true;
       }
     },
     async getMaketDetail(row) {
@@ -297,6 +300,8 @@ export default {
       let res = await detailMarketFun(payload);
       let time = res.noTime.split('-');
       let weeklist = res.noWeek ? res.noWeek.split(',') : [];
+      console.log(weeklist);
+
       let startTime = res.noDiscountStart ? moment(res.noDiscountStart).format('YYYY-MM-DD') : '';
       let endTime = res.noDiscountEnd ? moment(res.noDiscountEnd).format('YYYY-MM-DD') : '';
       let beshop = [];
@@ -315,11 +320,13 @@ export default {
         discount: (res.discountVO / 10).toFixed(1),
         weekCheckList: weeklist
       };
-      if (weeklist.length >= 1) {
+      if (Number(this.addMaketFrom.week) !== 8 && Number(this.addMaketFrom.week) !== 9 && weeklist.length >= 1) {
         this.addMaketFrom.week = 10;
       }
+      console.log(this.addMaketFrom.week, this.addMaketFrom.weekCheckList);
+
       this.getMarketlistParentType();
-      return Promise.resolve();
+      this.addMaketDialogVisible = true;
     },
     onSubmitAddOrEditMaketFrom(formName) {
       this.$refs[formName].validate(valid => {

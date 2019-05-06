@@ -2,7 +2,7 @@
   <div class="date-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="日期筛选：" prop="time">
-        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
+        <el-date-picker size="small" v-model="searchData.time" type="daterange" @change="checkedTime" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="店铺：" prop="shopId">
@@ -41,7 +41,7 @@
         <el-table-column header-align="left" prop="userName" label="用户账号"></el-table-column>
         <el-table-column header-align="left" prop="money" label="金额">
           <template slot-scope="scope">
-            <span>{{ scope.row.money=='0.00'||scope.row.money=='0' ? '-':scope.row.money | tofixd}}</span>
+            <span>{{ scope.row.money==0.00||scope.row.money==0 ? '-':scope.row.money | tofixd}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="origin" label="来源类型">
@@ -116,12 +116,22 @@ export default {
       let res = await shopListFun();
       this.shopList = res;
     },
+    checkedTime(val) {
+      let oneTime = new Date().setTime(new Date(val[0]).getTime());
+      let twoTime = new Date().setTime(new Date(val[1]).getTime());
+      if (oneTime + 3600 * 1000 * 24 * 31 <= twoTime) {
+        //判断开始时间+30天是否小于结束时间
+        this.$Message.error('最多查询跨度31天');
+        return false;
+      }
+    },
     checkedShop(val) {
       this.searchData.machineId = '';
       this.getmachineParentType(val);
     },
     searchForm() {
       this.searchData.page = 1;
+      this.checkedTime(this.searchData.time);
       this.getProfitDate();
     },
     resetSearchForm(formName) {

@@ -111,7 +111,7 @@
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
             <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState ===4">
-              <span v-if="scope.row.machineTypeName==='洗鞋机'||scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName !== '通用脉冲洗衣机'">
+              <span v-if="scope.row.machineTypeName==='洗鞋机'&&scope.row.subTypeName.includes('脉冲')===false||scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName.includes('脉冲')===false">
                 <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" /></span>
             </el-tooltip>
             <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'&& scope.row.notQuantitative===false">
@@ -335,10 +335,10 @@ export default {
       let res = null;
       this.searchData.subTypeId = '';
       if (val) {
-        let payload = { parentTypeId: val, onlyMine: true, shopId: this.searchData.shopId };
+        let payload = { parentTypeId: val, shopId: this.searchData.shopId };
         res = await getlistSubTypeFun(payload); //获取某个设备下二级类型
       } else {
-        res = await listSubTypeAllFun(); //获取全部设备二级类型
+        res = await listSubTypeAllFun({ onlyMine: true }); //获取全部设备二级类型
       }
       this.machineSubTypeList = res;
     },

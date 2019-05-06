@@ -69,7 +69,7 @@ export default {
       reportDate: [],
       pickerOptions: {
         disabledDate(time) {
-          return time.getTime() > Date.now();
+          return time.getTime() > Date.now() + 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
         }
       },
       searchData: {
