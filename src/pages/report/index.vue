@@ -12,32 +12,28 @@ import dateReport from '@/pages/report/dateReport';
 import monthReport from '@/pages/report/monthReport';
 import yearReport from '@/pages/report/yearReport';
 export default {
-  data () {
+  data() {
     return {
       currentView: 'dateReport', // 默认选中第一项
       num: 0,
-      tabTitle: [
-        { component: 'dateReport', title: '日报表' },
-        { component: 'monthReport', title: '月报表' },
-        { component: 'yearReport', title: '年报表' },
-      ]
+      tabTitle: [{ component: 'dateReport', title: '日报表' }, { component: 'monthReport', title: '月报表' }, { component: 'yearReport', title: '季度报表' }]
     };
   },
   components: {
     dateReport,
     monthReport,
-    yearReport,
+    yearReport
   },
   methods: {
-    tabChange (tabItem, index) {
+    tabChange(tabItem, index) {
       this.currentView = tabItem;
-      this.num = index
+      this.num = index;
     }
   }
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .earing-page {
   background: #fff;
   padding: 16px 32px 32px 32px;
@@ -52,6 +48,7 @@ export default {
       line-height: 22px;
       margin-right: 44px;
       padding-bottom: 11px;
+      cursor: pointer;
     }
     .active {
       color: $menuText;

@@ -49,7 +49,11 @@
             <span>{{scope.row.noWeek?scope.row.noWeek:'' | week}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="noTime" label="每日活动时段"></el-table-column>
+        <el-table-column header-align="left" prop="noTime" label="每日活动时段">
+          <template slot-scope="scope">
+            <span>{{scope.row.noTime === '00:00-23:59'? '全天':scope.row.noTime}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="discountVO" label="优惠折扣">
           <template slot-scope="scope">
             <span>{{scope.row.discountVO | discountToFIexd}} 折</span>
@@ -58,12 +62,12 @@
         <el-table-column header-align="left" prop="expired" label="活动状态" :formatter="formatterExpired"></el-table-column>
         <el-table-column header-align="left" label="开启/关闭">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.switchStatus" @change="updataeStatus(scope.row)"></el-switch>
+            <el-switch v-model="scope.row.switchStatus" v-if="scope.row.expired!==2" @change="updataeStatus(scope.row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column header-align="left" label="操作">
           <template slot-scope="scope">
-            <el-tooltip content="编辑" placement="top" effect="dark">
+            <el-tooltip content="编辑" placement="top" effect="dark" v-if="scope.row.expired!==2">
               <i class="el-icon-edit" @click="openAddBDDialog(scope.row)"></i>
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
@@ -81,24 +85,27 @@
           <multiple-shop v-model="addMaketFrom.shopIds" @change="getShopFilter" :isTimeMaket="isTimeMaket" placeholder="请选择店铺"></multiple-shop>
         </el-form-item>
         <el-form-item label="适用类型：" prop="parentTypeIds">
-          <el-select v-model="addMaketFrom.parentTypeIds" placeholder="请先选择店铺" :disabled="hasShop">
+          <el-select v-model="addMaketFrom.parentTypeIds" placeholder="请先选择店铺" :disabled="hasShop" v-if="machineParentType.length>0">
             <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无设备</span>
             <el-option v-for="(item,index) in machineParentType" :key="index" :label="item.parentTypeName" :value="item.parentTypeId"></el-option>
           </el-select>
+          <el-select placeholder="请先选择店铺" :disabled="hasShop" v-else>
+            <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无设备</span>
+          </el-select>
         </el-form-item>
         <el-form-item label="优惠日期：" prop="date">
-          <el-date-picker size="small" v-model="addMaketFrom.date" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
+          <el-date-picker size="small" v-model="addMaketFrom.date" :picker-options="pickerOptions" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
         </el-form-item>
         <el-form-item label="活动日：" class="shop-name active-date" prop="week">
-          <el-radio-group v-model="addMaketFrom.week" @change="changeActiveDate">
-            <el-radio :label="9">每天</el-radio>
-            <el-radio :label="8">周一～周五</el-radio>
-            <el-radio :label="10">自定义</el-radio>
+          <el-radio-group v-model="addMaketFrom.week">
+            <el-radio :label="9" @click.native="changeCustomWeekVisible(9)">每天</el-radio>
+            <el-radio :label="8" @click.native="changeCustomWeekVisible(8)">周一～周五</el-radio>
+            <el-radio :label="10" @click.native="changeCustomWeekVisible(10)">自定义</el-radio>
           </el-radio-group>
           <active-week v-model="addMaketFrom.weekCheckList" @getcustomWeekCheckList="getcustomWeekCheckList(arguments)" :visible="weekFilterVisible" />
         </el-form-item>
         <el-form-item label="每日活动时段：" prop="time">
-          <el-time-picker is-range v-model="addMaketFrom.time" placeholder="请选择" value-format="HH:mm"></el-time-picker>
+          <el-time-picker is-range v-model="addMaketFrom.time" placeholder="请选择" format="HH:mm" value-format="HH:mm"></el-time-picker>
         </el-form-item>
         <el-form-item label="优惠折扣：" prop="discount">
           <div class="add-discount">
@@ -135,6 +142,18 @@ export default {
     activeWeek
   },
   data() {
+    const validateDiscount = (rule, value, callback) => {
+      let reg = /^[0-9]{1}(\.[0-9])?$/;
+      if (!value) {
+        return callback(new Error('折扣不能为空'));
+      } else if (!reg.test(value)) {
+        callback(new Error('折扣请填写1到9的数字,可保留一位小数'));
+      } else if (Number(value) === 0) {
+        callback(new Error('折扣请填写1到9的数字,可保留一位小数'));
+      } else {
+        callback();
+      }
+    };
     return {
       searchData: {
         shopId: '',
@@ -147,6 +166,13 @@ export default {
       isTimeMaket: '123',
       addMaketDialogVisible: false,
       weekFilterVisible: false,
+      pickerOptions: {
+        disabledDate(time) {
+          let now = new Date();
+          let yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).getTime();
+          return time.getTime() < yesterday;
+        }
+      },
       addMaketFrom: {
         timeId: '',
         week: '',
@@ -158,12 +184,12 @@ export default {
         weekCheckList: []
       },
       addMaketFromRules: {
-        shopIds: [{ required: true, type: 'array', trigger: 'change', message: '请选择适用店铺' }],
+        shopIds: [{ required: true, type: 'array', trigger: 'blur', message: '请选择适用店铺' }],
         parentTypeIds: [{ required: true, trigger: 'change', message: '请填写适用类型' }],
         date: [{ required: true, type: 'array', trigger: 'change', message: '请选择优惠日期' }],
-        week: [{ required: true, trigger: 'blur', message: '请选择活动日' }],
+        week: [{ required: true, trigger: 'change', message: '请选择活动日' }],
         time: [{ required: true, type: 'array', trigger: 'change', message: '请选择每日活动时间段' }],
-        discount: [{ required: true, message: '请输入折扣', trigger: 'blur' }, { pattern: /^[0-9]{1}(\.[0-9])?$/, message: '折扣请填写1到9的数字,可保留一位小数', trigger: 'blur' }]
+        discount: [{ required: true, trigger: 'blur', validator: validateDiscount }]
       },
       machineParentType: [],
       hasShop: true
@@ -194,14 +220,17 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       this.getTimeMaketingDataToTable();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getTimeMaketingDataToTable();
     },
     getShopFilter(val) {
+      this.addMaketFrom.parentTypeIds = '';
       if (val.length >= 1) {
         this.getMarketlistParentType();
       }
@@ -213,13 +242,14 @@ export default {
       this.addMaketFrom.weekCheckList = data[0];
       this.weekFilterVisible = data[1];
     },
-    changeActiveDate(val) {
+    changeCustomWeekVisible(val) {
       if (val === 10) {
         this.weekFilterVisible = true;
       } else {
         this.weekFilterVisible = false;
         this.addMaketFrom.weekCheckList = [];
       }
+      console.log(this.addMaketFrom);
     },
     changeParentType() {
       if (this.addMaketFrom.shopIds.length <= 0) {
@@ -255,15 +285,14 @@ export default {
       this.total = res.total;
     },
     async openAddBDDialog(row = {}) {
-      this.addOrEditMaketTitle = '新增优惠';
-      this.isTimeMaket = '123';
-      this.addMaketDialogVisible = true;
       if (row.id) {
         this.addOrEditMaketTitle = '编辑优惠';
         this.isTimeMaket = '';
-        this.getMaketDetail(row).then(() => {
-          this.addMaketDialogVisible = true;
-        });
+        this.getMaketDetail(row);
+      } else {
+        this.addOrEditMaketTitle = '新增优惠';
+        this.isTimeMaket = '123';
+        this.addMaketDialogVisible = true;
       }
     },
     async getMaketDetail(row) {
@@ -271,6 +300,8 @@ export default {
       let res = await detailMarketFun(payload);
       let time = res.noTime.split('-');
       let weeklist = res.noWeek ? res.noWeek.split(',') : [];
+      console.log(weeklist);
+
       let startTime = res.noDiscountStart ? moment(res.noDiscountStart).format('YYYY-MM-DD') : '';
       let endTime = res.noDiscountEnd ? moment(res.noDiscountEnd).format('YYYY-MM-DD') : '';
       let beshop = [];
@@ -289,11 +320,13 @@ export default {
         discount: (res.discountVO / 10).toFixed(1),
         weekCheckList: weeklist
       };
-      if (weeklist.length > 1) {
+      if (Number(this.addMaketFrom.week) !== 8 && Number(this.addMaketFrom.week) !== 9 && weeklist.length >= 1) {
         this.addMaketFrom.week = 10;
       }
+      console.log(this.addMaketFrom.week, this.addMaketFrom.weekCheckList);
+
       this.getMarketlistParentType();
-      return Promise.resolve();
+      this.addMaketDialogVisible = true;
     },
     onSubmitAddOrEditMaketFrom(formName) {
       this.$refs[formName].validate(valid => {
@@ -304,7 +337,14 @@ export default {
           payload.startTime = payload.date ? payload.date[0] : null;
           payload.endTime = payload.date ? payload.date[1] : null;
           payload.date = null;
-          if (payload.week === 10) payload.week = payload.weekCheckList.join(',');
+          if (payload.week === 10) {
+            if (payload.weekCheckList.length > 0) {
+              payload.week = payload.weekCheckList.join(',');
+            } else {
+              this.$Message.error('请选择自定义活动日');
+              return false;
+            }
+          }
           payload.parentTypeIds = payload.parentTypeIds == '全部' ? '' : `'${payload.parentTypeIds}'`;
           addOruPdateFun(payload).then(() => {
             this.$Message.success('操作成功');

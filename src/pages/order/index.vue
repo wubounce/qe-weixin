@@ -41,7 +41,7 @@
         <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120"></el-table-column>
         <el-table-column header-align="left" prop="" label="优惠金额(元)" width="120">
           <template slot-scope="scope">
-            <el-popover ref="popover" trigger="hover" placement="bottom">
+            <el-popover ref="popover" trigger="hover" placement="bottom" v-if="scope.row.discountTotalPirce&&scope.row.discountTotalPirce>0">
               <p v-if="scope.row.discountType==1 && scope.row.discountPrice>0">VIP会员卡{{ scope.row.discountPrice }}</p>
               <p v-if="scope.row.discountType==2 && scope.row.discountPrice>0 || scope.row.discountType===null&&scope.row.discountPrice>0">限时优惠{{ scope.row.discountPrice }}</p>
               <div v-if="scope.row.source!=3&&scope.row.voucherPrice>0">
@@ -49,13 +49,14 @@
                 <p class="rowstyle" style="font-size:10px;" v-if="scope.row.platformPayPrice>0">(优惠券平台承担{{scope.row.platformPayPrice}})</p>
               </div>
               <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券{{scope.row.voucherPrice}}</p>
+              <div slot="reference" class="name-wrapper">
+                <span size="medium">
+                  <span>{{ scope.row.discountTotalPirce=='0.00'||scope.row.discountTotalPirce=='0' ? '-':scope.row.discountTotalPirce}}</span>
+                  <svg-icon icon-class="xialajiantoushang" class="arrow" v-if="scope.row.discountTotalPirce>0" />
+                </span>
+              </div>
             </el-popover>
-            <div v-popover:popover class="name-wrapper">
-              <span size="medium">
-                <span>{{ scope.row.discountTotalPirce}}</span>
-                <svg-icon icon-class="xialajiantoushang" class="arrow" v-if="scope.row.discountTotalPirce>0" />
-              </span>
-            </div>
+            <span v-else>{{ scope.row.discountTotalPirce=='0.00'||scope.row.discountTotalPirce=='0' ? '-':scope.row.discountTotalPirce}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="payPrice" label="实付金额(元)" width="120"></el-table-column>
@@ -119,23 +120,23 @@
               <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="补偿金额(天)：" prop="compensateMoney">
-            <el-input v-model="compensateFrom.compensateMoney" placeholder="请填写"></el-input>
+          <el-form-item label="补偿金额(元)：" prop="compensateMoney">
+            <el-input v-model="compensateFrom.compensateMoney" placeholder="请填写" maxlength="5"></el-input>
           </el-form-item>
-          <el-form-item label="满减金额(天)：" prop="conditionMoney">
+          <el-form-item label="满减金额(元)：" prop="conditionMoney">
             <el-col :span="9">
-              <el-input v-model="compensateFrom.conditionMoney" placeholder="请填写"></el-input>
+              <el-input v-model="compensateFrom.conditionMoney" placeholder="请填写" maxlength="5"></el-input>
             </el-col>
             <el-col :span="15" style=" color: rgba(23, 26, 46, 0.45);">满{{compensateFrom.conditionMoney}}可用 </el-col>
           </el-form-item>
           <el-form-item label="有效期(天)：" prop="validDays">
             <el-col :span="9">
-              <el-input v-model.number="compensateFrom.validDays" placeholder="请填写"></el-input>
+              <el-input v-model="compensateFrom.validDays" placeholder="请填写" maxlength="3"></el-input>
             </el-col>
             <el-col :span="15" style=" color: rgba(23, 26, 46, 0.45);">有效期至{{validDaysEnd}}</el-col>
           </el-form-item>
           <el-form-item label="发放数量(张)：" prop="compensateNumber">
-            <el-input v-model.number="compensateFrom.compensateNumber" placeholder="请填写"></el-input>
+            <el-input v-model="compensateFrom.compensateNumber" disabled placeholder="请填写" maxlength="3"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">保存</el-button>
@@ -148,7 +149,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { orderListFun, orderDetailFun, compensateFun, machineResetFun, machineBootFun, ordeRrefundFun } from '@/service/order';
+import { orderListFun, orderDetailFun, compensateFun, machineResetFun, machineBootFun, ordeRrefundFun, isReleaseCompensateFun } from '@/service/order';
 import { getlistParentTypeFun } from '@/service/device';
 import { orderStatus, PayType } from '@/utils/mapping';
 import { validatPrice, validatNum } from '@/utils/validate';
@@ -162,11 +163,13 @@ export default {
   data() {
     const validateCompensateMoney = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('补偿面额不能为空'));
+        return callback(new Error('补偿金额不能为空'));
       } else if (!validatPrice(value) || Number(value) === 0) {
-        callback(new Error('补偿面额必须大于0，支持两位小数'));
+        callback(new Error('补偿金额必须大于0，支持两位小数'));
+      } else if (Number(value) > this.compensateFrom.markPrice) {
+        callback(new Error('补偿金额不能超过订单原价'));
       } else if (Number(value) > 99) {
-        callback(new Error('补偿面额输入不能超过99'));
+        callback(new Error('补偿金额输入不能超过99'));
       } else {
         callback();
       }
@@ -179,12 +182,13 @@ export default {
       } else if (Number(value) > 99) {
         callback(new Error('满减金额输入不能超过99'));
       } else if (Number(value) !== 0 && Number(value) < Number(this.compensateFrom.compensateMoney)) {
-        callback(new Error('满减金额不能小于补偿面额'));
+        callback(new Error('满减金额不能小于补偿金额'));
       } else {
         callback();
       }
     };
     const validateValidDays = (rule, value, callback) => {
+      console.log(value);
       if (!value) {
         callback(new Error('有效期不能为空'));
       } else if (!validatNum(value)) {
@@ -222,15 +226,15 @@ export default {
         compensateMoney: '',
         conditionMoney: '',
         validDays: '',
-        compensateNumber: ''
+        compensateNumber: '1'
       },
       compensateDialogVisible: false,
       compensateFormRules: {
         parentTypeId: [{ required: true, trigger: 'change', message: '请选择适用类型' }],
-        compensateMoney: [{ required: true, trigger: 'blur', message: '请填写补偿面额', validator: validateCompensateMoney }],
-        conditionMoney: [{ required: true, trigger: 'blur', message: '请选择满减金额', validator: validateConditionMoney }],
-        validDays: [{ required: true, trigger: 'blur', message: '请填写有效期', validator: validateValidDays }],
-        compensateNumber: [{ required: true, trigger: 'blur', message: '请填写发放数量', validator: validateCompensateNumber }]
+        compensateMoney: [{ trigger: 'blur', validator: validateCompensateMoney }],
+        conditionMoney: [{ trigger: 'blur', validator: validateConditionMoney }],
+        validDays: [{ trigger: 'blur', validator: validateValidDays }],
+        compensateNumber: [{ trigger: 'blur', validator: validateCompensateNumber }]
       },
       machineParentTypeList: [],
       hh: false
@@ -265,10 +269,12 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       this.getOrderDataToTable();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getOrderDataToTable();
     },
@@ -298,6 +304,8 @@ export default {
         tmp = Number(tmp).toFixed(2);
         this.$set(item, 'discountTotalPirce', tmp);
       });
+      console.log(this.orederDataToTable);
+
       this.total = res.total;
     },
     async lookShopDetail(row) {
@@ -356,17 +364,24 @@ export default {
         });
       });
     },
-    handleCompensate(row) {
-      this.compensateDialogVisible = true;
-      this.$set(this.compensateFrom, 'shopName', row.shopName);
-      this.$set(this.compensateFrom, 'orderNo', row.orderNo);
-      this.$set(this.compensateFrom, 'phone', row.phone);
-      this.compensateFrom.parentTypeId = row.parentTypeId;
-      this.compensateFrom.compensateMoney = row.markPrice;
-      this.compensateFrom.conditionMoney = row.markPrice;
-      this.compensateFrom.validDays = 5;
-      this.compensateFrom.compensateNumber = 1;
-      this.getmachineParentType(row.shopId);
+    async handleCompensate(row) {
+      let payload = { orderNo: row.orderNo, memberId: row.userId };
+      let res = await isReleaseCompensateFun(payload);
+      if (Number(res.available) === 0) {
+        this.$Message.error('一个订单只能补偿一次');
+      } else {
+        this.compensateDialogVisible = true;
+        this.$set(this.compensateFrom, 'shopName', row.shopName);
+        this.$set(this.compensateFrom, 'orderNo', row.orderNo);
+        this.$set(this.compensateFrom, 'phone', row.phone);
+        this.$set(this.compensateFrom, 'markPrice', row.markPrice);
+        this.compensateFrom.parentTypeId = row.parentTypeId;
+        this.compensateFrom.compensateMoney = row.markPrice;
+        this.compensateFrom.conditionMoney = row.markPrice;
+        this.compensateFrom.validDays = 5;
+        this.compensateFrom.compensateNumber = 1;
+        this.getmachineParentType(row.shopId);
+      }
     }
   }
 };
@@ -383,8 +398,7 @@ export default {
     border: none;
   }
   li {
-    height: 40px;
-    line-height: 40px;
+    padding: 12px 0;
     border-bottom: 1px solid $under_line;
     span {
       color: rgba(23, 26, 46, 0.45);

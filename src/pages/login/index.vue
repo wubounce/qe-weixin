@@ -147,6 +147,9 @@ export default {
     left: 50%;
     transform: translateX(-50%);
   }
+  .svg-icon {
+    margin-top: 13px;
+  }
   .login-person {
     position: absolute;
     bottom: -68px;

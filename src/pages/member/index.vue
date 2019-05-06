@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form :inline="true" ref="searchData" :model="searchData" class="header-search">
-      <el-form-item label="人员姓名 ：" prop="search">
+      <el-form-item label="人员姓名/账号 ：" prop="search">
         <el-input v-model="searchData.search" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="负责店铺：" prop="shopId">
@@ -68,11 +68,11 @@
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditMemberTitle" :visible.sync="addMemberDialogVisible" @close="addMemberDialogVisible = false" width="760px" height="768px" top="20px">
         <el-form ref="addMemberFrom" :model="addMemberFrom" :rules="addMemberFormRules" class="add-shop-from" label-width="150px" v-if="addMemberDialogVisible">
-          <el-form-item label="手机号码：" class="shop-name" prop="phone">
+          <el-form-item label="手机号码：" class="shop-name" prop="phone" v-show="disabledEdit">
             <el-input v-model="addMemberFrom.phone" placeholder="手机号为登录人员账号，密码将自动短信发送"></el-input>
           </el-form-item>
           <el-form-item label="人员姓名：" class="shop-name" prop="username">
-            <el-input v-model="addMemberFrom.username" placeholder="请输入人员姓名"></el-input>
+            <el-input v-model="addMemberFrom.username" placeholder="请输入人员姓名" :disabled="!disabledEdit"></el-input>
           </el-form-item>
           <el-form-item label="负责店铺：" prop="operateShopIds">
             <multiple-shop v-model="addMemberFrom.operateShopIds" placeholder="请选择店铺"></multiple-shop>
@@ -83,7 +83,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitMemberFrom('addMemberFrom')">保存</el-button>
-            <el-button @click="addMemberDialogVisible = false">取消</el-button>
+            <el-button @click="resetAddMemberFrom('addMemberFrom');addMemberDialogVisible = false">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -126,7 +126,7 @@ export default {
       addMemberFormRules: {
         phone: [{ required: true, trigger: 'change', message: '请填写手机号' }, { pattern: /^(1)\d{10}$/, message: '请填写正确的手机号', trigger: 'blur' }],
         username: [{ required: true, trigger: 'blur', message: '请填写人员姓名' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z]{2,16}$/, message: '人员姓名需为2-16个字，只支持中英文', trigger: 'blur' }],
-        operateShopIds: [{ required: true, type: 'array', trigger: 'change', message: '请选择负责店铺' }]
+        operateShopIds: [{ required: true, type: 'array', trigger: 'blur', message: '请选择负责店铺' }]
       },
       allMenu: [],
       permissionsData: [],
@@ -135,7 +135,8 @@ export default {
         label: 'name'
       },
       parentIds: [],
-      checkpermissionslist: []
+      checkpermissionslist: [],
+      disabledEdit: true
     };
   },
   filters: {},
@@ -157,18 +158,20 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       let payload = Object.assign({}, this.searchData);
       this.getMemberDataToTable(payload);
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getMemberDataToTable();
     },
     async getMemberDataToTable() {
       let payload = Object.assign({}, this.searchData);
       let res = await operatorListFun(payload);
-      this.memberDataToTable = res.items;
+      this.memberDataToTable = res.items || [];
       this.memberDataToTable.forEach(item => {
         if (item.isLock === 0) {
           item.isLock = true;
@@ -191,6 +194,7 @@ export default {
     },
     async openAddBDDialog(row = {}) {
       this.addOrEditMemberTitle = '新增人员';
+      this.disabledEdit = true;
       this.checkpermissionslist = [];
       this.parentIds = [];
       this.addMemberFrom = {
@@ -201,6 +205,7 @@ export default {
       };
       if (row.id) {
         this.addOrEditMemberTitle = '编辑人员';
+        this.disabledEdit = false;
         let payload = { id: row.id };
         let res = await getOperatorInfoFun(payload);
         this.addMemberFrom.id = res.id;
@@ -209,6 +214,8 @@ export default {
         let updateOperateShopIds = res.operateShopNames ? res.operateShopNames.split(',') : [];
         this.addMemberFrom.operateShopIds = this.shopList.filter(v => updateOperateShopIds.some(k => k == v.shopName)).map(item => item.shopId);
         this.checkpermissionslist = res.list.map(item => item.menuId);
+        this.parentIds = res.list.filter(item => item.menuId <= 9).map(item => item.menuId); //在父级id中去掉首页和报表
+        this.checkpermissionslist = this.checkpermissionslist.filter(v => this.parentIds.indexOf(v) == -1); //取差集
       }
       this.addMemberDialogVisible = true;
     },
@@ -221,7 +228,7 @@ export default {
     async menuSelect() {
       let res = await permsMenuFun(); //拼接权限菜单
       this.allMenu = res;
-      this.permissionsData = getTrees(res, 0); //兼容app
+      this.permissionsData = getTrees(res, 0).filter(item => item.name !== '营销管理'); //兼容app
     },
     handleCheck() {
       this.checkpermissionslist = this.$refs.tree.getCheckedKeys(true);
@@ -245,12 +252,18 @@ export default {
           payload.mIds = mIds.join(',');
           payload.id ? await updateOperatorInfoFun(payload) : await addOperatorFun(payload);
           this.$Message.success('操作成功！');
+          this.resetAddMemberFrom(formName);
           this.addMemberDialogVisible = false;
           this.getMemberDataToTable();
         } else {
           return false;
         }
       });
+    },
+    resetAddMemberFrom(formName) {
+      this.$refs[formName].resetFields();
+      this.$refs[formName].clearValidate();
+      this.checkpermissionslist = [];
     },
     // 删除人员
     handleDelete(row) {

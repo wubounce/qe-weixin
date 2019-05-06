@@ -18,7 +18,7 @@ export const sourceType = {
 };
 
 export const earningType = {
-  0: '收入',
+  1: '收入',
   3: '退款'
 };
 
@@ -36,8 +36,7 @@ export const deviceSearchStatus = {
   1: '空闲',
   2: '运行',
   4: '故障',
-  8: '离线',
-  16: '超时未工作'
+  8: '离线'
 };
 
 // 设备状态类型
@@ -88,16 +87,18 @@ export const PayType = ststus => {
       return '其他';
     case 1:
       return '支付宝';
+    case 2:
+      return '余额';
+    case 3:
+      return '微信 ';
+    case 4:
+      return '受限余额 ';
     case 11:
       return '支付宝';
     case 12:
       return '支付宝';
     case 13:
       return '支付宝';
-    case 2:
-      return '余额';
-    case 3:
-      return '微信 ';
     case 31:
       return '微信 ';
     case 32:

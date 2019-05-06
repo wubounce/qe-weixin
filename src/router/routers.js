@@ -34,12 +34,6 @@ export default [
     name: 'forgotpwd'
   },
   {
-    path: '/userAgreement',
-    component: () => import('@/pages/userAgreement/index'),
-    hidden: true,
-    name: 'userAgreement'
-  },
-  {
     path: '/alipay',
     component: () => import('@/pages/alipay/index'),
     hidden: true,

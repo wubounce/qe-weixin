@@ -17,6 +17,7 @@ const orderFlowApi = 'operatorBalanceLog/orderFlow'; //店铺或设备-订单流
 const excelDayFlowApi = 'operatorBalanceLog/excelDayFlow'; // 日流水导出excel method 'post'
 const excelOrderFlowlApi = 'operatorBalanceLog/excelOrderFlow'; // 订单流水导出excel method 'post'
 const listByShopNameApi = 'shop/listByShopName'; // 店铺名称模糊搜索 method 'post'
+const manageSimpleListApi = '/machine/manageSimpleList'; // 店铺名里的设备列表 method 'post'
 
 export const areaListFun = payload => fetch.post(areaListApi, payload); //获取区域列表
 export const manageListFun = payload => fetch.post(manageListApi, payload); //店铺列表
@@ -41,3 +42,6 @@ export const excelOrderFlowlFun = payload =>
 // 店铺名称模糊搜索
 export const listByShopNameFun = payload =>
   fetch.post(listByShopNameApi, payload);
+// 店铺名里的设备列表
+export const manageSimpleListFun = payload =>
+  fetch.post(manageSimpleListApi, payload);

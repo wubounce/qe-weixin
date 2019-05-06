@@ -3,14 +3,14 @@
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container" />
     <breadcrumb class="breadcrumb-container" />
     <div class="right-menu">
-      <template v-if="device !== 'mobile'">
+      <!-- <template v-if="device !== 'mobile'">
         <el-tooltip :content="'全屏'" effect="dark" placement="bottom">
           <screenfull class="screenfull right-menu-item" />
         </el-tooltip>
         <el-tooltip :content="'布局大小'" effect="dark" placement="bottom">
           <size-select class="international right-menu-item" />
         </el-tooltip>
-      </template>
+      </template> -->
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
           <img src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" class="user-avatar" /><span style="display: inline-block;line-height:54px;">{{userInfoIn.realName}}</span>

@@ -21,7 +21,7 @@
       </el-form-item>
       <el-form-item label="适用类型：" prop="parentTypeId">
         <el-select v-model="searchData.parentTypeId" clearable placeholder="请选择">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="通用" value=""></el-option>
           <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -30,7 +30,7 @@
           <el-option v-for="(name, id) in couponSourceType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item> -->
-      <el-form-item label="时间： " prop="time">
+      <el-form-item label="创建时间： " prop="time">
         <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
@@ -80,11 +80,7 @@
           </template>
         </el-table-column>
         <!-- <el-table-column header-align="left" prop="" label="相关活动 "></el-table-column> -->
-        <el-table-column header-align="left" prop="merchantType" label="来源类型 ">
-          <template slot-scope="scope">
-            <span>订单补偿</span>
-          </template>
-        </el-table-column>
+        <el-table-column header-align="left" prop="source" label="来源类型 "></el-table-column>
         <el-table-column header-align="left" prop="realName" label="创建人"></el-table-column>
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
@@ -110,6 +106,8 @@ export default {
       searchData: {
         phone: '',
         status: '',
+        shopId: '',
+        parentTypeId: '',
         time: []
       },
       shopList: [],
@@ -157,10 +155,12 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       this.getCouponRecordDataToTable();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getCouponRecordDataToTable();
     },

@@ -2,7 +2,7 @@
   <div class="date-earing">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="日期筛选：" prop="time">
-        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
+        <el-date-picker size="small" v-model="searchData.time" type="daterange" :picker-options="pickerOptions" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="店铺筛选：" prop="shopIds">
@@ -64,6 +64,11 @@ export default {
       oderDataList: [],
       moneyDataList: [],
       reportDate: [],
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       searchData: {
         time: [
           moment()

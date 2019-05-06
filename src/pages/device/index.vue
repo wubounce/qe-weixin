@@ -110,8 +110,9 @@
         </el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
-            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState===4">
-              <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" />
+            <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState ===4">
+              <span v-if="scope.row.machineTypeName==='洗鞋机'&&scope.row.subTypeName.includes('脉冲')===false||scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName.includes('脉冲')===false">
+                <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" /></span>
             </el-tooltip>
             <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'&& scope.row.notQuantitative===false">
               <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
@@ -148,7 +149,7 @@
         <el-tabs v-model="detailActiveTab">
           <el-tab-pane label="功能设置" name="first">
             <div v-if="detailData.notQuantitative">
-              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce || ''}}元/升</p>
+              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterMachinePirce}}元/升</p>
               <el-table :data="detailData.functionList" style="width: 100%">
                 <el-table-column prop="functionName" label="出水口"></el-table-column>
                 <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
@@ -209,7 +210,7 @@
               </el-table-column>
             </el-table>
           </el-tab-pane>
-          <el-tab-pane label="洗衣液设置" name="second" v-if="detailData.parentTypeName === '洗衣机'">
+          <el-tab-pane label="洗衣液设置" name="second" v-if="detailData.isDetergent === 1">
             <el-table :data="detailData.detergentFunctionList" style="width: 100%">
               <el-table-column prop="functionName" label="功能"></el-table-column>
               <el-table-column prop="detergentLiquid" label="用量/ml"></el-table-column>
@@ -393,10 +394,10 @@ export default {
       let res = null;
       this.searchData.subTypeId = '';
       if (val) {
-        let payload = { parentTypeId: val };
+        let payload = { parentTypeId: val, shopId: this.searchData.shopId };
         res = await getlistSubTypeFun(payload); //获取某个设备下二级类型
       } else {
-        res = await listSubTypeAllFun(); //获取全部设备二级类型
+        res = await listSubTypeAllFun({ onlyMine: true }); //获取全部设备二级类型
       }
       this.machineSubTypeList = res;
     },
@@ -407,11 +408,13 @@ export default {
     },
     searchForm() {
       this.searchData.page = 1;
+      this.total = 0;
       let payload = Object.assign({}, this.searchData);
       this.getDeviceDataToTable(payload);
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.machineSubTypeList = [];
       this.getDeviceDataToTable();
@@ -429,7 +432,7 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
-      this.$set(this.detailData, 'waterAndChargeMachinePirce', res.functionList[0].functionPrice || '');
+      this.$set(this.detailData, 'waterAndChargeMachinePirce', res.functionList[0].functionPrice || 0);
       this.$set(this.detailData, 'extraAttr', res.functionList[0].extraAttr || {});
       this.$set(this.detailData, 'chargeNeedMinutes', res.functionList[0].needMinutes || {});
       this.deviceEditdetailForm = Object.assign({}, res);

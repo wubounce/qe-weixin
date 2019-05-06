@@ -27,16 +27,16 @@ export default {
     value: {
       type: Array,
       default: () => {
-        return [null, null, null];
+        return [];
       }
     },
     size: {
       type: String,
-      default: null
+      default: ''
     },
     defaultOption: {
       type: String,
-      default: null
+      default: ''
     }
   },
   data() {
@@ -46,16 +46,8 @@ export default {
         [], // 市 level = 1
         [] // 区 level = 2
       ],
-      data: [
-        null, // 选中的省id
-        null, // 选中的市id
-        null // 选中的区id
-      ],
-      dataName: [
-        null, // 选中的省
-        null, // 选中的市
-        null // 选中的区
-      ]
+      data: [],
+      dataName: []
     };
   },
   created() {
@@ -89,18 +81,16 @@ export default {
       if (pid > 0) {
         // 选中了数据
         // 重置后面的数据为null
-        for (let i = level + 1; i <= 2; i++) {
-          this.$set(this.data, i, null);
-        }
+        this.data = this.data.slice(0, level);
         // 获取下一级的数据
         this.getAreaList(pid, level + 1);
       } else {
         // 选中了不限
         // 重置后面的数据列表为空array,重置后面的数据为null
+        this.data = this.data.slice(0, level);
+        this.dataName = this.dataName.slice(0, level);
         for (let i = level + 1; i <= 2; i++) {
           this.$set(this.list, i, []);
-          this.$set(this.data, i, null);
-          this.$set(this.dataName, i, null);
         }
       }
     }

@@ -61,7 +61,7 @@
           </el-form-item>
           <el-form-item class="batch-device-edit-action">
             <el-button type="primary" @click="onSubmitDeviceEdit('deviceBatchStartForm')">保存</el-button>
-            <el-button @click="reseteditForm('deviceBatchStartForm')">取消</el-button>
+            <el-button @click="resetAddDeviceStart('deviceBatchStartForm');deviceBatchStartDialogVisible=false">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -95,7 +95,7 @@
           </el-form-item>
           <el-form-item class="batch-device-edit-action">
             <el-button type="primary" @click="onSubmitAddDeviceStart('addDeviceBatchStartForm')">保存</el-button>
-            <el-button @click="resetAddDeviceStart('addDeviceBatchStartForm')">取消</el-button>
+            <el-button @click="resetAddDeviceStart('addDeviceBatchStartForm');addDeviceBatchStartDialogVisible=false">取消</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -189,10 +189,12 @@ export default {
     searchForm() {
       //头部搜索
       this.searchData.page = 1;
+      this.total = 0;
       this.getBatchStartDataToTable();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getBatchStartDataToTable();
     },
@@ -203,10 +205,12 @@ export default {
     },
     async getBatchStartDataToTable() {
       //列表
-      this.batchStartDataToTable = [];
       let payload = Object.assign({}, this.searchData);
       let res = await listBatchStartFun(payload);
-      this.batchStartDataToTable = res.items;
+      this.batchStartDataToTable = res.items || [];
+      this.batchStartDataToTable.forEach(item => {
+        item.createTime = item.createTime ? moment(item.createTime).format('YYYY-MM-DD HH:ss:mm') : '';
+      });
       this.total = res.total;
     },
     async changeBatchFuncionList(val) {
@@ -230,8 +234,7 @@ export default {
           let payload = Object.assign({}, this.addDeviceBatchStartForm);
           addBatchStartFun(payload).then(() => {
             this.$message.success('添加成功');
-            this.$refs[formName].resetFields();
-            this.$refs[formName].clearValidate();
+            this.resetAddDeviceStart(formName);
             this.getBatchStartDataToTable();
             this.addDeviceBatchStartDialogVisible = false;
           });
@@ -239,6 +242,10 @@ export default {
           return false;
         }
       });
+    },
+    resetAddDeviceStart(formName) {
+      this.$refs[formName].resetFields();
+      this.$refs[formName].clearValidate();
     },
     async handleDeviceEdit(row) {
       this.deviceBatchStartForm.startTime = moment(row.beginTime).format('YYYY-MM-DD HH:mm:ss');

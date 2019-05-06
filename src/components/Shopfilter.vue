@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-clickoutside="handleClose">
     <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:placeholder}}
       <svg-icon icon-class="xialajiantouxia" class="filter-shop-arrow" /></span>
     <transition name="el-zoom-in-top">
@@ -47,6 +47,7 @@ export default {
   },
   data() {
     return {
+      show: true,
       state: '',
       checkedList: this.value,
       checkedListName: [],
@@ -60,6 +61,9 @@ export default {
     this.getShopList();
   },
   methods: {
+    handleClose(e) {
+      this.visibleModel = false;
+    },
     getFilterShop() {
       this.visibleModel = true;
     },
@@ -92,12 +96,13 @@ export default {
         return { shopId: item.shopId, shopName: item.shopName, active: false };
       });
       this.$emit('input', this.checkedList);
-      this.visibleModel = false;
+      this.state = '';
     },
     getCheckedShop() {
       this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
       this.shopFilterName = this.checkedListName.join(',');
       this.$emit('input', this.checkedList);
+      this.state = '';
       this.visibleModel = false;
     }
   },

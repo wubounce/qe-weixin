@@ -9,7 +9,7 @@
         </el-form-item>
         <el-form-item prop="code">
           <el-input v-model.number="forgotPwdForm.code" class="verify-code" name="code" type="text" @input="disabledBtn" placeholder="请输入验证码 " />
-          <el-button class="get-code" v-if="!btn">{{time}}s后重新获取</el-button>
+          <el-button class="get-code" v-if="!btn" :disabled="!btn">{{time}}s后重新获取</el-button>
           <el-button class="get-code" @click="sendcode" v-if="btn">获取验证码</el-button>
         </el-form-item>
         <el-form-item prop="password">

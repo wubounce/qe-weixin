@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="multiple-shop-page" v-clickoutside="handleClose">
     <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:placeholder}}
       <svg-icon icon-class="xialajiantouxia" class="filter-shop-arrow" /></span>
     <transition name="el-zoom-in-top">
@@ -22,8 +22,7 @@
               <div class="checked-shop-list">
                 <h3>已选店铺 ({{checkedList.length}})</h3>
                 <ul class="el-scrollbar__view" style="margin-right: -17px;">
-                  <li v-for="(item,index) in checkedListName" :key="index" :class="['shop-list',{'checked-active':item.active}]">
-                    {{item}}
+                  <li v-for="(item,index) in checkedListName" :key="index" :class="['shop-list',{'checked-active':item.active}]">{{item}}
                     <svg-icon icon-class="erjiguanbi" class="close-icon" @click="deleteCheckedSHop(item,index)" />
                   </li>
                 </ul>
@@ -71,6 +70,7 @@ export default {
       checkedListName: [],
       isEditTime: this.isTimeMaket,
       shopList: [],
+      allShopList: [],
       visibleModel: this.visible,
       checkAll: false,
       isIndeterminate: true,
@@ -81,59 +81,63 @@ export default {
     this.getShopList();
   },
   methods: {
+    handleClose(e) {
+      this.visibleModel = false;
+    },
     getFilterShop() {
       this.visibleModel = true;
     },
-    async getShopList(shopName = '', isTimeMaket = this.isEditTime) {
+    async getShopList(shopName = this.state, isTimeMaket = this.isEditTime) {
       let payload = { shopName: shopName, timeId: isTimeMaket };
       let res = await shopListFun(payload);
-      res.forEach(item => {
-        this.shopTypeIds.push(item.shopId);
-      });
+      if (!shopName) this.allShopList = res;
+      this.shopTypeIds = res.map(item => item.shopId);
       this.shopList = res;
-      this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      this.checkedListName = this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      this.allShopList.forEach(v => this.checkedList.some(k => (k == v.shopId ? this.$set(v, 'active', true) : this.$set(v, 'active', false))));
       this.shopFilterName = this.checkedListName.join(',');
-      this.shopList = this.shopList.map(item => {
-        return { shopId: item.shopId, shopName: item.shopName, active: false };
-      });
+      this.indeterminateStatus();
+    },
+    indeterminateStatus() {
+      //全选反选状态
+      let checkedCount = this.checkedList.length;
+      this.checkAll = checkedCount === this.shopTypeIds.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.shopTypeIds.length;
+    },
+    getCheckedListName() {
+      return this.allShopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
     },
     handleCheckAllChange(val) {
       this.checkedList = val ? this.shopTypeIds : [];
+      this.checkedList = Array.from(new Set(this.checkedList));
       this.isIndeterminate = false;
       this.shopList.forEach(item => {
         val ? this.$set(item, 'active', true) : this.$set(item, 'active', false);
       });
-      this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      this.checkedListName = this.getCheckedListName();
     },
     handleCheakedBg(item, val) {
-      if (item.active) {
-        this.$set(item, 'active', false); //为item添加不存在的属性，需要使用vue提供的Vue.set( object, key, value )方法。
-      } else {
-        this.$set(item, 'active', true);
-      }
-      let checkedCount = val.length;
-      this.checkAll = checkedCount === this.shopTypeIds.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.shopTypeIds.length;
-      this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
-      this.shopFilterName = this.checkedListName.join(',');
+      item.active ? this.$set(item, 'active', false) : this.$set(item, 'active', true);
+      this.indeterminateStatus(val);
+      this.checkedListName = this.getCheckedListName();
     },
     deleteCheckedSHop(shopname, index) {
       this.checkedListName.splice(index, 1);
-      this.shopFilterName = this.checkedListName.join(',');
-      this.checkedList = this.shopList.filter(v => this.checkedListName.some(k => k == v.shopName)).map(item => item.shopId);
+      this.checkedList = this.allShopList.filter(v => this.checkedListName.some(k => k == v.shopName)).map(item => item.shopId);
       this.shopList.forEach(item => {
         if (item.shopName === shopname) this.$set(item, 'active', false);
       });
-      this.isIndeterminate = true;
+      this.indeterminateStatus();
     },
     getSearchShop(val) {
-      this.getShopList(val);
+      this.getShopList();
     },
     resetCheckedShop() {
       this.checkedList = [];
       this.checkedListName = [];
       this.shopFilterName = '';
-      this.shopList = this.shopList.map(item => {
+      this.state = '';
+      this.shopList = this.allShopList.map(item => {
         return { shopId: item.shopId, shopName: item.shopName, active: false };
       });
       this.$emit('input', this.checkedList);
@@ -141,7 +145,7 @@ export default {
       this.visibleModel = false;
     },
     getCheckedShop() {
-      this.checkedListName = this.shopList.filter(v => this.checkedList.some(k => k == v.shopId)).map(item => item.shopName);
+      this.checkedListName = this.getCheckedListName();
       this.shopFilterName = this.checkedListName.join(',');
       this.$emit('input', this.checkedList);
       this.$emit('change', this.checkedList);
@@ -151,11 +155,10 @@ export default {
   watch: {
     value: function(val) {
       this.checkedList = val;
-      this.getShopList();
+      // this.getShopList();
     },
     isTimeMaket: function(val) {
-      this.checkedList = val;
-      this.getShopList();
+      this.isEditTime = val;
     }
   }
 };
@@ -170,6 +173,9 @@ export default {
   .el-input__inner {
     width: 230px !important;
   }
+}
+.multiple-shop-page .shop-list .el-checkbox__label {
+  font-size: 12px !important;
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
@@ -197,14 +203,6 @@ export default {
   margin-right: 12px;
   margin-top: 8px;
 }
-// .shop-filter {
-//   min-width: 565px;
-//   transform-origin: center top;
-//   z-index: 2009;
-//   position: absolute;
-//   left: 0px;
-//   top: 30px;
-// }
 .el-select-dropdown__item {
   padding: 0 24px;
   height: 34px;
@@ -229,10 +227,11 @@ export default {
   height: 34px;
   line-height: 34px;
   padding: 0 24px;
+  font-size: 12px;
 }
 .action {
   padding: 16px 24px;
-  font-size: 14px;
+  font-size: 12px;
   color: $menuText;
   cursor: pointer;
   p {
