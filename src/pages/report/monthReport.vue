@@ -36,7 +36,8 @@
         <!-- <el-table-column header-align="left" prop="vipMoney" label="VIP收益"></el-table-column> -->
         <el-table-column header-align="left" prop="refundMoney" label="退款金额"></el-table-column>
         <el-table-column header-align="left" prop="alipayMoney" label="支付宝收益"></el-table-column>
-        <el-table-column header-align="left" prop="totalMoney" label="总收益"></el-table-column>
+        <!-- <el-table-column header-align="left" prop="totalMoney" label="总收益"></el-table-column> -->
+        <el-table-column header-align="left" prop="money" label="总收益"></el-table-column>
       </el-table>
     </div>
   </div>
@@ -174,20 +175,21 @@ export default {
           sums[index] = this.totalDetergentMoney;
           return;
         }
+        // if (index === 4) {
+        //   sums[index] = this.totalVipMoney;
+        //   return;
+        // }
         if (index === 4) {
-          sums[index] = this.totalVipMoney;
-          return;
-        }
-        if (index === 5) {
           sums[index] = this.totalRefundMoney;
           return;
         }
-        if (index === 6) {
+        if (index === 5) {
           sums[index] = this.totalAlipayMoney;
           return;
         }
-        if (index === 7) {
-          sums[index] = this.totalAllMoney;
+        if (index === 6) {
+          // sums[index] = this.totalAllMoney;
+          sums[index] = this.totalMoney;
           return;
         }
       });
