@@ -124,7 +124,7 @@ export default {
         operateShopIds: []
       },
       addMemberFormRules: {
-        phone: [{ required: true, trigger: 'change', message: '请填写手机号' }, { pattern: /^(1)\d{10}$/, message: '请填写正确的手机号', trigger: 'blur' }],
+        phone: [{ required: true, trigger: 'blur', message: '请填写手机号' }, { pattern: /^(1)\d{10}$/, message: '请填写正确的手机号', trigger: 'blur' }],
         username: [{ required: true, trigger: 'blur', message: '请填写人员姓名' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z]{2,16}$/, message: '人员姓名需为2-16个字，只支持中英文', trigger: 'blur' }],
         operateShopIds: [{ required: true, type: 'array', trigger: 'blur', message: '请选择负责店铺' }]
       },
