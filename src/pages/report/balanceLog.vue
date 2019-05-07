@@ -41,7 +41,12 @@
         <el-table-column header-align="left" prop="userName" label="用户账号"></el-table-column>
         <el-table-column header-align="left" prop="money" label="金额">
           <template slot-scope="scope">
-            <span>{{ scope.row.money | tofixd }}</span>
+            <span>{{ scope.row.money | toFixed}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column header-align="left" prop="origin" label="收支类型">
+          <template slot-scope="scope">
+            <span>{{scope.row.type | earningType}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="origin" label="来源类型">
@@ -89,6 +94,9 @@ export default {
     },
     earningType(val) {
       return earningType[val];
+    },
+    toFixed(val) {
+      return Number(val).toFixed(2);
     }
   },
   computed: {
