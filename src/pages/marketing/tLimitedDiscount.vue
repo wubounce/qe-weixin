@@ -291,6 +291,16 @@ export default {
         this.getMaketDetail(row);
       } else {
         this.addOrEditMaketTitle = '新增优惠';
+        this.addMaketFrom = {
+          timeId: '',
+          week: '',
+          time: ['00:00', '23:59'],
+          date: [],
+          parentTypeIds: '',
+          shopIds: [],
+          discount: '',
+          weekCheckList: []
+        };
         this.isTimeMaket = '123';
         this.addMaketDialogVisible = true;
       }
@@ -300,8 +310,6 @@ export default {
       let res = await detailMarketFun(payload);
       let time = res.noTime.split('-');
       let weeklist = res.noWeek ? res.noWeek.split(',') : [];
-      console.log(weeklist);
-
       let startTime = res.noDiscountStart ? moment(res.noDiscountStart).format('YYYY-MM-DD') : '';
       let endTime = res.noDiscountEnd ? moment(res.noDiscountEnd).format('YYYY-MM-DD') : '';
       let beshop = [];
@@ -323,8 +331,6 @@ export default {
       if (Number(this.addMaketFrom.week) !== 8 && Number(this.addMaketFrom.week) !== 9 && weeklist.length >= 1) {
         this.addMaketFrom.week = 10;
       }
-      console.log(this.addMaketFrom.week, this.addMaketFrom.weekCheckList);
-
       this.getMarketlistParentType();
       this.addMaketDialogVisible = true;
     },
@@ -358,6 +364,7 @@ export default {
     },
     resetAddOrEditMaketFrom(formName) {
       this.addMaketFrom.weekCheckList = [];
+      this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
       this.addMaketDialogVisible = false;
     },
