@@ -63,7 +63,7 @@
         <el-table-column header-align="left" prop="profitPrice" label="收益金额(元) " width="120"></el-table-column>
         <el-table-column header-align="left" prop="payType" label="支付方式">
           <template slot-scope="scope">
-            <span>{{scope.row.payType | PayType }}</span>
+            <span>{{scope.row.orderStatus ==1 ? '-' : scope.row.payType | PayType }}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="createTime" label="下单时间" width="180"></el-table-column>
@@ -80,7 +80,7 @@
               <el-tooltip content="启动" placement="top" effect="dark" v-show="(scope.row.notQuantitative===false && scope.row.isESource === 0) || (scope.row.notQuantitative===false&&scope.row.isESource === null)">
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="退款" placement="top" effect="dark">
+              <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4">
                 <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
               </el-tooltip>
               <el-tooltip content="补偿券" placement="top" effect="dark" v-if="scope.row.shopState === 2">
