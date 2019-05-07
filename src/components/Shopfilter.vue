@@ -3,7 +3,7 @@
     <span :class="['filter-shop',{'filter-shop-selected':shopFilterName}]" @click="getFilterShop">{{shopFilterName?shopFilterName:placeholder}}
       <svg-icon icon-class="xialajiantouxia" class="filter-shop-arrow" /></span>
     <transition name="el-zoom-in-top">
-      <div class=" el-select-dropdown el-popper" v-show="visibleModel" x-placement="bottom-start">
+      <div class="el-select-dropdown el-popper" style="min-width: 280px;" v-show="visibleModel" x-placement="bottom-start">
         <div class="el-scrollbar">
           <div style="margin-right: -17px;">
             <div class="shop-search-text" style="">
