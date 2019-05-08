@@ -86,9 +86,7 @@ export default {
       }
     };
     const validateInviteCode = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请输入邀请码'));
-      } else if (!validatInviteCode(value)) {
+      if (value && !validatInviteCode(value)) {
         callback(new Error('请输入正确的邀请码'));
       } else {
         callback();
@@ -122,7 +120,7 @@ export default {
         code: [{ required: true, trigger: 'blur', message: '验证码必须为数字值' }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
         rePassword: [{ required: true, trigger: 'blur', validator: validateRePassword }],
-        invitationCode: [{ required: true, trigger: 'blur', validator: validateInviteCode }],
+        invitationCode: [{ trigger: 'blur', validator: validateInviteCode }],
         name: [{ required: true, trigger: 'blur', message: '请填写姓名' }, { pattern: /^[\u4e00-\u9fa5a-zA-Z]{2,20}$/, message: '姓名2-20个字符，支持中文和英文', trigger: 'blur' }],
         userAgreement: [{ required: true, trigger: 'blur', message: '请同意用户协议' }],
         areaIds: [{ required: true, trigger: 'blur', type: 'array', validator: validateAres }]
@@ -132,7 +130,7 @@ export default {
   },
   methods: {
     disabledBtn() {
-      if (this.registerForm.phone && this.registerForm.code && this.registerForm.invitationCode && this.registerForm.password && this.registerForm.rePassword && this.registerForm.name && this.registerForm.userAgreement && this.registerForm.areaIds.length >= 3) {
+      if (this.registerForm.phone && this.registerForm.code && this.registerForm.password && this.registerForm.rePassword && this.registerForm.name && this.registerForm.userAgreement && this.registerForm.areaIds.length >= 3) {
         this.disabled = false;
       } else {
         this.disabled = true;
