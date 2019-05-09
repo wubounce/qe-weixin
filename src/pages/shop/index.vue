@@ -63,7 +63,7 @@
         <ul class="deatil-list">
           <li><span>店铺名称：</span>{{detailData.shopName}}</li>
           <li><span>店铺类型：</span>{{detailData.shopTypeName}}</li>
-          <li><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.address}}</li>
+          <li><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</li>
           <li><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</li>
           <li><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</li>
           <li><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</li>
