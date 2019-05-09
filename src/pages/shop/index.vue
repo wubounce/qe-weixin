@@ -121,7 +121,7 @@
             </el-col>
           </el-form-item>
           <el-form-item label="营业时间：" prop="workTime">
-            <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" format="HH:mm" value-format="HH:mm"> </el-time-picker>
+            <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" format="HH:mm" value-format="HH:mm" :clearable="false"> </el-time-picker>
           </el-form-item>
           <el-form-item label="客服电话：" class="shop-name" prop="serviceTelephone">
             <el-input v-model.trim="addShopFrom.serviceTelephone" placeholder="请填写店铺客服电话"></el-input>
@@ -425,6 +425,7 @@ export default {
   width: 468px !important;
   height: 32px !important;
   line-height: 32px !important;
+  z-index: 10000 !important;
 }
 .add-shop-from {
   .shop-name .el-input__inner {
