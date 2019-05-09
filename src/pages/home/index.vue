@@ -7,7 +7,7 @@
           <ul class="profit-sub">
             <li>
               <p class="title">今日收益 (元)</p>
-              <p class="num">￥{{frofitCount.todayMoney}}</p>
+              <p class="num">{{frofitCount.todayMoney}}</p>
               <p :class="['pio',{'up-arrows':String(frofitCount.yoy).includes('+'),'down-arrows':String(frofitCount.yoy).includes('-')}]">
                 {{frofitCount.yoy}}
                 <svg-icon :icon-class="String(frofitCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
@@ -15,11 +15,11 @@
             </li>
             <li>
               <p class="title">当月收益 (元)</p>
-              <p class="num">￥{{frofitCount.monthMoney}}</p>
+              <p class="num">{{frofitCount.monthMoney}}</p>
             </li>
             <li>
               <p class="title">总收益 (元)</p>
-              <p class="num">￥{{frofitCount.allMoney}}</p>
+              <p class="num">{{frofitCount.allMoney}}</p>
             </li>
           </ul>
         </div>
