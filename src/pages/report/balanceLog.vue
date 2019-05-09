@@ -7,11 +7,15 @@
       </el-form-item>
       <el-form-item label="店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择" @change="checkedShop">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备：" prop="machineId">
         <el-select v-model="searchData.machineId" clearable placeholder="请选择">
+          <span v-if="machineList === null" slot="empty" style="font-size: 12px;min-height: 36px;display: block;line-height: 36px;text-align: center;color: rgba(0,0,0,0.65);">请先选择店铺</span>
+          <span v-else slot="empty" style="font-size: 12px;min-height: 36px;display: block;line-height: 36px;text-align: center;color: rgba(0,0,0,0.65);">无数据</span>
+          <!-- <el-option label="全部" value=""></el-option> -->
           <el-option v-for="(item,index) in machineList" :key="index" :label="item.machineName" :value="item.machineId"></el-option>
         </el-select>
       </el-form-item>
@@ -22,6 +26,7 @@
       </el-form-item> -->
       <el-form-item label="收支类型：" prop="type">
         <el-select v-model="searchData.type " clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in earningType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
@@ -85,7 +90,7 @@ export default {
         origin: 0,
         type: ''
       },
-      machineList: []
+      machineList: null
     };
   },
   filters: {
@@ -141,6 +146,10 @@ export default {
     },
     async getmachineParentType(shopId = '') {
       //获取设备类型
+      if (!shopId) {
+        this.machineList = null;
+        return;
+      }
       let res = await manageSimpleListFun({ page: 1, pageSize: 9999, shopId: shopId });
       this.machineList = res.items || [];
     },

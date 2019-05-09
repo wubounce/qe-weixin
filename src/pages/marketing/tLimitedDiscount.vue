@@ -3,17 +3,19 @@
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="优惠适用店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="活动状态：" prop="expired">
         <el-select v-model="searchData.expired" clearable placeholder="请选择">
-          <el-option value="" label="全部"></el-option>
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in CouponAcctiveStatusType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="开启/关闭：" prop="status">
         <el-select v-model="searchData.status" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option value="0" label="开启"></el-option>
           <el-option value="1" label="关闭"></el-option>
         </el-select>

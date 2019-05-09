@@ -6,6 +6,7 @@
       </el-form-item>
       <el-form-item label="负责店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>

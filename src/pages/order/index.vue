@@ -12,6 +12,7 @@
       </el-form-item>
       <el-form-item label="订单状态：" prop="orderStatus">
         <el-select v-model="searchData.orderStatus" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in orderStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>

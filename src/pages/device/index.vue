@@ -9,27 +9,31 @@
       </el-form-item>
       <el-form-item label="所属店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备状态：" prop="machineState">
         <el-select v-model="searchData.machineState" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in deviceSearchStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备类型：" prop="parentTypeId">
         <el-select v-model="searchData.parentTypeId" @change="getmachineSubType" clearable placeholder="请选择">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备型号：" prop="subTypeId">
         <el-select v-model="searchData.subTypeId" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item, index) in machineSubTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="通信类型：" prop="communicateType">
         <el-select v-model="searchData.communicateType" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in communicateType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>

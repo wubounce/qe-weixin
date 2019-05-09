@@ -25,7 +25,7 @@
           <el-input v-model.trim="registerForm.name" @input="disabledBtn" placeholder="请输入姓名" />
         </el-form-item>
         <el-form-item class="area" prop="areaIds">
-          <Area v-model.trim="registerForm.areaIds" @getAreaName="getAreaName" size="small" default-option="不限" />
+          <Area v-model.trim="registerForm.areaIds" @getAreaName="getAreaName" size="small" />
         </el-form-item>
         <el-form-item prop="userAgreement">
           <el-checkbox v-model.trim="registerForm.userAgreement" @change="disabledBtn"></el-checkbox>我已阅读并同意<span class="agreement" @click="userAgreementVisible=true">《用户协议》</span>

@@ -5,11 +5,15 @@
         <el-date-picker size="small" v-model="searchData.time" type="daterange" :picker-options="pickerOptions" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="店铺筛选：" prop="shopIds">
-        <shop-filter v-model="searchData.shopIds" placeholder="请选择"></shop-filter>
+      <el-form-item label="店铺：" prop="shopIds">
+        <el-select v-model="searchData.shopIds" clearable placeholder="请选择" @change="checkedShop">
+          <el-option label="不限" value=""></el-option>
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="设备类型：" prop="machineTypeIds">
-        <el-select v-model="searchData.machineTypeIds" multiple clearable placeholder="请选择">
+        <el-select v-model="searchData.machineTypeIds" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in parentTypList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -44,7 +48,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { dayReportFun, dayReportApi } from '@/service/report';
+import { dayReportFun, dayReportApi, shopListFun } from '@/service/report';
 import { exportExcel } from '@/service/common';
 import { ParentTypeFun } from '@/service/index';
 import { calMax, calMin } from '@/utils/tools';
@@ -64,6 +68,7 @@ export default {
       oderDataList: [],
       moneyDataList: [],
       reportDate: [],
+      shopList: [],
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now();
@@ -78,8 +83,8 @@ export default {
             .subtract(1, 'days')
             .format('YYYY-MM-DD')
         ],
-        shopIds: [],
-        machineTypeIds: []
+        shopIds: '',
+        machineTypeIds: ''
       },
       parentTypList: []
     };
@@ -93,10 +98,15 @@ export default {
     });
   },
   created() {
+    this.getShopList();
     this.getmachineParentType();
     this.getProfitDate();
   },
   methods: {
+    async getShopList() {
+      let res = await shopListFun();
+      this.shopList = res;
+    },
     initChart() {
       this.linechart = echarts.init(document.getElementById('datelinechart'));
     },
@@ -114,7 +124,7 @@ export default {
     },
     async getProfitDate(shopId = '') {
       //收益数据
-      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), machineTypeIds: this.searchData.machineTypeIds.join(','), dateLevel: 4 });
+      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds, machineTypeIds: this.searchData.machineTypeIds, dateLevel: 4 });
       let res = await dayReportFun(payload);
       this.oderDataList = [];
       this.moneyDataList = [];

@@ -1,17 +1,17 @@
 <template>
   <div class="area-com">
     <el-select v-model="data[0]" :size="size" @change="handleChange($event, 0)" placeholder="选择所在省">
-      <!-- <el-option v-if="defaultOption" :label="defaultOption" :value="null" /> -->
+      <el-option v-if="defaultOption" :label="defaultOption" value="" />
       <el-option v-for="item in list[0]" :key="item.areaId" :label="item.areaName" :value="item.areaId">
       </el-option>
     </el-select>
     <el-select v-model="data[1]" :size="size" @change="handleChange($event, 1)" placeholder="选择所在市">
-      <!-- <el-option v-if="defaultOption" :label="defaultOption" :value="null" /> -->
+      <el-option v-if="defaultOption" :label="defaultOption" value="" />
       <el-option v-for="item in list[1]" :key="item.areaId" :label="item.areaName" :value="item.areaId">
       </el-option>
     </el-select>
     <el-select v-model="data[2]" :size="size" @change="handleChange($event, 2)" placeholder="选择所在区" style="margin:0;">
-      <!-- <el-option v-if="defaultOption" :label="defaultOption" :value="null" /> -->
+      <el-option v-if="defaultOption" :label="defaultOption" value="" />
       <el-option v-for="item in list[2]" :key="item.areaId" :label="item.areaName" :value="item.areaId">
       </el-option>
     </el-select>
