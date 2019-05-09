@@ -92,7 +92,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="选择区域：" prop="areas" style="width:520px;">
-            <Area v-model="addShopFrom.areas" size="small" />
+            <Area v-model="addShopFrom.areas" @getAreaName="getAreaName" size="small" />
           </el-form-item>
           <el-form-item label="所在小区/大厦/学校：" class="map-search">
             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
@@ -360,6 +360,11 @@ export default {
         this.offAndOnReserve(this.addShopFrom.isReserve);
       }
       this.addShopDialogVisible = true;
+    },
+    getAreaName(data) {
+      if (data.length >= 2) {
+        this.searchOption.city = data[1];
+      }
     },
     onSubmitShopFrom(formName) {
       this.$refs[formName].validate(async valid => {
