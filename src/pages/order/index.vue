@@ -2,13 +2,13 @@
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="订单编号：" prop="orderNo">
-        <el-input v-model="searchData.orderNo" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.orderNo" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="用户账号：" prop="phone">
-        <el-input v-model="searchData.phone" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.phone" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="设备名称：" prop="machineName">
-        <el-input v-model="searchData.machineName" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.machineName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="订单状态：" prop="orderStatus">
         <el-select v-model="searchData.orderStatus" clearable placeholder="请选择">

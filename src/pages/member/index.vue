@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" ref="searchData" :model="searchData" class="header-search">
       <el-form-item label="人员姓名/账号 ：" prop="search">
-        <el-input v-model="searchData.search" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.search" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="负责店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择">
@@ -69,10 +69,10 @@
       <el-dialog :title="addOrEditMemberTitle" :visible.sync="addMemberDialogVisible" @close="addMemberDialogVisible = false" width="760px" height="768px" top="20px">
         <el-form ref="addMemberFrom" :model="addMemberFrom" :rules="addMemberFormRules" class="add-shop-from" label-width="150px" v-if="addMemberDialogVisible">
           <el-form-item label="手机号码：" class="shop-name" prop="phone" v-show="disabledEdit">
-            <el-input v-model="addMemberFrom.phone" placeholder="手机号为登录人员账号，密码将自动短信发送"></el-input>
+            <el-input v-model.trim="addMemberFrom.phone" placeholder="手机号为登录人员账号，密码将自动短信发送"></el-input>
           </el-form-item>
           <el-form-item label="人员姓名：" class="shop-name" prop="username">
-            <el-input v-model="addMemberFrom.username" placeholder="请输入人员姓名" :disabled="!disabledEdit"></el-input>
+            <el-input v-model.trim="addMemberFrom.username" placeholder="请输入人员姓名" :disabled="!disabledEdit"></el-input>
           </el-form-item>
           <el-form-item label="负责店铺：" prop="operateShopIds">
             <multiple-shop v-model="addMemberFrom.operateShopIds" placeholder="请选择店铺"></multiple-shop>

@@ -5,30 +5,30 @@
       <h3 class="title">注册账户</h3>
       <el-form ref="registerForm" :model="registerForm" :rules="registerRules" label-position="left">
         <el-form-item prop="phone">
-          <el-input v-model="registerForm.phone" name="phone" type="text" @input="disabledBtn" placeholder="请输入手机号为登录账号" />
+          <el-input v-model.trim="registerForm.phone" name="phone" type="text" @input="disabledBtn" placeholder="请输入手机号为登录账号" />
         </el-form-item>
         <el-form-item prop="code">
-          <el-input v-model="registerForm.code" class="verify-code" name="code" type="text" @input="disabledBtn" placeholder="请输入验证码" />
+          <el-input v-model.trim="registerForm.code" class="verify-code" name="code" type="text" @input="disabledBtn" placeholder="请输入验证码" />
           <el-button class="get-code" v-if="!btn" :disabled="!btn">{{time}}s后重新获取</el-button>
           <el-button class="get-code" @click="sendcode" v-if="btn">获取验证码</el-button>
         </el-form-item>
         <el-form-item prop="invitationCode">
-          <el-input v-model="registerForm.invitationCode" @input="disabledBtn" placeholder="请输入邀请码" />
+          <el-input v-model.trim="registerForm.invitationCode" @input="disabledBtn" placeholder="请输入邀请码（选填）" />
         </el-form-item>
         <el-form-item prop="password">
-          <el-input v-model="registerForm.password" type="password" @input="disabledBtn" placeholder="请输入密码" />
+          <el-input v-model.trim="registerForm.password" type="password" @input="disabledBtn" placeholder="请输入密码" />
         </el-form-item>
         <el-form-item prop="rePassword">
-          <el-input v-model="registerForm.rePassword" type="password" @input="disabledBtn" placeholder="请再次输入密码" />
+          <el-input v-model.trim="registerForm.rePassword" type="password" @input="disabledBtn" placeholder="请再次输入密码" />
         </el-form-item>
         <el-form-item prop="name">
-          <el-input v-model="registerForm.name" @input="disabledBtn" placeholder="请输入姓名" />
+          <el-input v-model.trim="registerForm.name" @input="disabledBtn" placeholder="请输入姓名" />
         </el-form-item>
         <el-form-item class="area" prop="areaIds">
-          <Area v-model="registerForm.areaIds" @getAreaName="getAreaName" size="small" default-option="不限" />
+          <Area v-model.trim="registerForm.areaIds" @getAreaName="getAreaName" size="small" default-option="不限" />
         </el-form-item>
         <el-form-item prop="userAgreement">
-          <el-checkbox v-model="registerForm.userAgreement" @change="disabledBtn"></el-checkbox>我已阅读并同意<span class="agreement" @click="userAgreementVisible=true">《用户协议》</span>
+          <el-checkbox v-model.trim="registerForm.userAgreement" @change="disabledBtn"></el-checkbox>我已阅读并同意<span class="agreement" @click="userAgreementVisible=true">《用户协议》</span>
         </el-form-item>
         <el-form-item class="reg-btn">
           <el-button type="primary" style="width:100%;font-size:16xp;" @click.native.prevent="handleRegister" :disabled='disabled'>注 册</el-button>

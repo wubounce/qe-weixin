@@ -3,7 +3,9 @@
     <div class="report-tab">
       <span v-for="(item,index) in tabTitle" :key="index" @click="tabChange(item.component,index)" :class="{active:index==num}">{{item.title}}</span>
     </div>
-    <div :is="currentView"></div>
+    <keep-alive>
+      <div :is="currentView"></div>
+    </keep-alive>
   </div>
 </template>
 

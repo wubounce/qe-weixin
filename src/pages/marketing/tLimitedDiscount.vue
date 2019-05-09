@@ -110,7 +110,7 @@
         <el-form-item label="优惠折扣：" prop="discount">
           <div class="add-discount">
             <div>
-              <el-input v-model="addMaketFrom.discount" placeholder="例：8.5"></el-input>
+              <el-input v-model.trim="addMaketFrom.discount" placeholder="例：8.5"></el-input>
               <span style="position: absolute;left: 125px;color:#bfbfbf;">折</span>
             </div>
             <div style="color:#bfbfbf;margin-left: 30px;">优惠折扣为用户支付时所享受的折扣</div>

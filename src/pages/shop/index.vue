@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="店铺名称：" prop="shopName">
-        <el-input v-model="searchData.shopName" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.shopName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="店铺类型：" prop="type">
         <el-select v-model="searchData.type" clearable placeholder="请选择">
@@ -13,7 +13,7 @@
         <Area v-model="searchData.areas" size="small" default-option="不限" />
       </el-form-item>
       <el-form-item label="地址：" prop="address">
-        <el-input v-model="searchData.address" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.address" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
@@ -83,7 +83,7 @@
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
         <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="160px" v-if="addShopDialogVisible">
           <el-form-item label="店铺名称：" class="shop-name" prop="shopName">
-            <el-input v-model="addShopFrom.shopName" placeholder="店铺名称需为2-16个字，只支持中英文、_和-"></el-input>
+            <el-input v-model.trim="addShopFrom.shopName" placeholder="店铺名称需为2-16个字，只支持中英文、_和-"></el-input>
           </el-form-item>
           <el-form-item label="店铺类型：" prop="shopType">
             <el-select v-model="addShopFrom.shopType" placeholder="请选择">
@@ -103,7 +103,7 @@
             </el-amap>
           </el-form-item>
           <el-form-item label="详细地址：" class="shop-name" prop="address">
-            <el-input v-model="addShopFrom.address" placeholder="例：A座1005室"></el-input>
+            <el-input v-model.trim="addShopFrom.address" placeholder="例：A座1005室"></el-input>
           </el-form-item>
           <el-form-item label="预约功能：" prop="isReserve">
             <el-col :span="4">
@@ -115,7 +115,7 @@
             <el-col class="line" :span="1">|</el-col>
             <el-col :span="19">
               <el-form-item label="预约时长（分钟）：" prop="orderLimitMinutes">
-                <el-input v-model="addShopFrom.orderLimitMinutes" :placeholder="isOffAndOnReservePlaceholder" :disabled="isOffAndOnReserve"></el-input>
+                <el-input v-model.trim="addShopFrom.orderLimitMinutes" :placeholder="isOffAndOnReservePlaceholder" :disabled="isOffAndOnReserve"></el-input>
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -123,7 +123,7 @@
             <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" format="HH:mm" value-format="HH:mm"> </el-time-picker>
           </el-form-item>
           <el-form-item label="客服电话：" class="shop-name" prop="serviceTelephone">
-            <el-input v-model="addShopFrom.serviceTelephone" placeholder="请填写店铺客服电话"></el-input>
+            <el-input v-model.trim="addShopFrom.serviceTelephone" placeholder="请填写店铺客服电话"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitShopFrom('addShopFrom')">保存</el-button>

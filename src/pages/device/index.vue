@@ -2,10 +2,10 @@
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="设备名称：" prop="machineName">
-        <el-input v-model="searchData.machineName" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.machineName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="IMEI：" prop="imei">
-        <el-input v-model="searchData.imei" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.imei" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="所属店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择">
