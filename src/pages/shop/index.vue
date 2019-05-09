@@ -92,7 +92,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="选择区域：" prop="areas" style="width:520px;">
-            <Area v-model="addShopFrom.areas" size="small" default-option="不限" />
+            <Area v-model="addShopFrom.areas" size="small" />
           </el-form-item>
           <el-form-item label="所在小区/大厦/学校：" class="map-search">
             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
