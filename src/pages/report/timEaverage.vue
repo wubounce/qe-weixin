@@ -40,8 +40,8 @@
       <el-table :data="tableDataList" show-summary style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
-        <el-table-column header-align="left" prop="refundMoney" label="退款金额"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)"></el-table-column>
+        <el-table-column header-align="left" prop="refundMoney" label="退款金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)(元)"></el-table-column>
       </el-table>
     </div>
   </div>

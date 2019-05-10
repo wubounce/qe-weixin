@@ -189,7 +189,6 @@ export default {
       }
     };
     const validateValidDays = (rule, value, callback) => {
-      console.log(value);
       if (!value) {
         callback(new Error('有效期不能为空'));
       } else if (!validatNum(value)) {

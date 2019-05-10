@@ -339,10 +339,10 @@ export default {
       let res = null;
       this.searchData.subTypeId = '';
       if (val) {
-        let payload = { parentTypeId: val, shopId: this.searchData.shopId };
+        let payload = { parentTypeId: val, shopId: this.searchData.shopId, onlyMine: true };
         res = await getlistSubTypeFun(payload); //获取某个设备下二级类型
       } else {
-        res = await listSubTypeAllFun({ onlyMine: true }); //获取全部设备二级类型
+        res = await listSubTypeAllFun(); //获取全部设备二级类型
       }
       this.machineSubTypeList = res;
     },
