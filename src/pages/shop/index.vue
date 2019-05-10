@@ -40,7 +40,11 @@
             <span class="rowstyle" @click="getDeciveFromShop(scope.row)">{{scope.row.machineCount}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="profit" label="累计收益(元)"></el-table-column>
+        <el-table-column header-align="left" prop="profit" label="累计收益(元)">
+          <template slot-scope="scope">
+            <span>{{scope.row.profit | tofixd}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="isReserve" label="预约功能">
           <template slot-scope="scope">
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
@@ -243,6 +247,9 @@ export default {
     },
     isDiscountType: val => {
       return isDiscountType[val];
+    },
+    tofixd(val) {
+      return val >= 0 ? Number(val).toFixed(2) : '';
     }
   },
   mounted() {},

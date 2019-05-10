@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class=device-page>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="设备名称：" prop="machineName">
         <el-input v-model.trim="searchData.machineName" clearable placeholder="请输入"></el-input>
@@ -68,51 +68,71 @@
         <el-table-column header-align="left" prop="imei" label="IMEI"></el-table-column>
         <el-table-column header-align="left" prop="signal" label="信号值">
           <template slot-scope="scope">
-            <div v-show="scope.row.signal">
-              <div v-show=" scope.row.signal<=5">
-                <span class="signal signal-one" style="background:#EF5657"></span>
+            <el-tooltip content="设备离线" placement="top" effect="dark">
+              <div v-if="scope.row.machineState===8" style="pos">
+                <svg-icon icon-class="erjiguanbi" class="out-line" />
+                <span class=" signal signal-one"></span>
                 <span class="signal signal-two"></span>
                 <span class="signal signal-three"></span>
                 <span class="signal signal-four"></span>
                 <span class="signal signal-five"></span>
               </div>
-              <div v-show="scope.row.signal>=6&&scope.row.signal<=11">
-                <span class="signal signal-one" style="background:#EF5657"></span>
-                <span class="signal signal-two" style="background:#EF5657"></span>
-                <span class="signal signal-three"></span>
-                <span class="signal signal-four"></span>
-                <span class="signal signal-five"></span>
-              </div>
-              <div v-show="scope.row.signal>=12&&scope.row.signal<=17">
-                <span class="signal signal-one" style="background:#FBD337"></span>
-                <span class="signal signal-two" style="background:#FBD337"></span>
-                <span class="signal signal-three" style="background:#FBD337"></span>
-                <span class="signal signal-four"></span>
-                <span class="signal signal-five"></span>
-              </div>
-              <div v-show="scope.row.signal>=18&&scope.row.signal<=23">
-                <span class="signal signal-one" style="background:#4ECB73"></span>
-                <span class="signal signal-two" style="background:#4ECB73"></span>
-                <span class="signal signal-three" style="background:#4ECB73"></span>
-                <span class="signal signal-four" style="background:#4ECB73"></span>
-                <span class="signal signal-five"></span>
-              </div>
-              <div v-show="scope.row.signal>=24">
-                <span class="signal signal-one" style="background:#4ECB73"></span>
-                <span class="signal signal-two" style="background:#4ECB73"></span>
-                <span class="signal signal-three" style="background:#4ECB73"></span>
-                <span class="signal signal-four" style="background:#4ECB73"></span>
-                <span class="signal signal-five" style="background:#4ECB73"></span>
-              </div>
+            </el-tooltip>
+            <div v-if="scope.row.machineState!==8&&scope.row.signal">
+              <el-tooltip content="设备信号极差" placement="top" effect="dark">
+                <div v-if=" scope.row.signal<=5">
+                  <span class="signal signal-one" style="background:#EF5657"></span>
+                  <span class="signal signal-two"></span>
+                  <span class="signal signal-three"></span>
+                  <span class="signal signal-four"></span>
+                  <span class="signal signal-five"></span>
+                </div>
+              </el-tooltip>
+              <el-tooltip content="设备信号差" placement="top" effect="dark">
+                <div v-if="scope.row.signal>=6&&scope.row.signal<=11">
+                  <span class="signal signal-one" style="background:#EF5657"></span>
+                  <span class="signal signal-two" style="background:#EF5657"></span>
+                  <span class="signal signal-three"></span>
+                  <span class="signal signal-four"></span>
+                  <span class="signal signal-five"></span>
+                </div>
+              </el-tooltip>
+              <el-tooltip content="设备信号一般" placement="top" effect="dark">
+                <div v-if="scope.row.signal>=12&&scope.row.signal<=17">
+                  <span class="signal signal-one" style="background:#FBD337"></span>
+                  <span class="signal signal-two" style="background:#FBD337"></span>
+                  <span class="signal signal-three" style="background:#FBD337"></span>
+                  <span class="signal signal-four"></span>
+                  <span class="signal signal-five"></span>
+                </div>
+              </el-tooltip>
+              <el-tooltip content="设备信号好" placement="top" effect="dark">
+                <div v-if="scope.row.signal>=18&&scope.row.signal<=23">
+                  <span class="signal signal-one" style="background:#4ECB73"></span>
+                  <span class="signal signal-two" style="background:#4ECB73"></span>
+                  <span class="signal signal-three" style="background:#4ECB73"></span>
+                  <span class="signal signal-four" style="background:#4ECB73"></span>
+                  <span class="signal signal-five"></span>
+                </div>
+              </el-tooltip>
+              <el-tooltip content="设备信号极好" placement="top" effect="dark">
+                <div v-if="scope.row.machineState!==8&&scope.row.signal>=24">
+                  <span class="signal signal-one" style="background:#4ECB73"></span>
+                  <span class="signal signal-two" style="background:#4ECB73"></span>
+                  <span class="signal signal-three" style="background:#4ECB73"></span>
+                  <span class="signal signal-four" style="background:#4ECB73"></span>
+                  <span class="signal signal-five" style="background:#4ECB73"></span>
+                </div>
+              </el-tooltip>
             </div>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="profit" label="累计收益(元)">
           <template slot-scope="scope">
-            <span>{{scope.row.profit | numFormat}}</span>
+            <span>{{scope.row.profit | tofixd}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" label="操作" fixed="right" width="300px">
+        <el-table-column header-align="left" label="操作" fixed="right" width="200px">
           <template slot-scope="scope">
             <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState ===4">
               <span v-if="scope.row.machineTypeName==='洗鞋机'&&scope.row.subTypeName.includes('脉冲')===false||scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName.includes('脉冲')===false">
@@ -303,6 +323,9 @@ export default {
     },
     waterStatus(val) {
       return waterStatus[val];
+    },
+    tofixd(val) {
+      return val >= 0 ? Number(val).toFixed(2) : '';
     }
   },
   computed: {
@@ -498,6 +521,12 @@ export default {
   }
 };
 </script>
+<style rel="stylesheet/scss" lang="scss">
+.device-page .el-tooltip {
+  display: inline-block;
+}
+</style>
+
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .detail-base-title {
@@ -566,6 +595,11 @@ export default {
   color: $comment;
   padding: 23px 0 16px 0;
   font-weight: normal;
+}
+.out-line {
+  width: 8px;
+  position: absolute;
+  top: 8px;
 }
 </style>
  

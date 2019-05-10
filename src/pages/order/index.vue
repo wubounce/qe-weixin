@@ -39,21 +39,25 @@
         <el-table-column header-align="left" prop="machineName" label="设备" width="160" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineFunctionName" label="功能模式"></el-table-column>
         <el-table-column header-align="left" prop="markPrice" label="原价(元)"></el-table-column>
-        <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120"></el-table-column>
+        <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120">
+          <template slot-scope="scope">
+            <span>{{scope.row.detergentPrice ? scope.row.detergentPrice:'-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="" label="优惠金额(元)" width="120">
           <template slot-scope="scope">
             <el-popover ref="popover" trigger="hover" placement="bottom" v-if="scope.row.discountTotalPirce&&scope.row.discountTotalPirce>0">
-              <p v-if="scope.row.discountType==1 && scope.row.discountPrice>0">VIP会员卡{{ scope.row.discountPrice }}</p>
-              <p v-if="scope.row.discountType==2 && scope.row.discountPrice>0 || scope.row.discountType===null&&scope.row.discountPrice>0">限时优惠{{ scope.row.discountPrice }}</p>
+              <p v-if="scope.row.discountType==1 && scope.row.discountPrice>0">VIP会员卡：{{ scope.row.discountPrice }}</p>
+              <p v-if="scope.row.discountType==2 && scope.row.discountPrice>0 || scope.row.discountType===null&&scope.row.discountPrice>0">限时优惠：{{ scope.row.discountPrice }}</p>
               <div v-if="scope.row.source!=3&&scope.row.voucherPrice>0">
-                <span>平台优惠券{{ scope.row.voucherPrice }}</span>
+                <span>平台优惠券：{{ scope.row.voucherPrice }}</span>
                 <p class="rowstyle" style="font-size:10px;" v-if="scope.row.platformPayPrice>0">(优惠券平台承担{{scope.row.platformPayPrice}})</p>
               </div>
-              <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券{{scope.row.voucherPrice}}</p>
+              <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券：{{scope.row.voucherPrice}}</p>
               <div slot="reference" class="name-wrapper">
                 <span size="medium">
                   <span>{{ scope.row.discountTotalPirce | tofixd}}</span>
-                  <svg-icon icon-class="xialajiantoushang" class="arrow" v-if="scope.row.discountTotalPirce>0" />
+                  <svg-icon icon-class="xialajiantouxia" class="arrow" v-if="scope.row.discountTotalPirce>0" />
                 </span>
               </div>
             </el-popover>
