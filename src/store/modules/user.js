@@ -1,4 +1,10 @@
-import { getToken, setToken, removeToken, setUserInfoInLocalstorage, getUserInfoInLocalstorage } from '@/utils/auth';
+import {
+  getToken,
+  setToken,
+  removeToken,
+  setUserInfoInLocalstorage,
+  getUserInfoInLocalstorage
+} from '@/utils/auth';
 import { login } from '@/service/login';
 import { getOperatorFun } from '@/service/user';
 import { menuSelectFun } from '@/service/member';
@@ -58,7 +64,6 @@ const user = {
       return new Promise(resolve => {
         menuSelectFun().then(res => {
           // let permsList = getTrees(res, 0);
-          // console.log(permsList);
           commit('SET_ACCESS', menusData.data);
           commit('SET_HAS_PRES_INFO', true);
           resolve(res);
@@ -66,7 +71,7 @@ const user = {
       });
     },
     // 前端 登出
-    FedLogOut({ commit }) {
+    LogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '');
         commit('SET_ACCESS', []);

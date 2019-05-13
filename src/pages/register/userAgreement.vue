@@ -1,6 +1,5 @@
 <template>
   <div class="agree-wrapper">
-    <p class="title big-title">运营商注册协议</p>
     <p class="text">尊敬的运营商，欢迎注册成为杭州企鹅科技有限公司平台（以下简称“本平台”）用户。在注册本平台之前，请务必认真阅读并充分理解本协议全部内容，并请您审慎阅读并选择接受或不接受本协议。点击本协议下方的“注册”按钮，并按照本平台注册程序进行注册 ，上述注册程序完成时即视为用户已经充分理解和同意本协议全部内容，并签署了本协议，本协议已在用户与本公司之间产生合同法律效力，用户使用本平台服务的全部活动将受到本协议的约束并应承担相应的责任和义务。</p>
     <p class="title">1、运营商注册须知</p>
     <p class="text">1.1 注册成为本平台用户运营商必须满足如下相应主体资格条件之一：</p>
@@ -55,7 +54,7 @@
 </script>
 
 <style lang="scss" scoped="scoped">
-@import "~@//styles/variables.scss";
+@import '~@//styles/variables.scss';
 .agree-wrapper {
   width: 80%;
   margin: 20px auto;
@@ -64,10 +63,6 @@
     color: $menuText;
     padding: 15px 0;
     line-height: 32px;
-  }
-  .big-title {
-    font-size: 24px;
-    text-align: center;
   }
   .text {
     font-size: 14px;

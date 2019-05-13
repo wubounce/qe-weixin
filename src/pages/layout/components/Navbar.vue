@@ -3,22 +3,22 @@
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container" />
     <breadcrumb class="breadcrumb-container" />
     <div class="right-menu">
-      <template v-if="device !== 'mobile'">
+      <!-- <template v-if="device !== 'mobile'">
         <el-tooltip :content="'全屏'" effect="dark" placement="bottom">
           <screenfull class="screenfull right-menu-item" />
         </el-tooltip>
         <el-tooltip :content="'布局大小'" effect="dark" placement="bottom">
           <size-select class="international right-menu-item" />
         </el-tooltip>
-      </template>
+      </template> -->
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
-          <img src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.svg" class="user-avatar" /><span style="display: inline-block;line-height:54px;">{{userInfoIn.realName}}</span>
+          <img src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" class="user-avatar" /><span style="display: inline-block;line-height:54px;">{{userInfoIn.realName}}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/">
-            <el-dropdown-item>消息中心</el-dropdown-item>
+          <router-link to="/changepwd">
+            <el-dropdown-item>修改密码</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出</span>
@@ -30,34 +30,33 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import Breadcrumb from "@/components/Breadcrumb";
-import Hamburger from "@/components/Hamburger";
-import Screenfull from "@/components/Screenfull";
-import SizeSelect from "@/components/SizeSelect";
+import { mapGetters } from 'vuex';
+import Breadcrumb from '@/components/Breadcrumb';
+import Hamburger from '@/components/Hamburger';
+import Screenfull from '@/components/Screenfull';
+import SizeSelect from '@/components/SizeSelect';
 import { getUserInfoInLocalstorage } from '@/utils/auth';
 export default {
   components: {
     Breadcrumb,
     Hamburger,
     Screenfull,
-    SizeSelect,
-
+    SizeSelect
   },
   computed: {
-    ...mapGetters(["sidebar", "name", "avatar", "device"])
+    ...mapGetters(['sidebar', 'name', 'avatar', 'device'])
   },
-  data () {
+  data() {
     return {
       userInfoIn: getUserInfoInLocalstorage() ? getUserInfoInLocalstorage() : {}
-    }
+    };
   },
   methods: {
-    toggleSideBar () {
-      this.$store.dispatch("ToggleSideBar");
+    toggleSideBar() {
+      this.$store.dispatch('ToggleSideBar');
     },
-    logout () {
-      this.$store.dispatch("FedLogOut").then(() => {
+    logout() {
+      this.$store.dispatch('LogOut').then(() => {
         location.reload(); // 为了重新实例化vue-router对象 避免bug
       });
     }

@@ -36,17 +36,18 @@
 <script>
 import { mapActions } from 'vuex';
 import JsEncrypt from 'jsencrypt';
+import { removeToken } from '@/utils/auth';
 export default {
-  name: "Login",
-  data () {
+  name: 'Login',
+  data() {
     return {
       loginForm: {
-        userName: "",
-        password: ""
+        userName: '',
+        password: ''
       },
       loginRules: {
-        userName: [{ required: true, trigger: "blur", message: "请输入账号" }],
-        password: [{ required: true, trigger: "blur", message: "请输入密码" }]
+        userName: [{ required: true, trigger: 'blur', message: '请输入账号' }],
+        password: [{ required: true, trigger: 'blur', message: '请输入密码' }]
       },
       loading: false,
       redirect: undefined
@@ -54,25 +55,26 @@ export default {
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler: function(route) {
         this.redirect = route.query && route.query.redirect;
       },
       immediate: true
     }
   },
+  mounted() {
+    removeToken();
+    localStorage.clear();
+  },
+  created() {},
   methods: {
-    ...mapActions([
-      'getUserInfo',
-      'getPermsInfo'
-    ]),
-    encryptSend (data) {
+    ...mapActions(['getUserInfo', 'getPermsInfo']),
+    encryptSend(data) {
       let jsencrypt = new JsEncrypt();
       let publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh/dHI4eSGQU55+WY2QIWguZ8got/aCairVO+8fMj6dHPWPb3AAhvfNZ7BrUaKUrPQqpt2QVRmV+UZp/bot6ukNEZMFMaSjGf4FFtRNbjIn+5jo8sC3rn6+9k2XNvAMydTDtU0P8Ebhbm1gg6O+gg+iRIAX3awWZajy2senYD7zSDguqyL8xuh6S9RG2wjPsN8LNuKd3klD1rw3kmX0Q672kSW6vm+GHzWun6jYaWac2w936NlvnbQI1P1lFjcgv0OgFBm/4yoLMhx6wZD9KTKG2S7wZRNmbzEaXyrTTdJ+Q1NE4+gqHCAFfHKrzB2zvY2I0v8QL7JLMpCevChRgEcwIDAQAB';
       jsencrypt.setPublicKey(publicKey);
       return jsencrypt.encrypt(data);
-
     },
-    handleLogin () {
+    handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
@@ -82,15 +84,18 @@ export default {
             password: password,
             userName: userName
           };
-          this.$store.dispatch("Login", payload).then(() => {
-            this.getUserInfo().then(() => {
-              this.getPermsInfo();
+          this.$store
+            .dispatch('Login', payload)
+            .then(() => {
+              this.getUserInfo().then(() => {
+                this.getPermsInfo();
+              });
+              this.loading = false;
+              this.$router.push({ path: this.redirect || '/' });
+            })
+            .catch(() => {
+              this.loading = false;
             });
-            this.loading = false;
-            this.$router.push({ path: this.redirect || "/" });
-          }).catch(() => {
-            this.loading = false;
-          });
         } else {
           return false;
         }
@@ -128,16 +133,12 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .login-container {
   height: 100%;
   width: 100%;
   // background-color: $regbg;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 252, 252, 1) 0%,
-    rgba(255, 245, 245, 1) 100%
-  );
+  background: linear-gradient(180deg, rgba(255, 252, 252, 1) 0%, rgba(255, 245, 245, 1) 100%);
   position: relative;
   border-radius: 12px;
   .login-bg {
@@ -145,6 +146,9 @@ export default {
     top: 250px;
     left: 50%;
     transform: translateX(-50%);
+  }
+  .svg-icon {
+    margin-top: 13px;
   }
   .login-person {
     position: absolute;

@@ -9,18 +9,17 @@
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": ""
+      "icon": "shouye"
     },
     {
       "menuId": 11,
       "parentId": 0,
       "name": "报表",
       "url": "report",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "baobiao",
       "children": [
         {
           "menuId": 10,
@@ -62,11 +61,10 @@
       "parentId": 0,
       "name": "店铺管理",
       "url": "shopmanagement",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "dianpuguanli",
       "children": [
         {
           "menuId": 104,
@@ -82,15 +80,48 @@
       ]
     },
     {
+      "menuId": 104,
+      "parentId": 0,
+      "name": "设备管理",
+      "url": "devicemanagement",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "shebeiguanli",
+      "children": [
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "设备列表",
+          "url": "list",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        },
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "设备批量启动",
+          "url": "batchStart",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    },
+    {
       "menuId": 3,
       "parentId": 0,
       "name": "订单管理",
       "url": "ordermanagement",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "dingdanguanli",
       "children": [
         {
           "menuId": 104,
@@ -106,15 +137,48 @@
       ]
     },
     {
+      "menuId": 4,
+      "parentId": 0,
+      "name": "营销管理",
+      "url": "marketingmanagement",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "yingxiaoguanli",
+      "children": [
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "限时优惠",
+          "url": "discount",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        },
+        {
+          "menuId": 104,
+          "parentId": 0,
+          "name": "优惠券记录",
+          "url": "couponrecord",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    },
+    {
       "menuId": 5,
       "parentId": 0,
       "name": "人员管理",
       "url": "membermanagement",
-      "perms": "mer:report",
       "type": 0,
       "orderNum": 0,
       "kind": null,
-      "icon": "",
+      "icon": "renyuanguanli",
       "children": [
         {
           "menuId": 104,

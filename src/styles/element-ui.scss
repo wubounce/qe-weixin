@@ -60,6 +60,9 @@
 .el-table__header-wrapper th {
   background: #fafafa !important;
 }
+.el-table .cell {
+  line-height: 33px !important;
+}
 .el-table__footer-wrapper tbody td {
   color: $menuText !important;
   border-bottom: 0 !important;
@@ -83,4 +86,49 @@
 .el-cascader-menu__item:focus:not(:active),
 .el-cascader-menu__item:hover {
   background-color: none;
+}
+
+.el-dialog__header {
+  margin: 0 32px !important;
+  border-bottom: 1px solid $under_line;
+  padding: 24px 0px !important;
+}
+.el-dialog__body {
+  padding: 0 32px !important;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: #fff !important;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: $menuText;
+  border-radius: 50px;
+  line-height: 24px !important;
+  text-align: center;
+}
+
+.el-table th {
+  background: #fafafa !important;
+}
+
+.el-message-box {
+  padding: 0 32px;
+}
+.el-message-box__header {
+  padding: 24px 24px !important;
+  text-align: center;
+  border-bottom: 1px solid $under_line;
+}
+.el-message-box__content {
+  padding: 30px 15px !important;
+  text-align: center;
+}
+
+.el-tabs__nav-wrap::after {
+  height: 0px !important;
+}
+.el-switch.is-checked .el-switch__core {
+  border-color: #2fc25b !important;
+  background-color: #2fc25b !important;
 }

@@ -9,7 +9,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, Arial, sans-serif;
 }
 
 label {
@@ -97,14 +98,28 @@ a:hover {
   padding: 24px 32px 6px 32px;
   border-radius: 2px;
 }
-
+.rowstyle {
+  color: $menuText;
+  cursor: pointer;
+}
 .table-content {
   background: #fff;
   padding: 24px 32px 24px 32px;
   border-radius: 2px;
   margin-top: 24px;
-  .el-table [class^='el-icon-'] {
-    font-size: 18px;
-    padding-right: 20px;
+  .table-header-action {
+    padding-bottom: 16px;
   }
+}
+.el-table [class^='el-icon-'] {
+  font-size: 18px;
+  padding-right: 20px;
+  cursor: pointer;
+}
+
+[class^='icon-'] {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+  cursor: pointer;
 }

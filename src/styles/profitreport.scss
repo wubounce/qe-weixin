@@ -3,23 +3,6 @@
   padding: 24px 0;
   border-bottom: 1px solid $under_line;
 }
-.filter-shop {
-  display: inline-block;
-  width: 140px;
-  height: 32px;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  line-height: 32px;
-  padding: 0 3px;
-  color: #c0c4cc;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.filter-shop-selected {
-  color: #606266;
-}
 .date-chart {
   padding: 24px 0;
   border-bottom: 1px solid $under_line;
@@ -27,6 +10,9 @@
 .chart-title {
   padding-bottom: 24px;
   font-weight: 500;
+}
+.detail-table {
+  padding-top: 24px;
 }
 .legend {
   text-align: center;

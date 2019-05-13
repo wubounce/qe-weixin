@@ -1,6 +1,7 @@
 <template>
   <div class="register-container">
     <div class="register-form">
+      <img class="login-logo" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" alt="">
       <h3 class="title">忘记密码</h3>
       <el-form ref="forgotPwdForm" :model="forgotPwdForm" :rules="forgotPwdRules" label-position="left">
         <el-form-item prop="phone">
@@ -8,7 +9,7 @@
         </el-form-item>
         <el-form-item prop="code">
           <el-input v-model.number="forgotPwdForm.code" class="verify-code" name="code" type="text" @input="disabledBtn" placeholder="请输入验证码 " />
-          <el-button class="get-code" v-if="!btn">{{time}}s后重新获取</el-button>
+          <el-button class="get-code" v-if="!btn" :disabled="!btn">{{time}}s后重新获取</el-button>
           <el-button class="get-code" @click="sendcode" v-if="btn">获取验证码</el-button>
         </el-form-item>
         <el-form-item prop="password">
@@ -27,15 +28,15 @@
 
 <script>
 import { smscodeFun, validateCodeFun, forgetPwdFun } from '@/service/resetPwd';
-import { validatPhone, validatPwd } from "@/utils/validate";
+import { validatPhone, validatPwd } from '@/utils/validate';
 export default {
-  name: "forgotPwd",
-  data () {
+  name: 'forgotPwd',
+  data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('手机号不能为空'));
       } else if (!validatPhone(value)) {
-        callback(new Error("请输入正确的手机号"));
+        callback(new Error('请输入正确的手机号'));
       } else {
         callback();
       }
@@ -72,32 +73,32 @@ export default {
       btn: true,
       disabled: true,
       forgotPwdRules: {
-        phone: [{ required: true, trigger: "blur", validator: validatePhone }],
-        code: [{ required: true, trigger: "blur", type: 'number', message: '验证码必须为数字值' }],
-        password: [{ required: true, trigger: "blur", validator: validatePassword }],
-        rePassword: [{ required: true, trigger: "blur", validator: validateRePassword }],
-      },
+        phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
+        code: [{ required: true, trigger: 'blur', type: 'number', message: '验证码必须为数字值' }],
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        rePassword: [{ required: true, trigger: 'blur', validator: validateRePassword }]
+      }
     };
   },
   methods: {
-    disabledBtn () {
+    disabledBtn() {
       if (this.forgotPwdForm.phone && this.forgotPwdForm.code && this.forgotPwdForm.password && this.forgotPwdForm.rePassword) {
         this.disabled = false;
       } else {
         this.disabled = true;
       }
     },
-    validatePhone () {
+    validatePhone() {
       if (this.forgotPwdForm.phone === '') {
-        this.$Message.error('请输入手机号码')
+        this.$Message.error('请输入手机号码');
         return false;
       } else if (!validatPhone(this.forgotPwdForm.phone)) {
-        this.$Message.error('请输入正确手机号码')
+        this.$Message.error('请输入正确手机号码');
         return false;
       }
       return true;
     },
-    async sendcode () {
+    async sendcode() {
       if (this.validatePhone()) {
         smscodeFun({ phone: this.forgotPwdForm.phone, mark: false });
         this.time = 60;
@@ -105,7 +106,7 @@ export default {
         this.countdown();
       }
     },
-    countdown () {
+    countdown() {
       this.btn = false;
       this.timer = setInterval(() => {
         if (--this.time <= 0) {
@@ -114,21 +115,21 @@ export default {
         }
       }, 1000);
     },
-    doChangePwd () {
+    doChangePwd() {
       this.$refs.forgotPwdForm.validate(valid => {
         if (valid) {
           let payload = Object.assign({}, { phone: this.forgotPwdForm.phone, code: this.forgotPwdForm.code });
-          validateCodeFun(payload).then((res) => {
+          validateCodeFun(payload).then(res => {
             let payload = Object.assign({}, { password: this.forgotPwdForm.password, phone: this.forgotPwdForm.phone, code: this.forgotPwdForm.code });
             forgetPwdFun(payload).then(() => {
               this.$router.push({ name: 'login' });
-            })
+            });
           });
         } else {
           return false;
         }
       });
-    },
+    }
   }
 };
 </script>
@@ -170,13 +171,19 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@//styles/variables.scss";
+@import '~@//styles/variables.scss';
 .register-container {
   height: 100%;
   width: 100%;
   background-color: $regbg;
   position: relative;
   border-radius: 12px;
+  .login-logo {
+    position: absolute;
+    top: -43px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
   .register-form {
     width: 420px;
     background: #fff;
