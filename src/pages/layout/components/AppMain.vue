@@ -14,19 +14,6 @@
 <script>
 export default {
   name: 'AppMain',
-  watch: {
-    $route(to, from) {
-      //监听路由是否变化
-      if (to.path !== this.$route.path) {
-        this.$router.push({
-          path: to.path,
-          query: {
-            t: +new Date()
-          }
-        });
-      }
-    }
-  },
   computed: {
     key() {
       return this.$route.name !== undefined ? this.$route.name + +new Date() : this.$route + +new Date();

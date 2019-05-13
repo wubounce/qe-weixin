@@ -594,6 +594,7 @@ export default {
         showClose: false
       }).then(() => {
         machineStartFun(payload).then(() => {
+          this.deviceStartDialogVisible = false;
           this.$message.success('启动成功');
           this.deviceStartDialogVisible = false;
         });

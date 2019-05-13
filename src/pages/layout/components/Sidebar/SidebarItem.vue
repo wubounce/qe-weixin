@@ -6,7 +6,7 @@
         <span slot="title">{{ item.name }}</span>
       </template>
       <template v-for="child in item.children">
-        <router-link :to="resolvePath(item.url,child.url)" :key="child.name">
+        <router-link :to="resolvePath(item.url,child.url)" @click.native="flushCom" :key="child.name">
           <el-menu-item :index="resolvePath(item.url,child.url)">
             <span slot="title">{{ child.name }}</span>
           </el-menu-item>
@@ -14,7 +14,7 @@
       </template>
     </el-submenu>
     <template v-else>
-      <router-link :to="resolvePath('',item.url)" :key="item.name">
+      <router-link :to="resolvePath('',item.url)" :key="item.name" @click.native="flushCom">
         <el-menu-item :index="resolvePath('',item.url)" :class="{ 'submenu-title-noDropdown': !isNest }">
           <svg-icon :icon-class="item.icon" />
           <span slot="title">{{ item.name }}</span>
@@ -50,6 +50,14 @@ export default {
         return routePath;
       }
       return path.resolve(basePath, routePath);
+    },
+    flushCom: function() {
+      this.$router.push({
+        path: this.$router.path,
+        query: {
+          t: +new Date()
+        }
+      });
     }
     // hasOneShowingChild(children, parent) {
     //   const showingChildren = children.filter(item => {
