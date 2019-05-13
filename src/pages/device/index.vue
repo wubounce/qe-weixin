@@ -479,7 +479,6 @@ export default {
     },
     closeDeviceEdit(res) {
       this.deviceEditDialogVisible = false;
-      this.getDeviceDataToTable();
     },
 
     handleSelectionChange(val) {
@@ -511,7 +510,6 @@ export default {
     },
     closeBatchDeviceEdit(res) {
       this.batchDEditDeviceDialogVisible = false;
-      this.getDeviceDataToTable();
     },
     exportTable() {
       let payload = Object.assign({}, this.searchData);
@@ -524,6 +522,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
 .device-page .el-tooltip {
   display: inline-block;
+  position: relative;
 }
 </style>
 
@@ -599,7 +598,7 @@ export default {
 .out-line {
   width: 8px;
   position: absolute;
-  top: 8px;
+  top: 0px;
 }
 </style>
  

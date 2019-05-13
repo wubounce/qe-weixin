@@ -2,7 +2,7 @@
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="订单编号：" prop="orderNo">
-        <el-input v-model.trim="searchData.orderNo" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.orderNo" clearable placeholder="请输入" class="order-no"></el-input>
       </el-form-item>
       <el-form-item label="用户账号：" prop="phone">
         <el-input v-model.trim="searchData.phone" clearable placeholder="请输入"></el-input>
@@ -388,6 +388,14 @@ export default {
   }
 };
 </script>
+<style rel="stylesheet/scss" lang="scss">
+.order-no {
+  .el-input__inner {
+    width: 190px !important;
+  }
+}
+</style>
+
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .add-shop-from {

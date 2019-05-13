@@ -8,9 +8,9 @@ export default {
       searchData: {
         // 搜索条件
         page: 1,
-        pageSize: 10 // 分页大小
+        pageSize: 30 // 分页大小
       },
-      pageSizeOpts: [10, 30, 50],
+      pageSizeOpts: [30, 50, 100],
       total: 0 // 总数量
     };
   },

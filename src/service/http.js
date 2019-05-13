@@ -3,7 +3,7 @@ import qs from 'qs';
 import store from '@/store';
 import { getToken, getUserInfoInLocalstorage } from '@/utils/auth';
 import { filterData, get_sign } from '@/utils/tools';
-import { Message } from 'element-ui';
+import { Message, Loading } from 'element-ui';
 // 创建axios实例
 const http = axios.create({
   baseURL: process.env.VUE_APP_URL, // api的base_url
@@ -12,6 +12,9 @@ const http = axios.create({
     return qs.stringify(params, { arrayFormat: 'brackets' });
   }
 });
+
+// 遮罩
+let loading = null;
 // request拦截器
 http.interceptors.request.use(
   config => {
@@ -42,6 +45,9 @@ http.interceptors.request.use(
       config.data =
         config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
     }
+
+    // 请求之前加遮罩
+    loading = Loading.service({ fullscreen: true });
     return config;
   },
   error => {
@@ -52,7 +58,9 @@ http.interceptors.request.use(
 
 // respone拦截器
 http.interceptors.response.use(
+  // 关闭遮罩
   response => {
+    loading && loading.close();
     if (response.status === 200 && response.data.code === 0) {
       return Promise.resolve(response.data.data);
     } else if (response.status === 200 && response.data.code === 11) {
