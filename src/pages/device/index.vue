@@ -586,7 +586,6 @@ export default {
       }
     },
     startDeviceFun(machineName, machineId, row) {
-      console.log(row);
       //启动
       let payload = { machineId: machineId, functionId: row.functionId };
       this.$confirm(`<p>确定启动${machineName}?</p><p style="font-size: 12px;">启动模式：${row.functionName}</p>`, '提示', {
@@ -600,6 +599,7 @@ export default {
       });
     },
     quantifyStartChargeFunctionName(name) {
+      //获取启充电桩功能名称
       this.quantifyStartForm.functionName = val;
     },
     quantifyStartDeviceFun(formName, machineId) {
