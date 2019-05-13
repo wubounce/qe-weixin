@@ -150,7 +150,7 @@
             <el-input v-model="compensateFrom.compensateNumber" disabled placeholder="请填写" maxlength="3"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">保存</el-button>
+            <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">确定</el-button>
             <el-button @click="resetCompensateForm('compensateFrom')">取消</el-button>
           </el-form-item>
         </el-form>
@@ -235,7 +235,7 @@ export default {
         parentTypeId: '',
         compensateMoney: '',
         conditionMoney: '',
-        validDays: '',
+        validDays: '7',
         compensateNumber: '1'
       },
       compensateDialogVisible: false,
@@ -387,7 +387,7 @@ export default {
         this.compensateFrom.parentTypeId = row.parentTypeId;
         this.compensateFrom.compensateMoney = row.markPrice;
         this.compensateFrom.conditionMoney = row.markPrice;
-        this.compensateFrom.validDays = 5;
+        this.compensateFrom.validDays = 7;
         this.compensateFrom.compensateNumber = 1;
         this.getmachineParentType(row.shopId);
       }

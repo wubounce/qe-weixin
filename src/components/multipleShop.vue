@@ -140,6 +140,7 @@ export default {
       });
       this.$emit('input', this.checkedList);
       this.$emit('change', this.checkedList);
+      this.indeterminateStatus();
       this.visibleModel = false;
     },
     getCheckedShop() {
