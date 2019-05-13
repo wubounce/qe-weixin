@@ -204,7 +204,7 @@
                     <span style="float:right">{{detailData.extraAttr.ratio1}}</span>
                   </li>
                   <li>
-                    <span>中功率 1-{{detailData.extraAttr.power1}}-{{detailData.extraAttr.power2}}</span>
+                    <span>中功率 {{detailData.extraAttr.power1}}-{{detailData.extraAttr.power2}}</span>
                     <span style="float:right">{{detailData.extraAttr.ratio2}}</span>
                   </li>
                   <li>
