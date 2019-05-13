@@ -249,7 +249,7 @@ export default {
       return isDiscountType[val];
     },
     tofixd(val) {
-      return val >= 0 ? Number(val).toFixed(2) : '';
+      return val >= 0 ? Number(val).toFixed(2) : val;
     }
   },
   mounted() {},
