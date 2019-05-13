@@ -273,7 +273,7 @@
       </el-dialog>
       <!-- 启动设备 -->
       <el-dialog title="启动设备" :visible.sync="deviceStartDialogVisible" width="540px" @close="resetQuantifyForm('quantifyStartForm')">
-        <div v-if="detailData.subTypeId === '435871915014357627'" class="start-charge-function">
+        <div v-show="detailData.subTypeId === '435871915014357627'" class="start-charge-function">
           <el-form ref="quantifyStartForm" :model="quantifyStartForm" :rules="quantifyStartFormRules" label-width="140px" class="add-shop-from">
             <el-form-item label="选择启动充电口：" prop="functionId">
               <el-radio-group v-model="quantifyStartForm.functionId">
@@ -290,7 +290,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div v-if="detailData.subTypeId !== '435871915014357627'">
+        <div v-show="detailData.subTypeId !== '435871915014357627'">
           <h5 class="chose-start-fun">选择设备启动的模式</h5>
           <el-table :data="detailData.functionList" style="width: 100%">
             <el-table-column prop="functionName" label="功能"></el-table-column>
@@ -588,13 +588,14 @@ export default {
     startDeviceFun(machineName, machineId, row) {
       //启动
       let payload = { machineId: machineId, functionId: row.functionId };
+      let self = this;
       this.$confirm(`<p>确定启动${machineName}?</p><p style="font-size: 12px;">启动模式：${row.functionName}</p>`, '提示', {
         dangerouslyUseHTMLString: true,
         showClose: false
       }).then(() => {
         machineStartFun(payload).then(() => {
-          this.deviceStertDialogVisible = false;
           this.$message.success('启动成功');
+          this.deviceStartDialogVisible = false;
         });
       });
     },
@@ -607,13 +608,14 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let payload = Object.assign({ machineId: machineId }, this.quantifyStartForm);
+          let self = this;
           this.$confirm(`<p>确定启动${payload.functionName}?</p><p style="font-size: 12px;">充电时长：${payload.extra}小时</p>`, '提示', {
             dangerouslyUseHTMLString: true,
             showClose: false
           }).then(() => {
             quantifyStartFun(payload).then(() => {
-              this.deviceStartDialogVisible = false;
               this.$message.success('启动成功');
+              this.deviceStartDialogVisible = false;
             });
           });
         }
