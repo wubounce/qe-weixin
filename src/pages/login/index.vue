@@ -91,7 +91,7 @@ export default {
                 this.getPermsInfo();
               });
               this.loading = false;
-              this.$router.push({ path: this.redirect || '/' });
+              this.$router.push('/');
             })
             .catch(() => {
               this.loading = false;
