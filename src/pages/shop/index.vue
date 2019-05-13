@@ -2,10 +2,11 @@
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="店铺名称：" prop="shopName">
-        <el-input v-model="searchData.shopName" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.shopName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="店铺类型：" prop="type">
         <el-select v-model="searchData.type" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -13,7 +14,7 @@
         <Area v-model="searchData.areas" size="small" default-option="不限" />
       </el-form-item>
       <el-form-item label="地址：" prop="address">
-        <el-input v-model="searchData.address" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.address" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
@@ -39,7 +40,11 @@
             <span class="rowstyle" @click="getDeciveFromShop(scope.row)">{{scope.row.machineCount}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="profit" label="累计收益(元)"></el-table-column>
+        <el-table-column header-align="left" prop="profit" label="累计收益(元)">
+          <template slot-scope="scope">
+            <span>{{scope.row.profit | tofixd}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="isReserve" label="预约功能">
           <template slot-scope="scope">
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
@@ -62,7 +67,7 @@
         <ul class="deatil-list">
           <li><span>店铺名称：</span>{{detailData.shopName}}</li>
           <li><span>店铺类型：</span>{{detailData.shopTypeName}}</li>
-          <li><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.address}}</li>
+          <li><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</li>
           <li><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</li>
           <li><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</li>
           <li><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</li>
@@ -83,7 +88,7 @@
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
         <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="160px" v-if="addShopDialogVisible">
           <el-form-item label="店铺名称：" class="shop-name" prop="shopName">
-            <el-input v-model="addShopFrom.shopName" placeholder="店铺名称需为2-16个字，只支持中英文、_和-"></el-input>
+            <el-input v-model.trim="addShopFrom.shopName" placeholder="店铺名称需为2-16个字，只支持中英文、_和-"></el-input>
           </el-form-item>
           <el-form-item label="店铺类型：" prop="shopType">
             <el-select v-model="addShopFrom.shopType" placeholder="请选择">
@@ -91,7 +96,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="选择区域：" prop="areas" style="width:520px;">
-            <Area v-model="addShopFrom.areas" size="small" default-option="不限" />
+            <Area v-model="addShopFrom.areas" @getAreaName="getAreaName" size="small" />
           </el-form-item>
           <el-form-item label="所在小区/大厦/学校：" class="map-search">
             <el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>
@@ -103,7 +108,7 @@
             </el-amap>
           </el-form-item>
           <el-form-item label="详细地址：" class="shop-name" prop="address">
-            <el-input v-model="addShopFrom.address" placeholder="例：A座1005室"></el-input>
+            <el-input v-model.trim="addShopFrom.address" placeholder="例：A座1005室"></el-input>
           </el-form-item>
           <el-form-item label="预约功能：" prop="isReserve">
             <el-col :span="4">
@@ -115,15 +120,15 @@
             <el-col class="line" :span="1">|</el-col>
             <el-col :span="19">
               <el-form-item label="预约时长（分钟）：" prop="orderLimitMinutes">
-                <el-input v-model="addShopFrom.orderLimitMinutes" :placeholder="isOffAndOnReservePlaceholder" :disabled="isOffAndOnReserve"></el-input>
+                <el-input v-model.trim="addShopFrom.orderLimitMinutes" :placeholder="isOffAndOnReservePlaceholder" :disabled="isOffAndOnReserve"></el-input>
               </el-form-item>
             </el-col>
           </el-form-item>
           <el-form-item label="营业时间：" prop="workTime">
-            <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" format="HH:mm" value-format="HH:mm"> </el-time-picker>
+            <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" format="HH:mm" value-format="HH:mm" :clearable="false"> </el-time-picker>
           </el-form-item>
           <el-form-item label="客服电话：" class="shop-name" prop="serviceTelephone">
-            <el-input v-model="addShopFrom.serviceTelephone" placeholder="请填写店铺客服电话"></el-input>
+            <el-input v-model.trim="addShopFrom.serviceTelephone" placeholder="请填写店铺客服电话"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitShopFrom('addShopFrom')">保存</el-button>
@@ -242,6 +247,9 @@ export default {
     },
     isDiscountType: val => {
       return isDiscountType[val];
+    },
+    tofixd(val) {
+      return val >= 0 ? Number(val).toFixed(2) : '';
     }
   },
   mounted() {},
@@ -360,6 +368,11 @@ export default {
       }
       this.addShopDialogVisible = true;
     },
+    getAreaName(data) {
+      if (data.length >= 2) {
+        this.searchOption.city = data[1];
+      }
+    },
     onSubmitShopFrom(formName) {
       this.$refs[formName].validate(async valid => {
         this.addShopFrom.lng && this.addShopFrom.lat ? (this.isposition = true) : (this.isposition = false);
@@ -419,6 +432,7 @@ export default {
   width: 468px !important;
   height: 32px !important;
   line-height: 32px !important;
+  z-index: 10000 !important;
 }
 .add-shop-from {
   .shop-name .el-input__inner {

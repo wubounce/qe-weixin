@@ -3,17 +3,19 @@
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="优惠适用店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="活动状态：" prop="expired">
         <el-select v-model="searchData.expired" clearable placeholder="请选择">
-          <el-option value="" label="全部"></el-option>
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in CouponAcctiveStatusType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="开启/关闭：" prop="status">
         <el-select v-model="searchData.status" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option value="0" label="开启"></el-option>
           <el-option value="1" label="关闭"></el-option>
         </el-select>
@@ -110,7 +112,7 @@
         <el-form-item label="优惠折扣：" prop="discount">
           <div class="add-discount">
             <div>
-              <el-input v-model="addMaketFrom.discount" placeholder="例：8.5"></el-input>
+              <el-input v-model.trim="addMaketFrom.discount" placeholder="例：8.5"></el-input>
               <span style="position: absolute;left: 125px;color:#bfbfbf;">折</span>
             </div>
             <div style="color:#bfbfbf;margin-left: 30px;">优惠折扣为用户支付时所享受的折扣</div>
@@ -291,6 +293,16 @@ export default {
         this.getMaketDetail(row);
       } else {
         this.addOrEditMaketTitle = '新增优惠';
+        this.addMaketFrom = {
+          timeId: '',
+          week: '',
+          time: ['00:00', '23:59'],
+          date: [],
+          parentTypeIds: '',
+          shopIds: [],
+          discount: '',
+          weekCheckList: []
+        };
         this.isTimeMaket = '123';
         this.addMaketDialogVisible = true;
       }
@@ -300,8 +312,6 @@ export default {
       let res = await detailMarketFun(payload);
       let time = res.noTime.split('-');
       let weeklist = res.noWeek ? res.noWeek.split(',') : [];
-      console.log(weeklist);
-
       let startTime = res.noDiscountStart ? moment(res.noDiscountStart).format('YYYY-MM-DD') : '';
       let endTime = res.noDiscountEnd ? moment(res.noDiscountEnd).format('YYYY-MM-DD') : '';
       let beshop = [];
@@ -323,8 +333,6 @@ export default {
       if (Number(this.addMaketFrom.week) !== 8 && Number(this.addMaketFrom.week) !== 9 && weeklist.length >= 1) {
         this.addMaketFrom.week = 10;
       }
-      console.log(this.addMaketFrom.week, this.addMaketFrom.weekCheckList);
-
       this.getMarketlistParentType();
       this.addMaketDialogVisible = true;
     },

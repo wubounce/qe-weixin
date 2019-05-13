@@ -8,7 +8,7 @@
       </el-form-item>
       <el-form-item label="设备类型：" prop="parentTypeId">
         <el-select v-model="searchData.parentTypeId" clearable placeholder="请选择">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>

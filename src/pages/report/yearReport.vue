@@ -30,12 +30,13 @@
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)"></el-table-column>
-        <el-table-column header-align="left" prop="detergentMoney" label="洗衣液收益"></el-table-column>
-        <el-table-column header-align="left" prop="vipMoney" label="VIP收益"></el-table-column>
-        <el-table-column header-align="left" prop="refundMoney" label="退款金额"></el-table-column>
-        <el-table-column header-align="left" prop="alipayMoney" label="支付宝收益"></el-table-column>
-        <el-table-column header-align="left" prop="totalMoney" label="总收益"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)(元)"></el-table-column>
+        <el-table-column header-align="left" prop="detergentMoney" label="洗衣液收益(元)"></el-table-column>
+        <!-- <el-table-column header-align="left" prop="vipMoney" label="VIP收益"></el-table-column> -->
+        <el-table-column header-align="left" prop="refundMoney" label="退款金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="alipayMoney" label="支付宝收益(元)"></el-table-column>
+        <!-- <el-table-column header-align="left" prop="totalMoney" label="总收益"></el-table-column> -->
+        <el-table-column header-align="left" prop="money" label="总收益(元)"></el-table-column>
       </el-table>
     </div>
   </div>
@@ -136,7 +137,7 @@ export default {
       return h - k;
     },
     getSummaries(param) {
-      const { columns, data } = param;
+      const { columns } = param;
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
@@ -155,20 +156,21 @@ export default {
           sums[index] = this.totalDetergentMoney;
           return;
         }
+        // if (index === 4) {
+        //   sums[index] = this.totalVipMoney;
+        //   return;
+        // }
         if (index === 4) {
-          sums[index] = this.totalVipMoney;
-          return;
-        }
-        if (index === 5) {
           sums[index] = this.totalRefundMoney;
           return;
         }
-        if (index === 6) {
+        if (index === 5) {
           sums[index] = this.totalAlipayMoney;
           return;
         }
-        if (index === 7) {
-          sums[index] = this.totalAllMoney;
+        if (index === 6) {
+          // sums[index] = this.totalAllMoney;
+          sums[index] = this.totalMoney;
           return;
         }
       });

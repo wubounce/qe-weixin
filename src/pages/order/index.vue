@@ -2,16 +2,17 @@
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="订单编号：" prop="orderNo">
-        <el-input v-model="searchData.orderNo" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.orderNo" clearable placeholder="请输入" class="order-no"></el-input>
       </el-form-item>
       <el-form-item label="用户账号：" prop="phone">
-        <el-input v-model="searchData.phone" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.phone" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="设备名称：" prop="machineName">
-        <el-input v-model="searchData.machineName" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.machineName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="订单状态：" prop="orderStatus">
         <el-select v-model="searchData.orderStatus" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in orderStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
@@ -38,32 +39,36 @@
         <el-table-column header-align="left" prop="machineName" label="设备" width="160" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineFunctionName" label="功能模式"></el-table-column>
         <el-table-column header-align="left" prop="markPrice" label="原价(元)"></el-table-column>
-        <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120"></el-table-column>
+        <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120">
+          <template slot-scope="scope">
+            <span>{{scope.row.detergentPrice ? scope.row.detergentPrice:'-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="" label="优惠金额(元)" width="120">
           <template slot-scope="scope">
             <el-popover ref="popover" trigger="hover" placement="bottom" v-if="scope.row.discountTotalPirce&&scope.row.discountTotalPirce>0">
-              <p v-if="scope.row.discountType==1 && scope.row.discountPrice>0">VIP会员卡{{ scope.row.discountPrice }}</p>
-              <p v-if="scope.row.discountType==2 && scope.row.discountPrice>0 || scope.row.discountType===null&&scope.row.discountPrice>0">限时优惠{{ scope.row.discountPrice }}</p>
+              <p v-if="scope.row.discountType==1 && scope.row.discountPrice>0">VIP会员卡：{{ scope.row.discountPrice }}</p>
+              <p v-if="scope.row.discountType==2 && scope.row.discountPrice>0 || scope.row.discountType===null&&scope.row.discountPrice>0">限时优惠：{{ scope.row.discountPrice }}</p>
               <div v-if="scope.row.source!=3&&scope.row.voucherPrice>0">
-                <span>平台优惠券{{ scope.row.voucherPrice }}</span>
+                <span>平台优惠券：{{ scope.row.voucherPrice }}</span>
                 <p class="rowstyle" style="font-size:10px;" v-if="scope.row.platformPayPrice>0">(优惠券平台承担{{scope.row.platformPayPrice}})</p>
               </div>
-              <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券{{scope.row.voucherPrice}}</p>
+              <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券：{{scope.row.voucherPrice}}</p>
               <div slot="reference" class="name-wrapper">
                 <span size="medium">
-                  <span>{{ scope.row.discountTotalPirce=='0.00'||scope.row.discountTotalPirce=='0' ? '-':scope.row.discountTotalPirce}}</span>
-                  <svg-icon icon-class="xialajiantoushang" class="arrow" v-if="scope.row.discountTotalPirce>0" />
+                  <span>{{ scope.row.discountTotalPirce | tofixd}}</span>
+                  <svg-icon icon-class="xialajiantouxia" class="arrow" v-if="scope.row.discountTotalPirce>0" />
                 </span>
               </div>
             </el-popover>
-            <span v-else>{{ scope.row.discountTotalPirce=='0.00'||scope.row.discountTotalPirce=='0' ? '-':scope.row.discountTotalPirce}}</span>
+            <span v-else>{{ scope.row.discountTotalPirce | tofixd}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="payPrice" label="实付金额(元)" width="120"></el-table-column>
         <el-table-column header-align="left" prop="profitPrice" label="收益金额(元) " width="120"></el-table-column>
         <el-table-column header-align="left" prop="payType" label="支付方式">
           <template slot-scope="scope">
-            <span>{{scope.row.payType | PayType }}</span>
+            <span>{{scope.row.orderStatus ===1||scope.row.orderStatus ===0 ? '-' : scope.row.payType | PayType }}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="createTime" label="下单时间" width="180"></el-table-column>
@@ -80,7 +85,7 @@
               <el-tooltip content="启动" placement="top" effect="dark" v-show="(scope.row.notQuantitative===false && scope.row.isESource === 0) || (scope.row.notQuantitative===false&&scope.row.isESource === null)">
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="退款" placement="top" effect="dark">
+              <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4">
                 <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
               </el-tooltip>
               <el-tooltip content="补偿券" placement="top" effect="dark" v-if="scope.row.shopState === 2">
@@ -115,9 +120,11 @@
             <span>{{compensateFrom.shopName}}</span>
           </el-form-item>
           <el-form-item label="适用类型：" prop="parentTypeId">
-            <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
+            <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择" v-if="machineParentTypeList.length>0">
               <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+            <el-select placeholder="请选择" v-else>
+              <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无适用类型</span>
             </el-select>
           </el-form-item>
           <el-form-item label="补偿金额(元)：" prop="compensateMoney">
@@ -188,7 +195,6 @@ export default {
       }
     };
     const validateValidDays = (rule, value, callback) => {
-      console.log(value);
       if (!value) {
         callback(new Error('有效期不能为空'));
       } else if (!validatNum(value)) {
@@ -281,7 +287,7 @@ export default {
     async getmachineParentType(shopId = '') {
       //获取设备类型
       let res = await getlistParentTypeFun({ shopId: shopId });
-      this.machineParentTypeList = res;
+      this.machineParentTypeList = res.length > 0 ? [{ id: '全部', name: '全部' }, ...res] : [];
     },
     async getOrderDataToTable() {
       let payload = Object.assign({}, this.searchData);
@@ -304,8 +310,6 @@ export default {
         tmp = Number(tmp).toFixed(2);
         this.$set(item, 'discountTotalPirce', tmp);
       });
-      console.log(this.orederDataToTable);
-
       this.total = res.total;
     },
     async lookShopDetail(row) {
@@ -317,6 +321,7 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           let payload = Object.assign({}, this.compensateFrom);
+          payload.parentTypeId = payload.parentTypeId == '全部' ? '' : payload.parentTypeId;
           await compensateFun(payload);
           this.$Message.success('恭喜你，操作成功！');
           this.$refs[formName].clearValidate();
@@ -388,6 +393,14 @@ export default {
   }
 };
 </script>
+<style rel="stylesheet/scss" lang="scss">
+.order-no {
+  .el-input__inner {
+    width: 190px !important;
+  }
+}
+</style>
+
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .add-shop-from {

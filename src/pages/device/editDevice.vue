@@ -1,7 +1,7 @@
 <template>
   <el-form :model="deviceEditForm" :rules="deviceEditFormRules" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
     <el-form-item prop="machineName" label="设备名称" label-width="80px" class="edit-device-name">
-      <el-input v-model="deviceEditForm.machineName"></el-input>
+      <el-input v-model.trim="deviceEditForm.machineName"></el-input>
     </el-form-item>
     <el-tabs v-model="deviceEditTab">
       <el-tab-pane label="功能设置" name="first">
@@ -119,7 +119,7 @@
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
               <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
-                <el-input v-model="scope.row.needMinutes">
+                <el-input v-model.trim="scope.row.needMinutes">
                 </el-input>
               </el-form-item>
             </template>
@@ -127,7 +127,7 @@
           <el-table-column prop="functionPrice" label="原价/元">
             <template slot-scope="scope">
               <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
-                <el-input v-model="scope.row.functionPrice">
+                <el-input v-model.trim="scope.row.functionPrice">
                 </el-input>
               </el-form-item>
             </template>
@@ -135,7 +135,7 @@
           <el-table-column prop="functionCode" label="脉冲数" v-if="deviceEditForm.communicateType == 0">
             <template slot-scope="scope">
               <el-form-item :prop="'functionList.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
-                <el-input v-model="scope.row.functionCode">
+                <el-input v-model.trim="scope.row.functionCode">
                 </el-input>
               </el-form-item>
             </template>
@@ -158,7 +158,7 @@
           <el-table-column prop="detergentLiquid" label="用量/ml">
             <template slot-scope="scope">
               <el-form-item :prop="'detergentFunctionList.' + scope.$index + '.detergentLiquid'" :rules='deviceEditFormRules.detergentLiquid'>
-                <el-input v-model="scope.row.detergentLiquid">
+                <el-input v-model.trim="scope.row.detergentLiquid">
                 </el-input>
               </el-form-item>
             </template>
@@ -166,7 +166,7 @@
           <el-table-column prop="functionPrice" label="原价/元">
             <template slot-scope="scope">
               <el-form-item :prop="'detergentFunctionList.' + scope.$index + '.detergentPrice'" :rules='deviceEditFormRules.detergentPrice'>
-                <el-input v-model="scope.row.detergentPrice">
+                <el-input v-model.trim="scope.row.detergentPrice">
                 </el-input>
               </el-form-item>
             </template></el-table-column>

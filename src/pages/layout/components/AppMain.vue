@@ -4,7 +4,7 @@
       <!-- or name="fade" -->
       <!-- <router-view :key="key"></router-view> -->
       <keep-alive :include="cachedViews">
-        <router-view></router-view>
+        <router-view :key="key"></router-view>
       </keep-alive>
       <router-view />
     </transition>
@@ -13,17 +13,30 @@
 
 <script>
 export default {
-  name: "AppMain",
+  name: 'AppMain',
+  watch: {
+    $route(to, from) {
+      //监听路由是否变化
+      if (to.path !== this.$route.path) {
+        this.$router.push({
+          path: to.path,
+          query: {
+            t: +new Date()
+          }
+        });
+      }
+    }
+  },
   computed: {
-    // key() {
-    //   return this.$route.name !== undefined ? this.$route.name + +new Date() : this.$route + +new Date()
-    // }
+    key() {
+      return this.$route.name !== undefined ? this.$route.name + +new Date() : this.$route + +new Date();
+    }
   }
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-@import "~@//styles/variables.scss";
+@import '~@//styles/variables.scss';
 .app-main {
   /*50 = navbar  */
   min-height: calc(100vh - 50px);

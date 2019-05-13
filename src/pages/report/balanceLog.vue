@@ -7,11 +7,15 @@
       </el-form-item>
       <el-form-item label="店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择" @change="checkedShop">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备：" prop="machineId">
         <el-select v-model="searchData.machineId" clearable placeholder="请选择">
+          <span v-if="machineList === null" slot="empty" style="font-size: 12px;min-height: 36px;display: block;line-height: 36px;text-align: center;color: rgba(0,0,0,0.65);">请先选择店铺</span>
+          <span v-else slot="empty" style="font-size: 12px;min-height: 36px;display: block;line-height: 36px;text-align: center;color: rgba(0,0,0,0.65);">无数据</span>
+          <!-- <el-option label="全部" value=""></el-option> -->
           <el-option v-for="(item,index) in machineList" :key="index" :label="item.machineName" :value="item.machineId"></el-option>
         </el-select>
       </el-form-item>
@@ -22,6 +26,7 @@
       </el-form-item> -->
       <el-form-item label="收支类型：" prop="type">
         <el-select v-model="searchData.type " clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in earningType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
@@ -39,9 +44,14 @@
         <el-table-column header-align="left" prop="time" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="orderNo" label="订单编号"></el-table-column>
         <el-table-column header-align="left" prop="userName" label="用户账号"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="金额">
+        <el-table-column header-align="left" prop="money" label="金额(元)">
           <template slot-scope="scope">
-            <span>{{ scope.row.money==0.00||scope.row.money==0 ? '-':scope.row.money | tofixd}}</span>
+            <span>{{ scope.row.money | toFixed}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column header-align="left" prop="origin" label="收支类型">
+          <template slot-scope="scope">
+            <span>{{scope.row.type | earningType}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="origin" label="来源类型">
@@ -74,20 +84,13 @@ export default {
       tableDataList: [],
       shopList: [],
       searchData: {
-        time: [
-          moment()
-            .subtract(7, 'days')
-            .format('YYYY-MM-DD'),
-          moment()
-            .subtract(1, 'days')
-            .format('YYYY-MM-DD')
-        ],
+        time: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         shopId: '',
         machineId: '',
         origin: 0,
         type: ''
       },
-      machineList: []
+      machineList: null
     };
   },
   filters: {
@@ -96,6 +99,9 @@ export default {
     },
     earningType(val) {
       return earningType[val];
+    },
+    toFixed(val) {
+      return Number(val).toFixed(2);
     }
   },
   computed: {
@@ -140,6 +146,10 @@ export default {
     },
     async getmachineParentType(shopId = '') {
       //获取设备类型
+      if (!shopId) {
+        this.machineList = null;
+        return;
+      }
       let res = await manageSimpleListFun({ page: 1, pageSize: 9999, shopId: shopId });
       this.machineList = res.items || [];
     },

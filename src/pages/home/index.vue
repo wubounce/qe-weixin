@@ -7,7 +7,7 @@
           <ul class="profit-sub">
             <li>
               <p class="title">今日收益 (元)</p>
-              <p class="num">￥{{frofitCount.todayMoney}}</p>
+              <p class="num">{{frofitCount.todayMoney}}</p>
               <p :class="['pio',{'up-arrows':String(frofitCount.yoy).includes('+'),'down-arrows':String(frofitCount.yoy).includes('-')}]">
                 {{frofitCount.yoy}}
                 <svg-icon :icon-class="String(frofitCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
@@ -15,11 +15,11 @@
             </li>
             <li>
               <p class="title">当月收益 (元)</p>
-              <p class="num">￥{{frofitCount.monthMoney}}</p>
+              <p class="num">{{frofitCount.monthMoney}}</p>
             </li>
             <li>
               <p class="title">总收益 (元)</p>
-              <p class="num">￥{{frofitCount.allMoney}}</p>
+              <p class="num">{{frofitCount.allMoney}}</p>
             </li>
           </ul>
         </div>
@@ -34,7 +34,7 @@
             <li>
               <p class="title">今日订单数</p>
               <p class="num">{{orderCount.todayCount}}</p>
-              <p :class="['pio',{'up-arrows':String(orderCount.yoy).includes('+'),'down-arrows':String(orderCount.yoy).includes('-')}]">
+              <p v-show="orderCount.yoy" :class="['pio',{'up-arrows':String(orderCount.yoy).includes('+'),'down-arrows':String(orderCount.yoy).includes('-')}]">
                 {{orderCount.yoy}}
                 <svg-icon :icon-class="String(orderCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
@@ -63,7 +63,7 @@
             <li>
               <p class="title">今日下单用户数</p>
               <p class="num">{{userCount.todayUserCount}}</p>
-              <p :class="['pio',{'up-arrows':String(userCount.yoyUser).includes('+'),'down-arrows':String(userCount.yoyUser).includes('-')}]">
+              <p v-show="userCount.yoyUser" :class="['pio',{'up-arrows':String(userCount.yoyUser).includes('+'),'down-arrows':String(userCount.yoyUser).includes('-')}]">
                 {{userCount.yoyUser}}
                 <svg-icon :icon-class="String(userCount.yoyUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
@@ -71,7 +71,7 @@
             <li>
               <p class="title">今日新增用户数</p>
               <p class="num">{{userCount.todayAddUserCount}}</p>
-              <p :class="['pio',{'up-arrows':String(userCount.yoyAddUser).includes('+'),'down-arrows':String(userCount.yoyAddUser).includes('-')}]">
+              <p v-show="userCount.yoyAddUser" :class="['pio',{'up-arrows':String(userCount.yoyAddUser).includes('+'),'down-arrows':String(userCount.yoyAddUser).includes('-')}]">
                 {{userCount.yoyAddUser}}
                 <svg-icon :icon-class="String(userCount.yoyAddUser).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
@@ -97,7 +97,7 @@
             <li>
               <p class="title">今日设备活跃率 </p>
               <p class="num">{{deviceCount.deviceActiveRatio}}%</p>
-              <p :class="['pio',{'up-arrows':String(deviceCount.yoy).includes('+'),'down-arrows':String(deviceCount.yoy).includes('-')}]">
+              <p v-show="deviceCount.yoy" :class="['pio',{'up-arrows':String(deviceCount.yoy).includes('+'),'down-arrows':String(deviceCount.yoy).includes('-')}]">
                 {{deviceCount.yoy}}
                 <svg-icon :icon-class="String(deviceCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
               </p>
@@ -524,6 +524,7 @@ export default {
     background: #fff;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     padding: 16px 24px;
+    min-height: 169px;
     h2 {
       font-size: 16px;
       font-weight: normal;

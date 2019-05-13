@@ -9,7 +9,7 @@
             <div class="all-content">
               <div class="all-content-left">
                 <div class="shop-search-text">
-                  <el-input v-model="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索" @input="getSearchShop"></el-input>
+                  <el-input v-model.trim="state" suffix-icon="el-icon-search" placeholder="请输入店铺关键字搜索" @input="getSearchShop"></el-input>
                 </div>
                 <ul class="el-scrollbar__view">
                   <el-checkbox-group v-model="checkedList">
@@ -45,6 +45,7 @@
 
 <script type="text/ecmascript-6">
 import { shopListFun } from '@/service/member';
+import { delay } from '@/utils/tools';
 export default {
   props: {
     value: {
@@ -129,9 +130,6 @@ export default {
       });
       this.indeterminateStatus();
     },
-    getSearchShop(val) {
-      this.getShopList();
-    },
     resetCheckedShop() {
       this.checkedList = [];
       this.checkedListName = [];
@@ -149,6 +147,7 @@ export default {
       this.shopFilterName = this.checkedListName.join(',');
       this.$emit('input', this.checkedList);
       this.$emit('change', this.checkedList);
+      this.state = '';
       this.visibleModel = false;
     }
   },
@@ -159,6 +158,15 @@ export default {
     },
     isTimeMaket: function(val) {
       this.isEditTime = val;
+    },
+    state: function(newVal) {
+      if (newVal) {
+        delay(() => {
+          this.getShopList();
+        }, 200);
+      } else {
+        this.getShopList();
+      }
     }
   }
 };

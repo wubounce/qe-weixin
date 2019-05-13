@@ -2,26 +2,26 @@
  *  描述：Global directive js
  */
 
-import { getMenu } from '@/utils/tools';
+// import { getMenu } from '@/utils/tools';
 
 const install = Vue => {
   /**
    * @description 权限检查方法
    */
-  Vue.prototype.$_has = function(value) {
-    let isExist = false;
-    let buttonpermsStr = getMenu();
-    if (buttonpermsStr == undefined || buttonpermsStr == null) {
-      return false;
-    }
-    for (let i = 0; i < buttonpermsStr.length; i++) {
-      if (buttonpermsStr[i].perms.includes(String(value))) {
-        isExist = true;
-        break;
-      }
-    }
-    return isExist;
-  };
+  // Vue.prototype.$_has = function(value) {
+  //   let isExist = false;
+  //   let buttonpermsStr = getMenu();
+  //   if (buttonpermsStr == undefined || buttonpermsStr == null) {
+  //     return false;
+  //   }
+  //   for (let i = 0; i < buttonpermsStr.length; i++) {
+  //     if (buttonpermsStr[i].perms.includes(String(value))) {
+  //       isExist = true;
+  //       break;
+  //     }
+  //   }
+  //   return isExist;
+  // };
 
   /**
    * @description 按钮权限指令

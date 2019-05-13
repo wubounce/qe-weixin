@@ -2,10 +2,11 @@
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="用户账号：" prop="phone">
-        <el-input v-model="searchData.phone" clearable placeholder="请输入"></el-input>
+        <el-input v-model.trim="searchData.phone" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="券状态：" prop="status">
         <el-select v-model="searchData.status" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in CouponStatusType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
@@ -16,6 +17,7 @@
       </el-form-item> -->
       <el-form-item label="适用店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
@@ -35,7 +37,7 @@
         </el-date-picker>
       </el-form-item>
       <!-- <el-form-item label="相关活动：" prop="name">
-        <el-input v-model="searchData.name" placeholder="请输入活动名称"></el-input>
+        <el-input v-model.trim="searchData.name" placeholder="请输入活动名称"></el-input>
       </el-form-item> -->
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
