@@ -120,9 +120,11 @@
             <span>{{compensateFrom.shopName}}</span>
           </el-form-item>
           <el-form-item label="适用类型：" prop="parentTypeId">
-            <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
+            <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择" v-if="machineParentTypeList.length>0">
               <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+            <el-select placeholder="请选择" v-else>
+              <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无适用类型</span>
             </el-select>
           </el-form-item>
           <el-form-item label="补偿金额(元)：" prop="compensateMoney">
@@ -285,7 +287,7 @@ export default {
     async getmachineParentType(shopId = '') {
       //获取设备类型
       let res = await getlistParentTypeFun({ shopId: shopId });
-      this.machineParentTypeList = res;
+      this.machineParentTypeList = res.length > 0 ? [{ id: '全部', name: '全部' }, ...res] : [];
     },
     async getOrderDataToTable() {
       let payload = Object.assign({}, this.searchData);
@@ -319,6 +321,7 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           let payload = Object.assign({}, this.compensateFrom);
+          payload.parentTypeId = payload.parentTypeId == '全部' ? '' : payload.parentTypeId;
           await compensateFun(payload);
           this.$Message.success('恭喜你，操作成功！');
           this.$refs[formName].resetFields();
