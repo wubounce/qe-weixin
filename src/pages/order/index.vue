@@ -37,7 +37,11 @@
         <el-table-column header-align="left" prop="phone" label="用户账号" width="120"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="店铺" width="160" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineName" label="设备" width="160" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="machineFunctionName" label="功能模式"></el-table-column>
+        <el-table-column header-align="left" prop="machineFunctionName" label="功能模式" min-width="240">
+          <template slot-scope="scope">
+            <span>{{scope.row.machineFunctionName}}/{{scope.row.markMinutes}}分钟</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="markPrice" label="原价(元)"></el-table-column>
         <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120">
           <template slot-scope="scope">

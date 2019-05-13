@@ -7,7 +7,7 @@
           <ul class="profit-sub">
             <li>
               <p class="title">今日收益 (元)</p>
-              <p class="num">{{frofitCount.todayMoney}}</p>
+              <p class="num">{{frofitCount.todayMoney | tofixd}}</p>
               <p :class="['pio',{'up-arrows':String(frofitCount.yoy).includes('+'),'down-arrows':String(frofitCount.yoy).includes('-')}]">
                 {{frofitCount.yoy}}
                 <svg-icon :icon-class="String(frofitCount.yoy).includes('+')? 'shangzhang':'xiajiang'" />
@@ -15,11 +15,11 @@
             </li>
             <li>
               <p class="title">当月收益 (元)</p>
-              <p class="num">{{frofitCount.monthMoney}}</p>
+              <p class="num">{{frofitCount.monthMoney | tofixd}}</p>
             </li>
             <li>
               <p class="title">总收益 (元)</p>
-              <p class="num">{{frofitCount.allMoney}}</p>
+              <p class="num">{{frofitCount.allMoney | tofixd}}</p>
             </li>
           </ul>
         </div>
@@ -171,6 +171,11 @@ export default {
     });
     if (document.body.clientWidth < 1400) {
       this.pieTitleOffset = '5%';
+    }
+  },
+  filters: {
+    tofixd(val) {
+      return val >= 0 ? Number(val).toFixed(2) : val;
     }
   },
   created() {

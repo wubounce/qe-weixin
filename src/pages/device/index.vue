@@ -277,7 +277,7 @@
           <el-form ref="quantifyStartForm" :model="quantifyStartForm" :rules="quantifyStartFormRules" label-width="140px" class="add-shop-from">
             <el-form-item label="选择启动充电口：" prop="functionId">
               <el-radio-group v-model="quantifyStartForm.functionId">
-                <el-radio v-for="(item,index) in detailData.functionList" :key="index" :label="item.functionId">{{item.functionName}}</el-radio>
+                <el-radio v-for="(item,index) in detailData.functionList" :key="index" :label="item.functionId" @click.native="quantifyStartChargeFunctionName(item.functionName)">{{item.functionName}}</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="选择充电时长：" prop="extra">
@@ -299,7 +299,7 @@
             <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineId,scope.row)">启动</el-button>
+                <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineName,detailData.machineId,scope.row)">启动</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -391,7 +391,8 @@ export default {
       quantifyStartForm: {
         //充电桩定量启动
         functionId: '',
-        extra: ''
+        extra: '',
+        functionName: ''
       },
       quantifyResetDialogVisible: false,
       quantifyResetFormRules: {
@@ -419,7 +420,7 @@ export default {
       return waterStatus[val];
     },
     tofixd(val) {
-      return val >= 0 ? Number(val).toFixed(2) : '';
+      return val >= 0 ? Number(val).toFixed(2) : val;
     }
   },
   computed: {
@@ -508,7 +509,7 @@ export default {
     handleDeviceTzj(row) {
       //筒自洁
       let payload = { machineId: row.machineId };
-      this.$confirm(`确认筒自洁${row.machineName}此设备?`, '提示', {
+      this.$confirm(`确定筒自洁${row.machineName}?`, '提示', {
         showClose: false
       }).then(() => {
         tzjDeviceFun(payload).then(() => {
@@ -525,7 +526,7 @@ export default {
       } else {
         //复位
         let payload = { machineId: row.machineId };
-        this.$confirm(`确认复位${row.machineName}此设备?`, '提示', {
+        this.$confirm(`确认复位${row.machineName}?`, '提示', {
           showClose: false
         }).then(() => {
           manageResetDeviceFun(payload).then(() => {
@@ -584,22 +585,36 @@ export default {
         });
       }
     },
-    startDeviceFun(machineId, row) {
+    startDeviceFun(machineName, machineId, row) {
+      console.log(row);
       //启动
       let payload = { machineId: machineId, functionId: row.functionId };
-      machineStartFun(payload).then(() => {
-        this.deviceStartDialogVisible = false;
-        this.$message.success('启动成功');
+      this.$confirm(`<p>确定启动${machineName}?</p><p style="font-size: 12px;">启动模式：${row.functionName}</p>`, '提示', {
+        dangerouslyUseHTMLString: true,
+        showClose: false
+      }).then(() => {
+        machineStartFun(payload).then(() => {
+          this.deviceStertDialogVisible = false;
+          this.$message.success('启动成功');
+        });
       });
+    },
+    quantifyStartChargeFunctionName(name) {
+      this.quantifyStartForm.functionName = val;
     },
     quantifyStartDeviceFun(formName, machineId) {
       //启充电桩定量启动
       this.$refs[formName].validate(valid => {
         if (valid) {
           let payload = Object.assign({ machineId: machineId }, this.quantifyStartForm);
-          quantifyStartFun(payload).then(() => {
-            this.deviceStartDialogVisible = false;
-            this.$message.success('启动成功');
+          this.$confirm(`<p>确定启动${payload.functionName}?</p><p style="font-size: 12px;">充电时长：${payload.extra}小时</p>`, '提示', {
+            dangerouslyUseHTMLString: true,
+            showClose: false
+          }).then(() => {
+            quantifyStartFun(payload).then(() => {
+              this.deviceStartDialogVisible = false;
+              this.$message.success('启动成功');
+            });
           });
         }
       });
