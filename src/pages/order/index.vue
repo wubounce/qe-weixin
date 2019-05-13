@@ -17,7 +17,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="日期筛选：" prop="time">
-        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:ss:mm" :default-time="['00:00:00', '23:59:59']">
+        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -37,7 +37,11 @@
         <el-table-column header-align="left" prop="phone" label="用户账号" width="120"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="店铺" width="160" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineName" label="设备" width="160" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="machineFunctionName" label="功能模式"></el-table-column>
+        <el-table-column header-align="left" prop="machineFunctionName" label="功能模式" min-width="240">
+          <template slot-scope="scope">
+            <span>{{scope.row.machineFunctionName}}/{{scope.row.markMinutes}}分钟</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="markPrice" label="原价(元)"></el-table-column>
         <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120">
           <template slot-scope="scope">
@@ -120,9 +124,11 @@
             <span>{{compensateFrom.shopName}}</span>
           </el-form-item>
           <el-form-item label="适用类型：" prop="parentTypeId">
-            <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择">
-              <el-option label="全部" value=""></el-option>
+            <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择" v-if="machineParentTypeList.length>0">
               <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+            <el-select placeholder="请选择" v-else>
+              <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无适用类型</span>
             </el-select>
           </el-form-item>
           <el-form-item label="补偿金额(元)：" prop="compensateMoney">
@@ -144,7 +150,7 @@
             <el-input v-model="compensateFrom.compensateNumber" disabled placeholder="请填写" maxlength="3"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">保存</el-button>
+            <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">确定</el-button>
             <el-button @click="resetCompensateForm('compensateFrom')">取消</el-button>
           </el-form-item>
         </el-form>
@@ -220,7 +226,12 @@ export default {
         phone: '',
         machineName: '',
         orderStatus: '',
-        time: []
+        time: [
+          moment()
+            .subtract(6, 'days')
+            .format('YYYY-MM-DD'),
+          moment().format('YYYY-MM-DD')
+        ]
       },
       orederDataToTable: [],
       detailDialogVisible: false,
@@ -229,7 +240,7 @@ export default {
         parentTypeId: '',
         compensateMoney: '',
         conditionMoney: '',
-        validDays: '',
+        validDays: '7',
         compensateNumber: '1'
       },
       compensateDialogVisible: false,
@@ -285,12 +296,12 @@ export default {
     async getmachineParentType(shopId = '') {
       //获取设备类型
       let res = await getlistParentTypeFun({ shopId: shopId });
-      this.machineParentTypeList = res;
+      this.machineParentTypeList = res.length > 0 ? [{ id: '全部', name: '全部' }, ...res] : [];
     },
     async getOrderDataToTable() {
       let payload = Object.assign({}, this.searchData);
-      payload.startTime = payload.time ? payload.time[0] : null;
-      payload.endTime = payload.time ? payload.time[1] : null;
+      payload.startTime = payload.time ? payload.time[0] + ' 00:00:00' : null;
+      payload.endTime = payload.time ? payload.time[1] + ' 23:59:59' : null;
       payload.time = null;
       let res = await orderListFun(payload);
       this.orederDataToTable = res.items || [];
@@ -319,6 +330,7 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           let payload = Object.assign({}, this.compensateFrom);
+          payload.parentTypeId = payload.parentTypeId == '全部' ? '' : payload.parentTypeId;
           await compensateFun(payload);
           this.$Message.success('恭喜你，操作成功！');
           this.$refs[formName].resetFields();
@@ -380,7 +392,7 @@ export default {
         this.compensateFrom.parentTypeId = row.parentTypeId;
         this.compensateFrom.compensateMoney = row.markPrice;
         this.compensateFrom.conditionMoney = row.markPrice;
-        this.compensateFrom.validDays = 5;
+        this.compensateFrom.validDays = 7;
         this.compensateFrom.compensateNumber = 1;
         this.getmachineParentType(row.shopId);
       }

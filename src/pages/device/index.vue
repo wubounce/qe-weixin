@@ -232,8 +232,8 @@
           <el-table-column prop="address" min-width="180" label="设备型号" show-overflow-tooltip></el-table-column>
         </el-table>
       </el-dialog>
-      <!-- 设备异常状态日志 -->
-      <el-dialog title="启动设备" :visible.sync="deviceStertDialogVisible" width="540px">
+      <!-- 设备启动 -->
+      <el-dialog title="启动设备" :visible.sync="deviceStartDialogVisible" width="540px">
         <h5 class="chose-start-fun">选择设备启动的模式</h5>
         <el-table :data="detailData.functionList" style="width: 100%">
           <el-table-column prop="functionName" label="功能"></el-table-column>
@@ -242,7 +242,7 @@
           <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineId,scope.row)">启动</el-button>
+              <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineName,detailData.machineId,scope.row)">启动</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -299,7 +299,7 @@ export default {
       machineParentTypeList: [],
       machineSubTypeList: [],
 
-      deviceStertDialogVisible: false,
+      deviceStartDialogVisible: false,
       multipleSelection: [],
       multipleSelectionMachineIds: [],
 
@@ -325,7 +325,7 @@ export default {
       return waterStatus[val];
     },
     tofixd(val) {
-      return val >= 0 ? Number(val).toFixed(2) : '';
+      return val >= 0 ? Number(val).toFixed(2) : val;
     }
   },
   computed: {
@@ -411,7 +411,7 @@ export default {
     handleDeviceTzj(row) {
       //筒自洁
       let payload = { machineId: row.machineId };
-      this.$confirm(`确认筒自洁${row.machineName}此设备?`, '提示', {
+      this.$confirm(`确定筒自洁${row.machineName}?`, '提示', {
         showClose: false
       }).then(() => {
         tzjDeviceFun(payload).then(() => {
@@ -423,7 +423,7 @@ export default {
     handleDeviceReset(row) {
       //复位
       let payload = { machineId: row.machineId };
-      this.$confirm(`确认复位${row.machineName}此设备?`, '提示', {
+      this.$confirm(`确定复位${row.machineName}?`, '提示', {
         showClose: false
       }).then(() => {
         manageResetDeviceFun(payload).then(() => {
@@ -436,7 +436,7 @@ export default {
       //启动列表
       if (row.machineState === 1) {
         this.lookShopDetail(row);
-        this.deviceStertDialogVisible = true;
+        this.deviceStartDialogVisible = true;
       }
       if (row.machineState === 2) {
         this.$confirm(`设备运行中，请先复位`, '提示', {
@@ -463,12 +463,17 @@ export default {
         });
       }
     },
-    startDeviceFun(machineId, row) {
+    startDeviceFun(machineName, machineId, row) {
       //启动
       let payload = { machineId: machineId, functionId: row.functionId };
-      machineStartFun(payload).then(() => {
-        this.deviceStertDialogVisible = false;
-        this.$message.success('启动成功');
+      this.$confirm(`<p>确定启动${machineName}?</p><p style="font-size: 12px;">启动模式：${row.functionName}</p>`, '提示', {
+        dangerouslyUseHTMLString: true,
+        showClose: false
+      }).then(() => {
+        machineStartFun(payload).then(() => {
+          this.deviceStartDialogVisible = false;
+          this.$message.success('启动成功');
+        });
       });
     },
     handleDeviceEdit(row) {
