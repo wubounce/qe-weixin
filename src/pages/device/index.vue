@@ -173,7 +173,7 @@
         <el-tabs v-model="detailActiveTab">
           <el-tab-pane label="功能设置" name="first">
             <div v-if="detailData.notQuantitative">
-              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterMachinePirce}}元/升</p>
+              <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce}}元/升</p>
               <el-table :data="detailData.functionList" style="width: 100%">
                 <el-table-column prop="functionName" label="出水口"></el-table-column>
                 <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
@@ -185,7 +185,7 @@
             </div>
             <div v-if="detailData.subTypeId === '435871915014357627'">
               <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce || ''}}元</p>
-              <p class="charge-base"><span>选时间范围：</span>{{detailData.extraAttr.max || ''}}-{{detailData.extraAttr.min || ''}}小时</p>
+              <p class="charge-base"><span>选时间范围：</span>{{detailData.extraAttr.min || ''}}-{{detailData.extraAttr.max || ''}}小时</p>
               <p class="charge-base"><span>单位刻度时间：</span>{{detailData.extraAttr.step || ''}}小时</p>
               <p class="charge-base"><span>推荐充电时间：</span>{{detailData.extraAttr.default || ''}}小时</p>
               <div class="charge-control">
@@ -204,11 +204,11 @@
                     <span style="float:right">{{detailData.extraAttr.ratio1}}</span>
                   </li>
                   <li>
-                    <span>中功率 {{detailData.extraAttr.power1}}-{{detailData.extraAttr.power2}}</span>
+                    <span>中功率 {{detailData.extraAttr.power1?detailData.extraAttr.power1+1:''}}-{{detailData.extraAttr.power2}}</span>
                     <span style="float:right">{{detailData.extraAttr.ratio2}}</span>
                   </li>
                   <li>
-                    <span>高功率 {{detailData.extraAttr.power2}}-{{detailData.extraAttr.power3}}</span>
+                    <span>高功率 {{detailData.extraAttr.power2?detailData.extraAttr.power2+1:''}}-{{detailData.extraAttr.power3}}</span>
                     <span style="float:right">{{detailData.extraAttr.ratio3}}</span>
                   </li>
                 </ul>
@@ -277,12 +277,12 @@
           <el-form ref="quantifyStartForm" :model="quantifyStartForm" :rules="quantifyStartFormRules" label-width="140px" class="add-shop-from">
             <el-form-item label="选择启动充电口：" prop="functionId">
               <el-radio-group v-model="quantifyStartForm.functionId">
-                <el-radio v-for="(item,index) in detailData.functionList" :key="index" :label="item.functionId" @click.native="quantifyStartChargeFunctionName(item.functionName)">{{item.functionName}}</el-radio>
+                <el-radio v-for="(item,index) in detailData.functionList" :disabled="item.ifOpen===1" :key="index" :label="item.functionId" @click.native="quantifyStartChargeFunctionName(item.functionName)">{{item.functionName}}</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="选择充电时长：" prop="extra">
               <el-select v-model="quantifyStartForm.extra">
-                <el-option v-for="item in chargeTimeList" :key="item" :label="item*0.5+'小时'" :value="item*0.5"></el-option>
+                <el-option v-for="item in chargeTimeMax" v-if="(item*chargeTimeStep)>=chargeTimeMin" :key="item" :label="(item*chargeTimeStep)+'小时'" :value="item*chargeTimeStep"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -310,7 +310,7 @@
         <el-form ref="quantifyResetForm" :model="quantifyResetForm" :rules="quantifyResetFormRules" label-width="140px" class="add-shop-from start-charge-function">
           <el-form-item label="选择复位充电口：" prop="functionId">
             <el-radio-group v-model="quantifyResetForm.functionId">
-              <el-radio v-for="(item,index) in detailData.functionList" :key="index" :label="item.functionId">{{item.functionName}}</el-radio>
+              <el-radio v-for="(item,index) in detailData.functionList" :disabled="item.ifOpen===1" :key="index" :label="item.functionId">{{item.functionName}}</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item>
@@ -403,7 +403,9 @@ export default {
         functionId: ''
       },
       //充电时间选择
-      chargeTimeList: (1 / 0.5) * 10
+      chargeTimeMax:0,
+      chargeTimeMin:0,
+      chargeTimeStep:0,
     };
   },
   filters: {
@@ -504,6 +506,12 @@ export default {
       this.deviceEditdetailForm.functionList.forEach(item => {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
+      if (res.subTypeId === '435871915014357627') {
+        let extraAttr = res.functionList.length > 0 ? (res.functionList[0].extraAttr ? res.functionList[0].extraAttr : {}) : {};
+        this.chargeTimeMax = (1 / extraAttr.step) * extraAttr.max || 0;
+        this.chargeTimeMin = extraAttr.min || 0;
+        this.chargeTimeStep = extraAttr.step || 0;
+      }
       return Promise.resolve();
     },
     handleDeviceTzj(row) {

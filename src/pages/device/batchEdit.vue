@@ -147,7 +147,7 @@
           </li>
           <li>
             <el-col :span="2">中功率</el-col>
-            <el-col :span="1">{{deviceEditForm.extraAttr.power1}}</el-col>
+            <el-col :span="1">{{deviceEditForm.extraAttr.power1?deviceEditForm.extraAttr.power1+1:''}}</el-col>
             <el-col class="line" :span="1">-</el-col>
             <el-col :span="5">
               <el-form-item prop="power2">
@@ -158,7 +158,7 @@
           </li>
           <li>
             <el-col :span="2">高功率</el-col>
-            <el-col :span="1">{{deviceEditForm.extraAttr.power2}}</el-col>
+            <el-col :span="1">{{deviceEditForm.extraAttr.power2?deviceEditForm.extraAttr.power2+1:''}}</el-col>
             <el-col class="line" :span="1">-</el-col>
             <el-col :span="5">
               <el-form-item prop="power3">
