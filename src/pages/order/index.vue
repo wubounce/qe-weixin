@@ -241,7 +241,8 @@ export default {
         compensateMoney: '',
         conditionMoney: '',
         validDays: '7',
-        compensateNumber: '1'
+        compensateNumber: '1',
+        memberId: ''
       },
       compensateDialogVisible: false,
       compensateFormRules: {
@@ -333,6 +334,7 @@ export default {
           payload.parentTypeId = payload.parentTypeId == '全部' ? '' : payload.parentTypeId;
           await compensateFun(payload);
           this.$Message.success('恭喜你，操作成功！');
+          this.$refs[formName].clearValidate();
           this.$refs[formName].resetFields();
           this.compensateDialogVisible = false;
           this.getOrderDataToTable();
@@ -342,6 +344,7 @@ export default {
       });
     },
     resetCompensateForm(formName) {
+      this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
       this.compensateDialogVisible = false;
     },
@@ -389,6 +392,7 @@ export default {
         this.$set(this.compensateFrom, 'orderNo', row.orderNo);
         this.$set(this.compensateFrom, 'phone', row.phone);
         this.$set(this.compensateFrom, 'markPrice', row.markPrice);
+        this.compensateFrom.memberId = row.userId;
         this.compensateFrom.parentTypeId = row.parentTypeId;
         this.compensateFrom.compensateMoney = row.markPrice;
         this.compensateFrom.conditionMoney = row.markPrice;

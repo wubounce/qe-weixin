@@ -176,14 +176,53 @@
               <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterMachinePirce}}元/升</p>
               <el-table :data="detailData.functionList" style="width: 100%">
                 <el-table-column prop="functionName" label="出水口"></el-table-column>
-                <el-table-column prop="ifOpen" label="状态">
+                <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
                   <template slot-scope="scope">
                     <span>{{scope.row.ifOpen | ifOpenType}}</span>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
-            <el-table :data="detailData.functionList" style="width: 100%" v-if="detailData.notQuantitative===false">
+            <div v-if="detailData.subTypeId === '435871915014357627'">
+              <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce || ''}}元</p>
+              <p class="charge-base"><span>选时间范围：</span>{{detailData.extraAttr.max || ''}}-{{detailData.extraAttr.min || ''}}小时</p>
+              <p class="charge-base"><span>单位刻度时间：</span>{{detailData.extraAttr.step || ''}}小时</p>
+              <p class="charge-base"><span>推荐充电时间：</span>{{detailData.extraAttr.default || ''}}小时</p>
+              <div class="charge-control">
+                <h2>
+                  <span>充电功率范围 (瓦)</span>
+                  <span style="float:right">
+                    <el-tooltip content="用户充电时间=用户选择时间 × 充电功率对应时间系数" placement="top">
+                      <svg-icon icon-class="zhibiaoshuoming" />
+                    </el-tooltip>
+                    时间系数
+                  </span>
+                </h2>
+                <ul>
+                  <li>
+                    <span>低功率 1-{{detailData.extraAttr.power1}}</span>
+                    <span style="float:right">{{detailData.extraAttr.ratio1}}</span>
+                  </li>
+                  <li>
+                    <span>中功率 {{detailData.extraAttr.power1}}-{{detailData.extraAttr.power2}}</span>
+                    <span style="float:right">{{detailData.extraAttr.ratio2}}</span>
+                  </li>
+                  <li>
+                    <span>高功率 {{detailData.extraAttr.power2}}-{{detailData.extraAttr.power3}}</span>
+                    <span style="float:right">{{detailData.extraAttr.ratio3}}</span>
+                  </li>
+                </ul>
+              </div>
+              <el-table :data="detailData.functionList" style="width: 100%">
+                <el-table-column prop="functionName" label="出水口"></el-table-column>
+                <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.ifOpen | ifOpenType}}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <el-table :data="detailData.functionList" style="width: 100%" v-if="detailData.notQuantitative===false&&detailData.subTypeId !== '435871915014357627'">
               <el-table-column prop="functionName" label="功能"></el-table-column>
               <el-table-column prop="needMinutes" label="耗时/分钟"></el-table-column>
               <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
@@ -232,20 +271,52 @@
           <el-table-column prop="address" min-width="180" label="设备型号" show-overflow-tooltip></el-table-column>
         </el-table>
       </el-dialog>
-      <!-- 设备启动 -->
-      <el-dialog title="启动设备" :visible.sync="deviceStartDialogVisible" width="540px">
-        <h5 class="chose-start-fun">选择设备启动的模式</h5>
-        <el-table :data="detailData.functionList" style="width: 100%">
-          <el-table-column prop="functionName" label="功能"></el-table-column>
-          <el-table-column prop="needMinutes" label="耗时/分钟" v-if="detailData.subTypeName !== '通用脉冲充电桩'"></el-table-column>
-          <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
-          <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
-          <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineName,detailData.machineId,scope.row)">启动</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+      <!-- 启动设备 -->
+      <el-dialog title="启动设备" :visible.sync="deviceStartDialogVisible" width="540px" @close="resetQuantifyForm('quantifyStartForm')">
+        <div v-show="detailData.subTypeId === '435871915014357627'" class="start-charge-function">
+          <el-form ref="quantifyStartForm" :model="quantifyStartForm" :rules="quantifyStartFormRules" label-width="140px" class="add-shop-from">
+            <el-form-item label="选择启动充电口：" prop="functionId">
+              <el-radio-group v-model="quantifyStartForm.functionId">
+                <el-radio v-for="(item,index) in detailData.functionList" :key="index" :label="item.functionId" @click.native="quantifyStartChargeFunctionName(item.functionName)">{{item.functionName}}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="选择充电时长：" prop="extra">
+              <el-select v-model="quantifyStartForm.extra">
+                <el-option v-for="item in chargeTimeList" :key="item" :label="item*0.5+'小时'" :value="item*0.5"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="quantifyStartDeviceFun('quantifyStartForm',detailData.machineId)">启动</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div v-show="detailData.subTypeId !== '435871915014357627'">
+          <h5 class="chose-start-fun">选择设备启动的模式</h5>
+          <el-table :data="detailData.functionList" style="width: 100%">
+            <el-table-column prop="functionName" label="功能"></el-table-column>
+            <el-table-column prop="needMinutes" label="耗时/分钟" v-if="detailData.subTypeName !== '通用脉冲充电桩'"></el-table-column>
+            <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
+            <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" @click="startDeviceFun(detailData.machineName,detailData.machineId,scope.row)">启动</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-dialog>
+      <!-- 串口充电桩复位  -->
+      <el-dialog title="设备复位" :visible.sync="quantifyResetDialogVisible" width="540px" @close="resetQuantifyForm('quantifyResetForm')">
+        <el-form ref="quantifyResetForm" :model="quantifyResetForm" :rules="quantifyResetFormRules" label-width="140px" class="add-shop-from start-charge-function">
+          <el-form-item label="选择复位充电口：" prop="functionId">
+            <el-radio-group v-model="quantifyResetForm.functionId">
+              <el-radio v-for="(item,index) in detailData.functionList" :key="index" :label="item.functionId">{{item.functionName}}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="quantifyResetDeviceFun('quantifyResetForm')">复位</el-button>
+          </el-form-item>
+        </el-form>
       </el-dialog>
       <!-- 编辑设备  -->
       <el-dialog title="编辑设备" :visible.sync="deviceEditDialogVisible" width="768px">
@@ -260,7 +331,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, getlistSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList } from '@/service/device';
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, getlistSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList, quantifyResetFun, quantifyStartFun } from '@/service/device';
 import { exportExcel } from '@/service/common';
 import { shopListFun } from '@/service/report';
 import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType, ifOpenType, waterStatus } from '@/utils/mapping';
@@ -292,7 +363,9 @@ export default {
       deviceDataToTable: [],
 
       detailDialogVisible: false,
-      detailData: {},
+      detailData: {
+        functionList: []
+      },
       detailActiveTab: 'first',
       errorLogDialogVisible: false,
       errorLogDeviceList: [],
@@ -300,6 +373,7 @@ export default {
       machineSubTypeList: [],
 
       deviceStartDialogVisible: false,
+      deviceRestDialogVisible: false,
       multipleSelection: [],
       multipleSelectionMachineIds: [],
 
@@ -308,7 +382,28 @@ export default {
       deviceEditdetailForm: {},
 
       //批量编辑设备
-      batchDEditDeviceDialogVisible: false
+      batchDEditDeviceDialogVisible: false,
+
+      quantifyStartFormRules: {
+        functionId: [{ required: true, message: '请选择需要启动的充电口', trigger: 'change' }],
+        extra: [{ required: true, message: '请选择充电时长', trigger: 'change' }]
+      },
+      quantifyStartForm: {
+        //充电桩定量启动
+        functionId: '',
+        extra: '',
+        functionName: ''
+      },
+      quantifyResetDialogVisible: false,
+      quantifyResetFormRules: {
+        functionId: [{ required: true, message: '请选择需要复位的充电口', trigger: 'change' }]
+      },
+      quantifyResetForm: {
+        //充电桩定量复位
+        functionId: ''
+      },
+      //充电时间选择
+      chargeTimeList: (1 / 0.5) * 10
     };
   },
   filters: {
@@ -384,6 +479,7 @@ export default {
       this.searchData.page = 1;
       this.total = 0;
       this.$refs[formName].resetFields();
+      this.$refs[formName].clearValidate();
       this.machineSubTypeList = [];
       this.getDeviceDataToTable();
     },
@@ -400,7 +496,9 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
-      this.$set(this.detailData, 'waterMachinePirce', res.functionList[0].functionPrice || 0);
+      this.$set(this.detailData, 'waterAndChargeMachinePirce', res.functionList[0].functionPrice || 0);
+      this.$set(this.detailData, 'extraAttr', res.functionList[0].extraAttr || {});
+      this.$set(this.detailData, 'chargeNeedMinutes', res.functionList[0].needMinutes || {});
       this.deviceEditdetailForm = Object.assign({}, res);
       this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
       this.deviceEditdetailForm.functionList.forEach(item => {
@@ -421,16 +519,40 @@ export default {
       });
     },
     handleDeviceReset(row) {
-      //复位
-      let payload = { machineId: row.machineId };
-      this.$confirm(`确定复位${row.machineName}?`, '提示', {
-        showClose: false
-      }).then(() => {
-        manageResetDeviceFun(payload).then(() => {
-          this.$message.success('复位成功');
-          this.getDeviceDataToTable();
+      if (row.subTypeId === '435871915014357627') {
+        //充电桩定量复位
+        this.lookShopDetail(row);
+        this.quantifyResetDialogVisible = true;
+      } else {
+        //复位
+        let payload = { machineId: row.machineId };
+        this.$confirm(`确认复位${row.machineName}?`, '提示', {
+          showClose: false
+        }).then(() => {
+          manageResetDeviceFun(payload).then(() => {
+            this.$message.success('复位成功');
+            this.getDeviceDataToTable();
+          });
         });
+      }
+    },
+    quantifyResetDeviceFun(formName) {
+      //充电桩定量复位
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          let payload = { functionId: this.quantifyResetForm.functionId };
+          quantifyResetFun(payload).then(() => {
+            this.$message.success('复位成功');
+            this.quantifyResetDialogVisible = false;
+            this.resetQuantifyForm(formName);
+            this.getDeviceDataToTable();
+          });
+        }
       });
+    },
+    resetQuantifyForm(formName) {
+      this.$refs[formName].clearValidate();
+      this.$refs[formName].resetFields();
     },
     handleDeviceStart(row) {
       //启动列表
@@ -473,7 +595,29 @@ export default {
         machineStartFun(payload).then(() => {
           this.deviceStartDialogVisible = false;
           this.$message.success('启动成功');
+          this.deviceStartDialogVisible = false;
         });
+      });
+    },
+    quantifyStartChargeFunctionName(name) {
+      //获取启充电桩功能名称
+      this.quantifyStartForm.functionName = name;
+    },
+    quantifyStartDeviceFun(formName, machineId) {
+      //启充电桩定量启动
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          let payload = Object.assign({ machineId: machineId }, this.quantifyStartForm);
+          this.$confirm(`<p>确定启动${payload.functionName}?</p><p style="font-size: 12px;">充电时长：${payload.extra}小时</p>`, '提示', {
+            dangerouslyUseHTMLString: true,
+            showClose: false
+          }).then(() => {
+            quantifyStartFun(payload).then(() => {
+              this.$message.success('启动成功');
+              this.deviceStartDialogVisible = false;
+            });
+          });
+        }
       });
     },
     handleDeviceEdit(row) {
@@ -531,6 +675,14 @@ export default {
 }
 </style>
 
+<style rel="stylesheet/scss" lang="scss" scoped>
+.start-charge-function {
+  .el-radio + .el-radio {
+    margin-left: 0 !important;
+    margin-bottom: 24px;
+  }
+}
+</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .detail-base-title {
@@ -600,10 +752,39 @@ export default {
   padding: 23px 0 16px 0;
   font-weight: normal;
 }
+.charge-base {
+  line-height: 42px;
+  border-bottom: 1px solid $under_line;
+}
+.charge-control {
+  padding-bottom: 24px;
+  padding-top: 24px;
+  h2 {
+    font-size: 14px;
+    font-weight: 600;
+    height: 54px;
+    line-height: 54px;
+    background: rgba(250, 250, 250, 1);
+    border-radius: 4px 4px 0px 0px;
+    border-bottom: 1px solid $under_line;
+    padding: 0 10px;
+    color: #262626;
+  }
+
+  li {
+    height: 54px;
+    line-height: 54px;
+    border-bottom: 1px solid $under_line;
+    padding: 0 10px;
+  }
+}
+.add-shop-from {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
 .out-line {
   width: 8px;
   position: absolute;
   top: 0px;
 }
 </style>
- 
