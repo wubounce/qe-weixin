@@ -33,6 +33,8 @@ const listSubTypeAll = 'machine/listSubTypeAll';
 const listShopBatchStart = 'shop/listShopBatchStart'; //批量启动店铺列表
 const machineStart = 'machine/machineStart'; //设备详情 - 启动
 const batchEditDetergent = 'machine/batchEditDetergent'; //批量编辑设备洗衣液功能 - 启动
+const quantifyStartApi = 'machine/quantify/start'; //充电桩定量启动
+const quantifyResetApi = 'machine/quantify/reset'; //充电桩定量复位
 
 export const device = payload => fetch.get(deviceApi, { params: payload }); //登录
 export const deviceListFun = payload => fetch.post(deviceList, payload); //获取设备列表
@@ -73,3 +75,8 @@ export const batchEditDetergentFun = payload =>
   fetch.post(batchEditDetergent, payload); //批量启动店铺列表
 export const batchEditDetergentListFun = payload =>
   fetch.post(batchEditDetergentListApi, payload); //批量编辑洗衣液功能列表
+
+export const quantifyStartFun = payload =>
+  fetch.post(quantifyStartApi, payload); //批量编辑洗衣液功能列表
+export const quantifyResetFun = payload =>
+  fetch.post(quantifyResetApi, payload); //批量编辑洗衣液功能列表

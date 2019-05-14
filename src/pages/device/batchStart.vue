@@ -244,8 +244,8 @@ export default {
       });
     },
     resetAddDeviceStart(formName) {
-      this.$refs[formName].resetFields();
       this.$refs[formName].clearValidate();
+      this.$refs[formName].resetFields();
     },
     async handleDeviceEdit(row) {
       this.deviceBatchStartForm.startTime = moment(row.beginTime).format('YYYY-MM-DD HH:mm:ss');

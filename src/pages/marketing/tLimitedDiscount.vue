@@ -251,7 +251,6 @@ export default {
         this.weekFilterVisible = false;
         this.addMaketFrom.weekCheckList = [];
       }
-      console.log(this.addMaketFrom);
     },
     changeParentType() {
       if (this.addMaketFrom.shopIds.length <= 0) {
