@@ -79,7 +79,7 @@
               </div>
             </el-tooltip>
             <div v-if="scope.row.machineState!==8&&scope.row.signal">
-              <el-tooltip content="设备信号极差" placement="top" effect="dark">
+              <el-tooltip :content="`设备信号极差：${scope.row.signal}`" placement="top" effect="dark">
                 <div v-if=" scope.row.signal<=5">
                   <span class="signal signal-one" style="background:#EF5657"></span>
                   <span class="signal signal-two"></span>
@@ -88,7 +88,7 @@
                   <span class="signal signal-five"></span>
                 </div>
               </el-tooltip>
-              <el-tooltip content="设备信号差" placement="top" effect="dark">
+              <el-tooltip :content="`设备信号差：${scope.row.signal}`" placement="top" effect="dark">
                 <div v-if="scope.row.signal>=6&&scope.row.signal<=11">
                   <span class="signal signal-one" style="background:#EF5657"></span>
                   <span class="signal signal-two" style="background:#EF5657"></span>
@@ -97,7 +97,7 @@
                   <span class="signal signal-five"></span>
                 </div>
               </el-tooltip>
-              <el-tooltip content="设备信号一般" placement="top" effect="dark">
+              <el-tooltip :content="`设备信号一般：${scope.row.signal}`" placement="top" effect="dark">
                 <div v-if="scope.row.signal>=12&&scope.row.signal<=17">
                   <span class="signal signal-one" style="background:#FBD337"></span>
                   <span class="signal signal-two" style="background:#FBD337"></span>
@@ -106,7 +106,7 @@
                   <span class="signal signal-five"></span>
                 </div>
               </el-tooltip>
-              <el-tooltip content="设备信号好" placement="top" effect="dark">
+              <el-tooltip :content="`设备信号好：${scope.row.signal}`" placement="top" effect="dark">
                 <div v-if="scope.row.signal>=18&&scope.row.signal<=23">
                   <span class="signal signal-one" style="background:#4ECB73"></span>
                   <span class="signal signal-two" style="background:#4ECB73"></span>
@@ -115,7 +115,7 @@
                   <span class="signal signal-five"></span>
                 </div>
               </el-tooltip>
-              <el-tooltip content="设备信号极好" placement="top" effect="dark">
+              <el-tooltip :content="`设备信号极好：${scope.row.signal}`" placement="top" effect="dark">
                 <div v-if="scope.row.machineState!==8&&scope.row.signal>=24">
                   <span class="signal signal-one" style="background:#4ECB73"></span>
                   <span class="signal signal-two" style="background:#4ECB73"></span>
@@ -403,9 +403,9 @@ export default {
         functionId: ''
       },
       //充电时间选择
-      chargeTimeMax:0,
-      chargeTimeMin:0,
-      chargeTimeStep:0,
+      chargeTimeMax: 0,
+      chargeTimeMin: 0,
+      chargeTimeStep: 0
     };
   },
   filters: {
@@ -636,6 +636,9 @@ export default {
     },
     closeDeviceEdit(res) {
       this.deviceEditDialogVisible = false;
+      if (res) {
+        this.getDeviceDataToTable();
+      }
     },
 
     handleSelectionChange(val) {
@@ -667,6 +670,9 @@ export default {
     },
     closeBatchDeviceEdit(res) {
       this.batchDEditDeviceDialogVisible = false;
+      if (res) {
+        this.getDeviceDataToTable();
+      }
     },
     exportTable() {
       let payload = Object.assign({}, this.searchData);
