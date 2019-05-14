@@ -83,10 +83,10 @@
               <span class="rowstyle" @click="lookShopDetail(scope.row);detailDialogVisible=true">退款详情</span>
             </div>
             <div v-if="scope.row.orderStatus === 2">
-              <el-tooltip content="复位" placement="top" effect="dark" v-show="(scope.row.notQuantitative===false && scope.row.isESource === 0) || (scope.row.notQuantitative===false&&scope.row.isESource === null)">
+              <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
                 <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="启动" placement="top" effect="dark" v-show="(scope.row.notQuantitative===false && scope.row.isESource === 0) || (scope.row.notQuantitative===false&&scope.row.isESource === null)">
+              <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
               <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4">
