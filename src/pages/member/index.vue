@@ -262,7 +262,7 @@ export default {
       });
     },
     resetAddMemberFrom(formName) {
-      tthis.$refs[formName].clearValidate();
+      this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
       this.checkpermissionslist = [];
     },

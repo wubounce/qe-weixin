@@ -588,7 +588,6 @@ export default {
     startDeviceFun(machineName, machineId, row) {
       //启动
       let payload = { machineId: machineId, functionId: row.functionId };
-      let self = this;
       this.$confirm(`<p>确定启动${machineName}?</p><p style="font-size: 12px;">启动模式：${row.functionName}</p>`, '提示', {
         dangerouslyUseHTMLString: true,
         showClose: false
@@ -602,14 +601,13 @@ export default {
     },
     quantifyStartChargeFunctionName(name) {
       //获取启充电桩功能名称
-      this.quantifyStartForm.functionName = val;
+      this.quantifyStartForm.functionName = name;
     },
     quantifyStartDeviceFun(formName, machineId) {
       //启充电桩定量启动
       this.$refs[formName].validate(valid => {
         if (valid) {
           let payload = Object.assign({ machineId: machineId }, this.quantifyStartForm);
-          let self = this;
           this.$confirm(`<p>确定启动${payload.functionName}?</p><p style="font-size: 12px;">充电时长：${payload.extra}小时</p>`, '提示', {
             dangerouslyUseHTMLString: true,
             showClose: false
