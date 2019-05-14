@@ -11,17 +11,17 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import SidebarItem from "./SidebarItem";
-import variables from '@/styles/variables.scss'
+import { mapGetters } from 'vuex';
+import SidebarItem from './SidebarItem';
+import variables from '@/styles/variables.scss';
 export default {
   components: { SidebarItem },
   computed: {
-    ...mapGetters(["sidebar"]),
-    routes () {
+    ...mapGetters(['sidebar']),
+    routes() {
       return this.$store.state.user.access;
     },
-    onRoutes () {
+    onRoutes() {
       return this.$route.path;
       // if (this.$route.matched.length === 3) {
       //   //子路由
@@ -30,17 +30,17 @@ export default {
       //   return this.$route.path.replace("/", "");
       // }
     },
-    variables () {
-      return variables
+    variables() {
+      return variables;
     },
-    isCollapse () {
+    isCollapse() {
       return !this.sidebar.opened;
     }
   }
 };
 </script>
 <style lang="scss" scoped>
-@import "~@//styles/variables.scss";
+@import '~@//styles/variables.scss';
 .el-logo {
   height: 54px;
   background: $menuText;

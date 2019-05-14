@@ -4,11 +4,11 @@ export default {
       searchData: {
         // 搜索条件
         page: 1,
-        pageSize: 10 // 分页大小
+        pageSize: 30 // 分页大小
       },
       // 总条数
       total: 0,
-      pageSizeOpts: [10, 30, 50],
+      pageSizeOpts: [30, 50, 100],
       layout: 'total, sizes, prev, pager, next, jumper'
     };
   },

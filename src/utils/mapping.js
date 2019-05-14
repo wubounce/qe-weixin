@@ -3,96 +3,81 @@
  */
 
 // 首页机器状态
-export const MachineStatus = ststus => {
-  switch (ststus) {
-    case 'idle':
-      return '空闲设备';
-    case 'run':
-      return '工作设备';
-    case 'hitch':
-      return '故障设备';
-    case 'offline':
-      return '离线设备';
-    case 'timeout':
-      return '超时未工作';
-    case 'all':
-      return '总数';
-    default:
-      return ststus;
-  }
+export const MachineStatus = {
+  idle: '空闲设备',
+  run: '工作设备',
+  hitch: '故障设备',
+  offline: '离线设备',
+  timeout: '超时未工作',
+  all: '总数'
 };
 
-// 首页通信类型
-export const communicateType = ststus => {
-  switch (ststus) {
-    case 0:
-      return '脉冲';
-    case 1:
-      return '串口';
-    default:
-      return ststus;
-  }
+export const sourceType = {
+  0: '订单',
+  1: 'vip卡'
+};
+
+export const earningType = {
+  1: '收入',
+  3: '退款'
+};
+
+// 通信类型
+export const communicateType = {
+  0: '脉冲',
+  1: '串口'
+};
+export const ifOpenType = {
+  0: '开启',
+  1: '关闭'
+};
+// 设备状态类型
+export const deviceSearchStatus = {
+  1: '空闲',
+  2: '运行',
+  4: '故障',
+  8: '离线'
 };
 
 // 设备状态类型
-export const deviceStatus = ststus => {
-  switch (ststus) {
-    case 1:
-      return '空闲';
-    case 2:
-      return '运行 ';
-    case 3:
-      return '预约';
-    case 4:
-      return '故障';
-    case 5:
-      return '参数设置';
-    case 6:
-      return '自检';
-    case 7:
-      return '预约';
-    case 8:
-      return '离线';
-    case 16:
-      return '超时未工作';
-    default:
-      return ststus;
-  }
+export const deviceStatus = {
+  1: '空闲',
+  2: '运行',
+  3: '预约',
+  4: '故障',
+  5: '参数设置',
+  6: '自检',
+  7: '运行',
+  8: '离线',
+  16: '超时未工作'
+};
+
+// 设备状态类型颜色
+export const deviceColorStatus = {
+  1: '#1890FF',
+  2: '#2FC25B',
+  3: '#29dddd',
+  4: '#EF5657',
+  5: '#82848a',
+  6: '#b532e8',
+  7: '#2FC25B',
+  8: '#FACC14',
+  16: '#df6c1f'
 };
 // 设备水位
-export const waterStatus = ststus => {
-  switch (ststus) {
-    case 1:
-      return '极低水位';
-    case 2:
-      return '低水位 ';
-    case 3:
-      return '中水位';
-    case 4:
-      return '高水位';
-    default:
-      return ststus;
-  }
+export const waterStatus = {
+  1: '极低水位',
+  2: '低水位',
+  3: '中水位',
+  4: '高水位'
 };
 
 // 订单状态类型
-export const orderStatus = ststus => {
-  switch (ststus) {
-    case 0:
-      return '未支付';
-    case 1:
-      return '支付超时';
-    case 2:
-      return '已支付 ';
-    case 3:
-      return '已完成';
-    case 4:
-      return '申请退款';
-    case 5:
-      return '已退款';
-    default:
-      return ststus;
-  }
+export const orderStatus = {
+  0: '待支付',
+  1: '支付超时',
+  2: '已支付',
+  5: '已退款'
 };
 
 // 支付方式
@@ -102,57 +87,77 @@ export const PayType = ststus => {
       return '其他';
     case 1:
       return '支付宝';
+    case 2:
+      return '余额';
+    case 3:
+      return '微信 ';
+    case 4:
+      return '受限余额 ';
     case 11:
       return '支付宝';
     case 12:
       return '支付宝';
     case 13:
       return '支付宝';
-    case 2:
-      return '余额';
-    case 3:
-      return '微信 ';
     case 31:
       return '微信 ';
     case 32:
       return '微信 ';
     default:
-      return '其他';
+      return '-';
   }
 };
 
 // 交易类型
-export const ApplyType = ststus => {
-  switch (ststus) {
-    case 1:
-      return '收入 ';
-    case 2:
-      return '提现';
-    case 3:
-      return '支出 ';
-    default:
-      return ststus;
-  }
+export const ApplyType = {
+  1: '收入',
+  2: '提现',
+  3: '支出'
 };
 
-// 人员管理禁用启用
-export const memberIsLock = ststus => {
-  switch (ststus) {
-    case 0:
-      return true;
-    case 1:
-      return false;
-    default:
-      return true;
-  }
+// 预约功能状态
+export const isReserveType = {
+  0: '已开通',
+  1: '未开通'
+};
+// 是否有vip
+export const isHasVipType = {
+  false: '未设置',
+  true: '已设置'
+};
+//是否优惠状态
+export const isDiscountType = {
+  false: '未设置',
+  true: '已设置'
 };
 
 // 优惠券类型
-export const CouponType = ststus => {
-  switch (ststus) {
-    case 1:
-      return '补偿券 ';
-    default:
-      return ststus;
-  }
+export const CouponType = {
+  1: '补偿券'
+};
+// 优惠券状态
+export const CouponStatusType = {
+  0: '未使用',
+  1: '已使用',
+  2: '已过期'
+};
+
+// 限时优惠活动状态
+export const CouponAcctiveStatusType = {
+  0: '未开始',
+  1: '进行中',
+  2: '已过期'
+};
+
+//优惠券来源类型
+export const couponSourceType = {
+  0: '订单补偿',
+  1: '发券',
+  2: '活动'
+};
+
+// 人员管理禁用启用
+export const memberIsLock = {
+  0: true,
+  1: false
 };

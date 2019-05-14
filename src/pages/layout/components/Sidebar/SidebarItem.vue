@@ -2,22 +2,21 @@
   <div class="menu-wrapper">
     <el-submenu v-if="item.children && item.children.length > 0" :index="item.name">
       <template slot="title">
-        <i class="el-icon-setting"></i>
+        <svg-icon :icon-class="item.icon" />
         <span slot="title">{{ item.name }}</span>
       </template>
       <template v-for="child in item.children">
-        <router-link :to="resolvePath(item.url,child.url)" :key="child.name">
+        <router-link :to="resolvePath(item.url,child.url)" @click.native="flushCom(item.url,child.url)" :key="child.name">
           <el-menu-item :index="resolvePath(item.url,child.url)">
-            <i class="el-icon-setting"></i>
             <span slot="title">{{ child.name }}</span>
           </el-menu-item>
         </router-link>
       </template>
     </el-submenu>
     <template v-else>
-      <router-link :to="resolvePath('',item.url)" :key="item.name">
+      <router-link :to="resolvePath('',item.url)" :key="item.name" @click.native="flushCom('',item.url)">
         <el-menu-item :index="resolvePath('',item.url)" :class="{ 'submenu-title-noDropdown': !isNest }">
-          <i class="el-icon-setting"></i>
+          <svg-icon :icon-class="item.icon" />
           <span slot="title">{{ item.name }}</span>
         </el-menu-item>
       </router-link>
@@ -26,10 +25,10 @@
 </template>
 
 <script>
-import path from 'path'
-import { isExternal } from '@/utils/validate'
+import path from 'path';
+import { isExternal } from '@/utils/validate';
 export default {
-  name: "SidebarItem",
+  name: 'SidebarItem',
   props: {
     item: {
       type: Object,
@@ -38,20 +37,28 @@ export default {
     isNest: {
       type: Boolean,
       default: false
-    },
+    }
   },
-  data () {
+  data() {
     return {
       onlyOneChild: null
     };
   },
   methods: {
-    resolvePath (basePath, routePath) {
+    resolvePath(basePath, routePath) {
       if (isExternal(routePath)) {
-        return routePath
+        return routePath;
       }
-      return path.resolve(basePath, routePath)
+      return path.resolve(basePath, routePath);
     },
+    flushCom: function(basePath, routePath) {
+      this.$router.push({
+        path: path.resolve(basePath, routePath),
+        query: {
+          t: +new Date()
+        }
+      });
+    }
     // hasOneShowingChild(children, parent) {
     //   const showingChildren = children.filter(item => {
     //     if (item.hidden) {
@@ -85,3 +92,11 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.menu-wrapper {
+  .svg-icon {
+    margin-right: 11px;
+  }
+}
+</style>
+

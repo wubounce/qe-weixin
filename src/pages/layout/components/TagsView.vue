@@ -6,15 +6,15 @@
         <span class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
     </scroll-pane>
-    <div class="close-con close-btn">
+    <!-- <div class="close-con close-btn">
       <span class="el-icon-circle-close-outline" @click="visible = true"></span>
     </div>
     <ul v-show="visible" class="contextmenu">
-      <!-- <li @click="refreshSelectedTag(selectedTag)">刷新</li>
-      <li @click="closeSelectedTag(selectedTag)">关闭</li> -->
+      <li @click="refreshSelectedTag(selectedTag)">刷新</li>
+      <li @click="closeSelectedTag(selectedTag)">关闭</li> 
       <li @click="closeOthersTags">关闭其他</li>
       <li @click="closeAllTags">关闭所有</li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 

@@ -11,8 +11,26 @@ import store from './store';
 
 import filter from '@/filters/index'; // global filter
 import directive from '@/directive/index'; // global directive
+import common from '@/utils/common'; // global directive
 
 import { Message } from 'element-ui';
+// 引入vue-amap
+
+window.VueAMap.initAMapApiLoader({
+  key: '613b0f15bea16ba4bb84c1c9cde9ae88',
+  plugin: [
+    'AMap.Autocomplete',
+    'AMap.PlaceSearch',
+    'AMap.Scale',
+    'AMap.OverView',
+    'AMap.ToolBar',
+    'AMap.MapType',
+    'AMap.PolyEditor',
+    'AMap.CircleEditor',
+    'AMap.Geolocation',
+    'AMap.Geocoder'
+  ]
+});
 /* eslint-disable */
 Vue.config.productionTip = true;
 Vue.prototype.$ELEMENT = { size: Cookies.get('size') || 'small' };
@@ -22,6 +40,7 @@ Vue.prototype.$Message = Message;
 // });
 Vue.use(filter);
 Vue.use(directive);
+Vue.use(common);
 new Vue({
   el: '#app',
   router,
