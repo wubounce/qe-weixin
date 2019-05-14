@@ -241,7 +241,8 @@ export default {
         compensateMoney: '',
         conditionMoney: '',
         validDays: '7',
-        compensateNumber: '1'
+        compensateNumber: '1',
+        memberId: ''
       },
       compensateDialogVisible: false,
       compensateFormRules: {
@@ -391,6 +392,7 @@ export default {
         this.$set(this.compensateFrom, 'orderNo', row.orderNo);
         this.$set(this.compensateFrom, 'phone', row.phone);
         this.$set(this.compensateFrom, 'markPrice', row.markPrice);
+        this.compensateFrom.memberId = row.userId;
         this.compensateFrom.parentTypeId = row.parentTypeId;
         this.compensateFrom.compensateMoney = row.markPrice;
         this.compensateFrom.conditionMoney = row.markPrice;
