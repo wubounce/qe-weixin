@@ -90,9 +90,9 @@
     </div>
     <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
       <p class="device-type">设备类型：{{deviceEditForm.parentTypeName}}<span>|</span>设备型号：{{deviceEditForm.subTypeName}}</p>
-      <el-form-item label="充电单价：" prop="waterAndChargeMachinePirce" class="check-batch-funtion">
+      <el-form-item label="充电单价：" prop="chargeMachinePirce" class="check-batch-funtion">
         <div class="add-discount">
-          <el-input v-model="deviceEditForm.waterAndChargeMachinePirce" disabled></el-input>
+          <el-input v-model="deviceEditForm.chargeMachinePirce" maxlength="4"></el-input>
           <span style="position: absolute;left: 220px;color:#bfbfbf;">元/小时</span>
         </div>
       </el-form-item>
@@ -173,9 +173,9 @@
     <div class="waterAndChargeMachinePirce" v-if="deviceEditForm.notQuantitative">
       <p class="device-type waterAndChargeMachinePirce-type">设备类型：{{deviceEditForm.parentTypeName}}</p>
       <p class="device-type waterAndChargeMachinePirce-type">设备型号：{{deviceEditForm.subTypeName}}</p>
-      <el-form-item label="价格设置：" prop="waterAndChargeMachinePirce" class="water-machine-pirce">
+      <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce">
         <div class="add-discount">
-          <el-input v-model="deviceEditForm.waterAndChargeMachinePirce" placeholder="例：1"></el-input>
+          <el-input v-model="deviceEditForm.waterMachinePirce" placeholder="例：1"></el-input>
           <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
         </div>
       </el-form-item>
@@ -198,10 +198,6 @@ export default {
         return {};
       }
     },
-    visible: {
-      type: Boolean,
-      default: null
-    },
     multipleSelectionMachineIds: {
       type: String,
       default: () => {
@@ -213,9 +209,19 @@ export default {
     var validatorFunctionPrice = (rule, value, callback) => {
       let reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/; //可带二位小数的正整数
       if (!reg.test(value)) {
-        return callback(new Error('最多保留2位小数'));
+        return callback(new Error('请输入0-99之间的数字，最多保留2位小数'));
       } else if (Number(value) > 99) {
-        return callback(new Error('请输入0-99之间的数字'));
+        return callback(new Error('请输入0-99之间的数字，最多保留2位小数'));
+      } else {
+        callback();
+      }
+    };
+    var validatorChargeMachinePirce = (rule, value, callback) => {
+      let reg = /^[0-5]{1}([.]{1}[0-9]{1,2})?$/; //可带二位小数的正整数
+      if (!reg.test(value)) {
+        return callback(new Error('充电单价不能超过5，支持小数点后两位'));
+      } else if (Number(value) > 5) {
+        return callback(new Error('充电单价不能超过5，支持小数点后两位'));
       } else {
         callback();
       }
@@ -228,7 +234,8 @@ export default {
         machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
         needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
         functionPrice: [{ required: true, message: '请填写原价', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
-        waterAndChargeMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
+        waterMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
+        chargeMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorChargeMachinePirce, trigger: 'blur' }],
         functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }]
@@ -250,7 +257,8 @@ export default {
       this.deviceEditForm.functionList = res.list;
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
-      this.$set(this.deviceEditForm, 'waterAndChargeMachinePirce', res.list[0].functionPrice);
+      this.$set(this.deviceEditForm, 'waterMachinePirce', res.list[0].functionPrice);
+      this.$set(this.deviceEditForm, 'chargeMachinePirce', res.list[0].functionPrice);
       this.deviceEditForm.functionList.forEach(item => {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
@@ -275,7 +283,10 @@ export default {
                 item.ifOpen = 0;
               }
               if (this.deviceEditForm.notQuantitative === true) {
-                item.functionPrice = this.deviceEditForm.waterAndChargeMachinePirce;
+                item.functionPrice = this.deviceEditForm.waterMachinePirce;
+              }
+              if (this.deviceEditForm.subTypeId === '435871915014357627') {
+                item.functionPrice = this.deviceEditForm.chargeMachinePirce;
               }
             });
             if (ifOpenLen === this.deviceEditForm.functionList.length) {
@@ -296,8 +307,7 @@ export default {
             );
             batchEditFun(payload).then(() => {
               this.$Message.success('批量编辑成功');
-              this.visible = false;
-              this.$emit('closeBatchDeviceEdit', this.visible);
+              this.$emit('closeBatchDeviceEdit', true);
             });
           }
           if (this.checkBatchFuntion === 2) {
@@ -314,8 +324,7 @@ export default {
             );
             batchEditDetergentFun(payload).then(() => {
               this.$Message.success('批量编辑成功');
-              this.visible = false;
-              this.$emit('closeBatchDeviceEdit', this.visible);
+              this.$emit('closeBatchDeviceEdit', true);
             });
           }
         } else {
@@ -327,8 +336,7 @@ export default {
     resetForm(formName) {
       this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
-      this.visible = false;
-      this.$emit('closeBatchDeviceEdit', this.visible);
+      this.$emit('closeBatchDeviceEdit', false);
     }
   },
   watch: {
