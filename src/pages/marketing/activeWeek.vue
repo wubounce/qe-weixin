@@ -3,8 +3,8 @@
     <el-radio v-model="activeWeek" :label="9" @click.native="changeCustomWeekVisible(9)">每天</el-radio>
     <el-radio v-model="activeWeek" :label="8" @click.native="changeCustomWeekVisible(8)">周一～周五</el-radio>
     <el-radio v-model="activeWeek" :label="10" @click.native="changeCustomWeekVisible(10)">自定义</el-radio>
-    <transition name="el-zoom-in-top">
-      <div class="shop-filter" v-if="visibleModel">
+    <transition name="el-zoom-in-top" v-if="visibleModel">
+      <div class="shop-filter">
         <div class=" el-select-dropdown el-popper" x-placement="bottom-start">
           <div class="week">
             <el-checkbox-group v-model="customWeekCheckList">
@@ -49,27 +49,27 @@ export default {
   },
   methods: {
     handleClose(e) {
-      this.visibleModel = false;
       this.$emit('input', '');
+      this.visibleModel = false;
     },
     changeCustomWeekVisible(val) {
       this.activeWeek = val;
       if (val === 10) {
         this.visibleModel = true;
       } else {
-        this.visibleModel = false;
         this.customWeekCheckList = [];
         this.$emit('input', this.activeWeek);
+        this.visibleModel = false;
       }
     },
     getCustomCheckedWeek() {
-      this.visibleModel = false;
       if (this.activeWeek == 10) {
         let comWeeek = this.customWeekCheckList.join(',');
         this.$emit('input', comWeeek);
       } else {
         this.$emit('input', activeWeek);
       }
+      this.visibleModel = false;
     },
     resetCheckedWeek() {
       this.customWeekCheckList = [];
@@ -88,6 +88,8 @@ export default {
 @import '~@/styles/variables.scss';
 .shop-filter {
   margin-left: 190px;
+  position: relative;
+  z-index: 99999;
 }
 .week {
   width: 150px;
