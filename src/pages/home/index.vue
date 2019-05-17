@@ -170,7 +170,7 @@ export default {
       this.initChart();
     });
     if (document.body.clientWidth < 1400) {
-      this.pieTitleOffset = '5%';
+      this.pieTitleOffset = '3%';
     }
   },
   filters: {
