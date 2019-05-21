@@ -82,7 +82,7 @@
     </div>
     <!-- 新增 -->
     <el-dialog :title="addOrEditMaketTitle" :visible.sync="addMaketDialogVisible" @close="resetAddOrEditMaketFrom('addMaketFrom')" width="620px" height="768px">
-      <el-form ref="addMaketFrom" :model="addMaketFrom" :rules="addMaketFromRules" class="add-shop-from" label-width="120px" v-if="addMaketDialogVisible">
+      <el-form ref="addMaketFrom" :model="addMaketFrom" :rules="addMaketFromRules" class="add-shop-from" label-width="125px" v-if="addMaketDialogVisible">
         <el-form-item label="适用店铺：" prop="shopIds">
           <multiple-shop v-model="addMaketFrom.shopIds" @change="getShopFilter" :isTimeMaket="isTimeMaket" placeholder="请选择店铺"></multiple-shop>
         </el-form-item>
@@ -99,12 +99,7 @@
           <el-date-picker size="small" v-model="addMaketFrom.date" :picker-options="pickerOptions" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']"></el-date-picker>
         </el-form-item>
         <el-form-item label="活动日：" class="shop-name active-date" prop="week">
-          <el-radio-group v-model="addMaketFrom.week">
-            <el-radio :label="9" @click.native="changeCustomWeekVisible(9)">每天</el-radio>
-            <el-radio :label="8" @click.native="changeCustomWeekVisible(8)">周一～周五</el-radio>
-            <el-radio :label="10" @click.native="changeCustomWeekVisible(10)">自定义</el-radio>
-          </el-radio-group>
-          <active-week v-model="addMaketFrom.weekCheckList" @getcustomWeekCheckList="getcustomWeekCheckList(arguments)" :visible="weekFilterVisible" />
+          <active-week v-model="addMaketFrom.week"></active-week>
         </el-form-item>
         <el-form-item label="每日活动时段：" prop="time">
           <el-time-picker is-range v-model="addMaketFrom.time" placeholder="请选择" format="HH:mm" value-format="HH:mm"></el-time-picker>
@@ -167,7 +162,6 @@ export default {
       addOrEditMaketTitle: '新增优惠',
       isTimeMaket: '123',
       addMaketDialogVisible: false,
-      weekFilterVisible: false,
       pickerOptions: {
         disabledDate(time) {
           let now = new Date();
@@ -182,14 +176,13 @@ export default {
         date: [],
         parentTypeIds: '',
         shopIds: [],
-        discount: '',
-        weekCheckList: []
+        discount: ''
       },
       addMaketFromRules: {
         shopIds: [{ required: true, type: 'array', trigger: 'blur', message: '请选择适用店铺' }],
         parentTypeIds: [{ required: true, trigger: 'change', message: '请填写适用类型' }],
         date: [{ required: true, type: 'array', trigger: 'change', message: '请选择优惠日期' }],
-        week: [{ required: true, trigger: 'change', message: '请选择活动日' }],
+        week: [{ required: true, trigger: 'blur', message: '请选择活动日' }],
         time: [{ required: true, type: 'array', trigger: 'change', message: '请选择每日活动时间段' }],
         discount: [{ required: true, trigger: 'blur', validator: validateDiscount }]
       },
@@ -240,18 +233,6 @@ export default {
     formatterExpired(row, column) {
       return CouponAcctiveStatusType[row.expired];
     },
-    getcustomWeekCheckList(data) {
-      this.addMaketFrom.weekCheckList = data[0];
-      this.weekFilterVisible = data[1];
-    },
-    changeCustomWeekVisible(val) {
-      if (val === 10) {
-        this.weekFilterVisible = true;
-      } else {
-        this.weekFilterVisible = false;
-        this.addMaketFrom.weekCheckList = [];
-      }
-    },
     changeParentType() {
       if (this.addMaketFrom.shopIds.length <= 0) {
         this.$Message.error('先选择店铺');
@@ -299,8 +280,7 @@ export default {
           date: [],
           parentTypeIds: '',
           shopIds: [],
-          discount: '',
-          weekCheckList: []
+          discount: ''
         };
         this.isTimeMaket = '123';
         this.addMaketDialogVisible = true;
@@ -310,7 +290,6 @@ export default {
       let payload = { timeId: row.id };
       let res = await detailMarketFun(payload);
       let time = res.noTime.split('-');
-      let weeklist = res.noWeek ? res.noWeek.split(',') : [];
       let startTime = res.noDiscountStart ? moment(res.noDiscountStart).format('YYYY-MM-DD') : '';
       let endTime = res.noDiscountEnd ? moment(res.noDiscountEnd).format('YYYY-MM-DD') : '';
       let beshop = [];
@@ -321,17 +300,13 @@ export default {
       });
       this.addMaketFrom = {
         timeId: res.id,
-        week: Number(res.noWeek),
+        week: res.noWeek,
         time: [time[0], time[1]],
         date: [startTime, endTime],
         parentTypeIds: res.parentTypeMap && res.parentTypeIds ? res.parentTypeMap[0].parentTypeId : '全部',
         shopIds: beshopIds,
-        discount: (res.discountVO / 10).toFixed(1),
-        weekCheckList: weeklist
+        discount: (res.discountVO / 10).toFixed(1)
       };
-      if (Number(this.addMaketFrom.week) !== 8 && Number(this.addMaketFrom.week) !== 9 && weeklist.length >= 1) {
-        this.addMaketFrom.week = 10;
-      }
       this.getMarketlistParentType();
       this.addMaketDialogVisible = true;
     },
@@ -344,13 +319,9 @@ export default {
           payload.startTime = payload.date ? payload.date[0] : null;
           payload.endTime = payload.date ? payload.date[1] : null;
           payload.date = null;
-          if (payload.week === 10) {
-            if (payload.weekCheckList.length > 0) {
-              payload.week = payload.weekCheckList.join(',');
-            } else {
-              this.$Message.error('请选择自定义活动日');
-              return false;
-            }
+          if (!payload.week) {
+            this.$Message.error('请选择自定义活动日');
+            return false;
           }
           payload.parentTypeIds = payload.parentTypeIds == '全部' ? '' : `'${payload.parentTypeIds}'`;
           addOruPdateFun(payload).then(() => {
@@ -364,7 +335,6 @@ export default {
       });
     },
     resetAddOrEditMaketFrom(formName) {
-      this.addMaketFrom.weekCheckList = [];
       this.$refs[formName].clearValidate();
       this.$refs[formName].resetFields();
       this.addMaketDialogVisible = false;

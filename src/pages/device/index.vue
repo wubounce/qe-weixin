@@ -713,7 +713,7 @@ export default {
     span {
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
-      width: 70px;
+      width: 75px;
     }
   }
 }

@@ -31,7 +31,7 @@
             <div class="action">
               <p>
                 <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange" style="float:left">全选</el-checkbox>
-                <span style="margin-right:24px;color:rgba(0,0,0,0.65);" @click="resetCheckedShop">重置</span>
+                <span style="margin-right:24px;color:rgba(0,0,0,0.65);" @click="resetCheckedShop">取消</span>
                 <span @click="getCheckedShop">确定</span>
               </p>
             </div>
