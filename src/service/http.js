@@ -21,31 +21,34 @@ http.interceptors.request.use(
     if (getUserInfoInLocalstorage()) {
       config.headers.uid = getUserInfoInLocalstorage().id;
     }
-    // 过滤为null的参数
-    config.data = filterData(config.data);
-    let token = getToken();
-    let _timestamp = new Date().getTime();
-    if (token) {
-      config.data = config.data
-        ? config.data + `&token=${token}`
-        : `token=${token}`;
-      // 阻止转义
-      if (
-        config.url == '/batchExecutePlan/updateBatchStart' ||
-        config.url == '/batchExecutePlan/add'
-      ) {
-        config.data = config.data.split('+').join(' ');
-      }
-      // 添加签名
-      let _sign = get_sign(config.data, _timestamp);
-      config.data =
-        config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
+    if (config.data instanceof FormData) {
+      config.headers['Content-Type'] = 'multipart/form-data';
     } else {
-      let _sign = get_sign(config.data, _timestamp);
-      config.data =
-        config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
+      // 过滤为null的参数
+      config.data = filterData(config.data);
+      let token = getToken();
+      let _timestamp = new Date().getTime();
+      if (token) {
+        config.data = config.data
+          ? config.data + `&token=${token}`
+          : `token=${token}`;
+        // 阻止转义
+        if (
+          config.url == '/batchExecutePlan/updateBatchStart' ||
+          config.url == '/batchExecutePlan/add'
+        ) {
+          config.data = config.data.split('+').join(' ');
+        }
+        // 添加签名
+        let _sign = get_sign(config.data, _timestamp);
+        config.data =
+          config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
+      } else {
+        let _sign = get_sign(config.data, _timestamp);
+        config.data =
+          config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
+      }
     }
-
     // 请求之前加遮罩
     loading = Loading.service({ fullscreen: true });
     return config;
