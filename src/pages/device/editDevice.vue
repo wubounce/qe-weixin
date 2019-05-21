@@ -8,7 +8,7 @@
         <div v-if="deviceEditForm.notQuantitative">
           <el-form-item label="价格设置：" prop="waterMachinePirce" class="water-machine-pirce">
             <div class="add-discount">
-              <el-input v-model="deviceEditForm.waterMachinePirce" maxlength="5" placeholder="例：1"></el-input>
+              <el-input v-model.trim="deviceEditForm.waterMachinePirce" maxlength="5" placeholder="例：1"></el-input>
               <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
             </div>
           </el-form-item>
@@ -26,34 +26,35 @@
         <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
           <el-form-item label="充电单价：" prop="chargeMachinePirce">
             <div class="add-discount">
-              <el-input v-model="deviceEditForm.chargeMachinePirce" maxlength="4"></el-input>
+              <el-input v-model.trim="deviceEditForm.chargeMachinePirce" maxlength="4"></el-input>
               <span style="position: absolute;left: 220px;color:#bfbfbf;">元/小时</span>
             </div>
           </el-form-item>
           <el-form-item label="可选时间范围：">
             <el-col :span="5">
-              <el-select v-model="deviceEditForm.extraAttr.min" disabled placeholder="请选择">
-                <el-option :label="deviceEditForm.extraAttr.min+'小时'" :value="deviceEditForm.extraAttr.min"></el-option>
+              <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
+                <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item+'小时'" :value="item"></el-option>
               </el-select>
             </el-col>
             <el-col class="line" :span="1">-</el-col>
             <el-col :span="5">
-              <el-select v-model="deviceEditForm.extraAttr.max" disabled placeholder="请选择">
-                <el-option :label="deviceEditForm.extraAttr.max+'小时'" :value="deviceEditForm.extraAttr.max"></el-option>
+              <el-select v-model="deviceEditForm.extraAttr.max" placeholder="请选择">
+                <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item+'小时'" :value="item"></el-option>
               </el-select>
             </el-col>
           </el-form-item>
           <el-form-item label="单位刻度时间：">
             <div class="add-discount">
-              <el-select v-model="deviceEditForm.extraAttr.step" disabled placeholder="请选择">
-                <el-option :label="deviceEditForm.extraAttr.step+'小时'" :value="deviceEditForm.extraAttr.step"></el-option>
+              <el-select v-model="deviceEditForm.extraAttr.step" placeholder="请选择">
+                <el-option label="0.5小时" :value="0.5"></el-option>
+                <el-option label="1小时" :value="1"></el-option>
               </el-select>
             </div>
           </el-form-item>
           <el-form-item label="推荐充电时间：">
             <div class="add-discount">
-              <el-select v-model="deviceEditForm.extraAttr.default" disabled placeholder="请选择">
-                <el-option :label="deviceEditForm.extraAttr.default+'小时'" :value="deviceEditForm.extraAttr.default"></el-option>
+              <el-select v-model="deviceEditForm.extraAttr.default" placeholder="请选择">
+                <el-option v-for="item in ((1 / deviceEditForm.extraAttr.step) * deviceEditForm.extraAttr.max)" v-show="(item*deviceEditForm.extraAttr.step)>=deviceEditForm.extraAttr.min" :key="item" :label="(item*deviceEditForm.extraAttr.step)+'小时'" :value="item*deviceEditForm.extraAttr.step"></el-option>
               </el-select>
             </div>
           </el-form-item>
@@ -73,30 +74,30 @@
                 <el-col :span="1">1</el-col>
                 <el-col class="line" :span="1">-</el-col>
                 <el-col :span="5">
-                  <el-form-item prop="power1">
-                    <el-input v-model="deviceEditForm.extraAttr.power1" disabled></el-input>
+                  <el-form-item prop="extraAttr.power1">
+                    <el-input v-model.trim="deviceEditForm.extraAttr.power1"></el-input>
                   </el-form-item>
                 </el-col>
                 <span style="float:right">{{deviceEditForm.extraAttr.ratio1}}</span>
               </li>
               <li>
                 <el-col :span="2">中功率</el-col>
-                <el-col :span="1">{{deviceEditForm.extraAttr.power1?deviceEditForm.extraAttr.power1+1:''}}</el-col>
+                <el-col :span="1">{{deviceEditForm.extraAttr.power1 | getBeginPower}}</el-col>
                 <el-col class="line" :span="1">-</el-col>
                 <el-col :span="5">
-                  <el-form-item prop="machineName">
-                    <el-input v-model="deviceEditForm.extraAttr.power2" disabled></el-input>
+                  <el-form-item prop="extraAttr.power2">
+                    <el-input v-model.trim="deviceEditForm.extraAttr.power2"></el-input>
                   </el-form-item>
                 </el-col>
                 <span style="float:right">{{deviceEditForm.extraAttr.ratio2}}</span>
               </li>
               <li>
                 <el-col :span="2">高功率</el-col>
-                <el-col :span="1">{{deviceEditForm.extraAttr.power2?deviceEditForm.extraAttr.power2+1:''}}</el-col>
+                <el-col :span="1">{{deviceEditForm.extraAttr.power2 | getBeginPower}}</el-col>
                 <el-col class="line" :span="1">-</el-col>
                 <el-col :span="5">
-                  <el-form-item prop="machineName">
-                    <el-input v-model="deviceEditForm.extraAttr.power3" disabled></el-input>
+                  <el-form-item prop="extraAttr.power3">
+                    <el-input v-model.trim="deviceEditForm.extraAttr.power3"></el-input>
                   </el-form-item>
                 </el-col>
                 <span style="float:right">{{deviceEditForm.extraAttr.ratio3}}</span>
@@ -235,6 +236,29 @@ export default {
         callback();
       }
     };
+    var validatorPower1 = (rule, value, callback) => {
+      if (value <= 1) {
+        return callback(new Error('功率必须大于1'));
+      } else {
+        callback();
+      }
+    };
+    var validatorPower2 = (rule, value, callback) => {
+      let power = this.$options.filters.getBeginPower(this.deviceEditForm.extraAttr.power1);
+      if (value <= power) {
+        return callback(new Error(`功率必须大于${power}`));
+      } else {
+        callback();
+      }
+    };
+    var validatorPower3 = (rule, value, callback) => {
+      let power = this.$options.filters.getBeginPower(this.deviceEditForm.extraAttr.power2);
+      if (value <= power) {
+        return callback(new Error(`功率必须大于${power}`));
+      } else {
+        callback();
+      }
+    };
     return {
       deviceEditTab: 'first',
       waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
@@ -247,16 +271,34 @@ export default {
         chargeMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorChargeMachinePirce, trigger: 'blur' }],
         functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }]
+        detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { validator: validatorFunctionPrice, trigger: 'blur' }],
+        'extraAttr.power1': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
+        'extraAttr.power2': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
+        'extraAttr.power3': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }]
       },
-      powerRangeList: []
+      //充电时间选择
+      chargeTimeMax: 0,
+      chargeTimeMin: 0,
+      chargeTimeStep: 0
     };
   },
   components: {},
+  filters: {
+    getBeginPower(val) {
+      return val ? +val + 1 : val;
+    }
+  },
   created() {
     this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice || 0);
     this.$set(this.deviceEditForm, 'chargeMachinePirce', this.deviceEditForm.functionList[0].functionPrice || 0);
     this.$set(this.deviceEditForm, 'extraAttr', this.deviceEditForm.functionList[0].extraAttr || {});
+    if (this.deviceEditForm.subTypeId === '435871915014357627') {
+      let extraAttr = this.deviceEditForm.functionList.length > 0 ? (this.deviceEditForm.functionList[0].extraAttr ? this.deviceEditForm.functionList[0].extraAttr : {}) : {};
+      let tmpext = Object.assign({}, extraAttr);
+      this.chargeTimeMax = tmpext.max || 0;
+      this.chargeTimeMin = tmpext.min || 0;
+      this.chargeTimeStep = tmpext.step || 0;
+    }
   },
   methods: {
     onEditDecive(formName) {
