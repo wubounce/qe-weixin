@@ -319,13 +319,9 @@
         </el-form>
       </el-dialog>
       <!-- 编辑设备  -->
-      <el-dialog title="编辑设备" :visible.sync="deviceEditDialogVisible" width="768px">
-        <edit-device :deviceEditdetailForm="deviceEditdetailForm" :visible="deviceEditDialogVisible" @closeDeviceEdit="closeDeviceEdit" v-if="deviceEditDialogVisible"></edit-device>
-      </el-dialog>
+      <edit-device :deviceEditdetailForm="deviceEditdetailForm" v-if="deviceEditDialogVisible" :visible.sync="deviceEditDialogVisible" @getDeviceDataToTable="getDeviceDataToTable"></edit-device>
       <!-- 批量编辑设备  -->
-      <el-dialog title="批量编辑设备" :visible.sync="batchDEditDeviceDialogVisible" width="768px">
-        <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" :visible="batchDEditDeviceDialogVisible" @closeBatchDeviceEdit="closeBatchDeviceEdit" v-if="batchDEditDeviceDialogVisible"></batch-edit>
-      </el-dialog>
+      <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" v-if="batchDEditDeviceDialogVisible" :visible.sync="batchDEditDeviceDialogVisible" @getDeviceDataToTable="getDeviceDataToTable"></batch-edit>
     </div>
   </div>
 </template>
@@ -634,13 +630,6 @@ export default {
         this.deviceEditDialogVisible = true;
       });
     },
-    closeDeviceEdit(res) {
-      this.deviceEditDialogVisible = false;
-      if (res) {
-        this.getDeviceDataToTable();
-      }
-    },
-
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -667,12 +656,6 @@ export default {
       this.lookShopDetail(this.multipleSelection[0]).then(data => {
         this.batchDEditDeviceDialogVisible = true;
       });
-    },
-    closeBatchDeviceEdit(res) {
-      this.batchDEditDeviceDialogVisible = false;
-      if (res) {
-        this.getDeviceDataToTable();
-      }
     },
     exportTable() {
       let payload = Object.assign({}, this.searchData);

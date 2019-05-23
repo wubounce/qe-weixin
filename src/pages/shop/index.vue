@@ -16,6 +16,13 @@
       <el-form-item label="地址：" prop="address">
         <el-input v-model.trim="searchData.address" clearable placeholder="请输入"></el-input>
       </el-form-item>
+      <el-form-item label="分账配置：" prop="type">
+        <el-select v-model="searchData.type" clearable placeholder="请选择">
+          <el-option label="全部" value="0"></el-option>
+          <el-option label="已配置" value="1"></el-option>
+          <el-option label="未配置" value="2"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
         <el-button @click="resetSearchForm('searchForm')">重 置</el-button>
@@ -24,9 +31,11 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="onAddorEditShop">新增店铺</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="subAccountSet">分账配置</el-button>
         <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
-      <el-table :data="shopDataToTable" style="width: 100%">
+      <el-table :data="shopDataToTable" style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="店铺名称" show-overflow-tooltip>
           <template slot-scope="scope">
@@ -50,6 +59,7 @@
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
           </template>
         </el-table-column>
+        <el-table-column header-align="left" prop="profit" label="分账配置"></el-table-column>
         <el-table-column header-align="left" fixed="right" label="操作">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
@@ -81,9 +91,10 @@
         </ul>
       </el-dialog>
       <!-- 店铺设备数量 -->
-      <el-dialog :title="deviceDialogTitle" :visible.sync="deviceDialogVisible" width="1100px">
-        <shop-inmachine-list :shopId="shopIdToMachine" v-if="deviceDialogVisible"></shop-inmachine-list>
-      </el-dialog>
+      <shop-inmachine-list :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIdToMachine"></shop-inmachine-list>
+      <!-- 分账设置 -->
+      <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" @getShopDataToTable="getShopDataToTable"></sub-account-set>
+      <!-- </el-dialog> -->
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
         <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="160px" v-if="addShopDialogVisible">
@@ -147,13 +158,15 @@ import { isReserveType, isHasVipType, isDiscountType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import Area from '@/components/Area';
 import shopInmachineList from './shopInmachineList';
+import subAccountSet from './subAccountSet';
 import PagerMixin from '@/mixins/PagerMixin';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
     Area,
-    shopInmachineList
+    shopInmachineList,
+    subAccountSet
   },
   data() {
     let self = this;
@@ -226,7 +239,9 @@ export default {
           }
         }
       ],
-
+      multipleSelection: [],
+      subAccountSetDialogVisible: false,
+      subAccountSetTitle: '分账批量配置',
       addShopRules: {
         shopName: [{ required: true, trigger: 'blur', message: '请输入店铺名称' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9_-]{2,16}$/, message: '店铺名称需为2-16个字，只支持中英文、_和-', trigger: 'blur' }],
         shopType: [{ required: true, message: '请选择店铺类型', trigger: 'change' }],
@@ -411,6 +426,20 @@ export default {
           this.getShopDataToTable();
         });
       });
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    subAccountSet() {
+      //批量分账
+      if (this.multipleSelection.length <= 0) {
+        this.$alert(`请勾选想要分账的店铺`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定'
+        });
+        return false;
+      }
+      this.subAccountSetDialogVisible = true;
     },
     exportTable() {
       let payload = Object.assign({}, this.searchData);
