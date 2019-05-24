@@ -532,7 +532,7 @@ export default {
     min-height: 169px;
     h2 {
       font-size: 16px;
-      font-weight: normal;
+      font-weight: 600;
       padding-bottom: 17px;
       border-bottom: 1px solid $under_line;
       .svg-icon {
@@ -588,6 +588,7 @@ export default {
   .chart-title {
     width: 100%;
     overflow: hidden;
+    font-weight: 600;
   }
   .change-type {
     float: right;

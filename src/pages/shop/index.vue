@@ -35,7 +35,7 @@
         <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
       <el-table :data="shopDataToTable" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" :selectable="checkboxInit"></el-table-column>
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="店铺名称" show-overflow-tooltip>
           <template slot-scope="scope">
@@ -59,11 +59,15 @@
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
           </template>
         </el-table-column>
+        <el-table-column header-align="left" prop="attribute" label="店铺属性" :formatter="shopAttributeType"></el-table-column>
         <el-table-column header-align="left" prop="profit" label="分账配置"></el-table-column>
         <el-table-column header-align="left" fixed="right" label="操作">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
               <i class="el-icon-edit" @click="onAddorEditShop(scope.row)"></i>
+            </el-tooltip>
+            <el-tooltip content="分账配置" placement="top" effect="dark" v-if="scope.row.attribute === 1">
+              <i class="el-icon-edit" @click="subAccountSet(scope.row)"></i>
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
               <i class="el-icon-delete" @click="handleDelete(scope.row.shopId)"></i>
@@ -91,7 +95,7 @@
         </ul>
       </el-dialog>
       <!-- 店铺设备数量 -->
-      <shop-inmachine-list :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIdToMachine"></shop-inmachine-list>
+      <shop-inmachine-list :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></shop-inmachine-list>
       <!-- 分账设置 -->
       <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" @getShopDataToTable="getShopDataToTable"></sub-account-set>
       <!-- </el-dialog> -->
@@ -154,7 +158,7 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi } from '@/service/shop';
 import { exportExcel } from '@/service/common';
-import { isReserveType, isHasVipType, isDiscountType } from '@/utils/mapping';
+import { isReserveType, isHasVipType, isDiscountType, shopAttributeType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import Area from '@/components/Area';
 import shopInmachineList from './shopInmachineList';
@@ -182,7 +186,7 @@ export default {
       detailDialogVisible: false,
       detailData: {},
       deviceDialogVisible: false,
-      shopIdToMachine: '',
+      shopIds: '', //店铺id
       deviceDialogTitle: '',
       addShopDialogVisible: false,
       addOrEditShopTitle: '新增店铺',
@@ -291,6 +295,15 @@ export default {
       this.$refs[formName].resetFields();
       this.getShopDataToTable();
     },
+    shopAttributeType(row, column, cellValue, index) {
+      return shopAttributeType[row.attribute];
+    },
+    checkboxInit(row, index) {
+      return row.attribute === 1;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
     async getShopDataToTable() {
       let payload = Object.assign({}, this.searchData);
       payload.provinceId = payload.areas[0];
@@ -311,7 +324,7 @@ export default {
         return false;
       }
       this.deviceDialogTitle = row.shopName;
-      this.shopIdToMachine = row.shopId;
+      this.shopIds = row.shopId;
       this.deviceDialogVisible = true;
     },
     //搜索城市获取经纬度
@@ -334,6 +347,24 @@ export default {
         this.addShopRules.orderLimitMinutes[0].required = true;
         this.isOffAndOnReservePlaceholder = '请填写1到9的数字';
       }
+    },
+    subAccountSet(row = {}) {
+      if (row.shopId) {
+        this.shopIds = row.shopId;
+        this.subAccountSetTitle = '分账配置';
+      } else {
+        //批量分账
+        if (this.multipleSelection.length <= 0) {
+          this.$alert(`请勾选想要分账的店铺`, '提示', {
+            showClose: false,
+            confirmButtonText: '确定'
+          });
+          return false;
+        } else {
+          this.subAccountSetTitle = '分账批量配置';
+        }
+      }
+      this.subAccountSetDialogVisible = true;
     },
     async onAddorEditShop(row = {}) {
       this.addOrEditShopTitle = '新增店铺';
@@ -427,20 +458,7 @@ export default {
         });
       });
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    subAccountSet() {
-      //批量分账
-      if (this.multipleSelection.length <= 0) {
-        this.$alert(`请勾选想要分账的店铺`, '提示', {
-          showClose: false,
-          confirmButtonText: '确定'
-        });
-        return false;
-      }
-      this.subAccountSetDialogVisible = true;
-    },
+
     exportTable() {
       let payload = Object.assign({}, this.searchData);
       payload.provinceId = payload.areas[0];

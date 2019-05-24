@@ -68,7 +68,7 @@
       </el-dialog>
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditMemberTitle" :visible.sync="addMemberDialogVisible" @close="addMemberDialogVisible = false" width="760px" height="768px" top="20px">
-        <el-form ref="addMemberFrom" :model="addMemberFrom" :rules="addMemberFormRules" class="add-shop-from" label-width="150px" v-if="addMemberDialogVisible">
+        <el-form ref="addMemberFrom" :model="addMemberFrom" :rules="addMemberFormRules" class="add-shop-from" label-width="100px" v-if="addMemberDialogVisible">
           <el-form-item label="手机号码：" class="shop-name" prop="phone" v-show="disabledEdit">
             <el-input v-model.trim="addMemberFrom.phone" placeholder="手机号为登录人员账号，密码将自动短信发送"></el-input>
           </el-form-item>
@@ -82,7 +82,7 @@
             <el-tree ref="tree" :data="permissionsData" show-checkbox node-key="menuId" :props="defaultProps" @check="handleCheck" :default-checked-keys="checkpermissionslist" :default-expanded-keys="checkpermissionslist">
             </el-tree>
           </el-form-item>
-          <el-form-item>
+          <el-form-item class="action">
             <el-button type="primary" @click="onSubmitMemberFrom('addMemberFrom')">保存</el-button>
             <el-button @click="resetAddMemberFrom('addMemberFrom');addMemberDialogVisible = false">取消</el-button>
           </el-form-item>
@@ -318,6 +318,9 @@ export default {
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
+  .action {
+    text-align: right;
+  }
 }
 .pid-list {
   .pid-title {

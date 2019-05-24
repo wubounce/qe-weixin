@@ -161,3 +161,8 @@ export const memberIsLock = {
   0: true,
   1: false
 };
+// 人员管理禁用启用
+export const shopAttributeType = {
+  0: '非联营',
+  1: '联营'
+};

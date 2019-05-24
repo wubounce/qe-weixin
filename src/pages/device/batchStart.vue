@@ -31,7 +31,7 @@
         <el-table-column header-align="left" prop="functionName" label="启动模式"></el-table-column>
         <el-table-column header-align="left" prop="beginTime" label="启动时间"></el-table-column>
         <el-table-column header-align="left" prop="createUserName" label="创建人"></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="创建时间"></el-table-column>
+        <el-table-column header-align="left" prop="createTime" label="创建时间" min-width="180"></el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="300px">
           <template slot-scope="scope">
             <el-tooltip content="启动" placement="top" effect="dark">
@@ -89,7 +89,7 @@
               <el-radio :label="1">定时启动</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="启动时间：" prop="startTime" class="add-batch-wrap" v-if="isNowAndTimingStartAction">
+          <el-form-item label="启动时间：" prop="startTime" class="add-batch-time" v-if="isNowAndTimingStartAction">
             <el-date-picker v-model="addDeviceBatchStartForm.startTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择">
             </el-date-picker>
           </el-form-item>
@@ -303,15 +303,6 @@ export default {
   }
 };
 </script>
-<style lang="scss">
-.batch-device-edit-wrap,
-.add-batch-wrap {
-  .el-input__inner {
-    width: 220px !important;
-    padding-left: 30px !important;
-  }
-}
-</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 [class^='icon-'] {
@@ -323,7 +314,12 @@ export default {
   color: #8c8c8c;
   padding-top: 16px;
 }
+.add-batch-time /deep/ .el-input__inner {
+  width: 220px !important;
+  padding-left: 30px !important;
+}
 .batch-device-edit-action {
+  border-top: 1px solid $under_line;
   padding-top: 16px;
   padding-bottom: 16px;
   text-align: right;

@@ -42,6 +42,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { getUserInfoInLocalstorage } from '@/utils/auth';
 export default {
   props: {
     visible: {
@@ -91,9 +92,16 @@ export default {
         if (valid) {
           if (this.dynamicValidateForm.domains.length > 0) {
             let proportionTotal = 0;
-            this.dynamicValidateForm.domains.forEach(item => {
+            let isSubAccountSAme = false;
+            let user = getUserInfoInLocalstorage() ? getUserInfoInLocalstorage().phone : '';
+            this.dynamicValidateForm.domains.forEach((item, index, arr) => {
               proportionTotal += Number(item.proportion);
+              isSubAccountSAme = item.account === arr[0].account || item.account === user;
             });
+            if (isSubAccountSAme) {
+              this.$Message.error('当前添加的账户不允许重复');
+              return;
+            }
             if (proportionTotal <= 0 || proportionTotal > 100) {
               this.$Message.error('分账比例总和需大于0并小于等于100');
               return;
@@ -134,7 +142,6 @@ export default {
 .sub-account-form {
   padding-top: 24px;
   padding-bottom: 24px;
-  padding-bottom: 24px;
   h2 {
     font-size: 14px;
     font-weight: 600;
@@ -172,9 +179,7 @@ export default {
   width: 70%;
 }
 .action {
+  text-align: right;
   border-top: 1px solid $under_line;
-}
-.action /deep/ .el-form-item__content {
-  float: right;
 }
 </style>
