@@ -105,38 +105,64 @@
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
       <!-- 订单详情 -->
-      <el-dialog title="订单详情" :visible.sync="detailDialogVisible" width="540px">
+      <el-dialog title="订单详情" :visible.sync="detailDialogVisible" width="768px">
+        <h3 class="detail-base-title">基本信息</h3>
         <ul class="deatil-list new-detail-list">
-          <li><span>订单编号：</span>{{detailData.orderNo}}</li>
-          <li><span>订单状态：</span>{{detailData.orderStatus | orderStatus}}</li>
-          <li><span>用户账号：</span>{{detailData.phone}}</li>
-          <li><span>店铺：</span>{{detailData.shopName}}</li>
-          <li><span>设备：</span>{{detailData.machineName }}</li>
-          <li><span>功能模式：</span>{{detailData.machineFunctionName}}/{{detailData.markMinutes}}分钟</li>
-          <li><span>原价(元)：</span>{{detailData.markPrice||'-'}}</li>
-          <li><span>洗衣液价格(元)：</span>{{detailData.detergentPayPrice||'-'}}</li>
-          <li><span>优惠金额(元)：</span>
-            <el-popover ref="popover" trigger="hover" placement="bottom" v-if="detailData.discountTotalPirce&&detailData.discountTotalPirce>0">
-              <p v-if="detailData.discountType==1 && detailData.discountPrice>0">VIP会员卡：{{ detailData.discountPrice }}</p>
-              <p v-if="detailData.discountType==2 && detailData.discountPrice>0 || detailData.discountType===null&&detailData.discountPrice>0">限时优惠：{{ detailData.discountPrice }}</p>
-              <div v-if="detailData.source!=3&&detailData.voucherPrice>0">
-                <span>平台优惠券：{{ detailData.voucherPrice }}</span>
-                <p class="rowstyle" style="font-size:10px;" v-if="detailData.platformPayPrice>0">(优惠券平台承担{{detailData.platformPayPrice}})</p>
-              </div>
-              <p v-if="detailData.source==3&&detailData.voucherPrice>0">商家优惠券：{{detailData.voucherPrice}}</p>
-              <div slot="reference" class="name-wrapper" style="   color: #595959;">
-                {{ detailData.discountTotalPirce | tofixd}}
-                <svg-icon icon-class="xialajiantouxia" class="arrow" v-if="detailData.discountTotalPirce>0" />
-              </div>
-            </el-popover>
-            <span v-else>{{ detailData.discountTotalPirce | tofixd}}</span>
+          <li>
+            <div><span>订单编号：</span>{{detailData.orderNo}}</div>
+            <div><span>订单状态：</span>{{detailData.orderStatus | orderStatus}}</div>
           </li>
-          <li><span>实付金额(元)：</span>{{detailData.payPrice}}</li>
-          <li><span>收益金额(元)：</span>{{detailData.profitPrice}}</li>
-          <li><span>支付方式 ：</span>{{detailData.payType | PayType}}</li>
-          <li><span>下单时间：</span>{{detailData.createTime}}</li>
-          <li><span>支付时间：</span>{{detailData.payTime}}</li>
+          <li>
+            <div><span>用户账号：</span>{{detailData.phone}}</div>
+            <div><span>店铺：</span>{{detailData.shopName}}</div>
+          </li>
+          <li>
+            <div><span>设备：</span>{{detailData.machineName }}</div>
+            <div><span>功能模式：</span>{{detailData.machineFunctionName}}/{{detailData.markMinutes}}分钟</div>
+          </li>
+          <li>
+            <div><span>原价(元)：</span>{{detailData.markPrice||'-'}}</div>
+            <div><span>洗衣液价格(元)：</span>{{detailData.detergentPayPrice||'-'}}</div>
+          </li>
+          <li>
+            <div><span>优惠金额(元)：</span>
+              <el-popover ref="popover" trigger="hover" placement="bottom" v-if="detailData.discountTotalPirce&&detailData.discountTotalPirce>0">
+                <p v-if="detailData.discountType==1 && detailData.discountPrice>0">VIP会员卡：{{ detailData.discountPrice }}</p>
+                <p v-if="detailData.discountType==2 && detailData.discountPrice>0 || detailData.discountType===null&&detailData.discountPrice>0">限时优惠：{{ detailData.discountPrice }}</p>
+                <div v-if="detailData.source!=3&&detailData.voucherPrice>0">
+                  <span>平台优惠券：{{ detailData.voucherPrice }}</span>
+                  <p class="rowstyle" style="font-size:10px;" v-if="detailData.platformPayPrice>0">(优惠券平台承担{{detailData.platformPayPrice}})</p>
+                </div>
+                <p v-if="detailData.source==3&&detailData.voucherPrice>0">商家优惠券：{{detailData.voucherPrice}}</p>
+                <div slot="reference" class="name-wrapper" style="   color: #595959;">
+                  {{ detailData.discountTotalPirce | tofixd}}
+                  <svg-icon icon-class="xialajiantouxia" class="arrow" v-if="detailData.discountTotalPirce>0" />
+                </div>
+              </el-popover>
+              <span v-else>{{ detailData.discountTotalPirce | tofixd}}</span>
+            </div>
+            <div><span>实付金额(元)：</span>{{detailData.payPrice}}</div>
+          </li>
+          <li>
+            <div><span>收益金额(元)：</span>{{detailData.profitPrice}}</div>
+            <div><span>支付方式 ：</span>{{detailData.payType | PayType}}</div>
+          </li>
+          <li>
+            <div><span>下单时间：</span>{{detailData.createTime}}</div>
+            <div><span>支付时间：</span>{{detailData.payTime}}</div>
+          </li>
         </ul>
+        <h3 class="detail-base-title" style="border:none">分账信息</h3>
+        <el-table>
+          <el-table-column prop="functionName" label="分账账户"></el-table-column>
+          <el-table-column prop="functionName" label="运营商姓名"></el-table-column>
+          <el-table-column prop="ifOpen" label="分账比例">
+            <template slot-scope="scope">
+              <span>%</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="functionName" label="分账金额(元)"></el-table-column>
+        </el-table>
       </el-dialog>
       <!-- 退款详情 -->
       <el-dialog title="退款详情" :visible.sync="refundDialogVisible" width="540px">
@@ -460,14 +486,20 @@ export default {
     text-align: right;
   }
 }
+.detail-base-title {
+  font-size: 16px;
+  padding: 10px 0;
+  font-weight: normal;
+}
 .deatil-list {
   padding-bottom: 15px;
-  :last-child {
-    border: none;
-  }
   li {
     padding: 12px 0;
     border-bottom: 1px solid $under_line;
+    display: flex;
+    > div {
+      width: 50%;
+    }
     span {
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;

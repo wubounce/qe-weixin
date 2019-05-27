@@ -18,7 +18,7 @@
       </el-form-item>
       <el-form-item label="分账配置：" prop="type">
         <el-select v-model="searchData.type" clearable placeholder="请选择">
-          <el-option label="全部" value="0"></el-option>
+          <el-option label="全部" value=""></el-option>
           <el-option label="已配置" value="1"></el-option>
           <el-option label="未配置" value="2"></el-option>
         </el-select>
@@ -31,10 +31,10 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="onAddorEditShop">新增店铺</el-button>
-        <el-button type="primary" icon="el-icon-plus" @click="subAccountSet">分账配置</el-button>
+
         <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
-      <el-table :data="shopDataToTable" style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table :data="shopDataToTable" ref="shopDataToTable" style="width: 100%" @selection-change="handleSelectionChange" :header-cell-class-name="celClass">
         <el-table-column type="selection" width="55" :selectable="checkboxInit"></el-table-column>
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="店铺名称" show-overflow-tooltip>
@@ -59,45 +59,75 @@
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="attribute" label="店铺属性" :formatter="shopAttributeType"></el-table-column>
-        <el-table-column header-align="left" prop="profit" label="分账配置"></el-table-column>
+        <el-table-column header-align="left" prop="profit" label="分账配置" :formatter="fmsubAccountType"></el-table-column>
         <el-table-column header-align="left" fixed="right" label="操作">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <i class="el-icon-edit" @click="onAddorEditShop(scope.row)"></i>
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="onAddorEditShop(scope.row)" />
             </el-tooltip>
             <el-tooltip content="分账配置" placement="top" effect="dark" v-if="scope.row.attribute === 1">
-              <i class="el-icon-edit" @click="subAccountSet(scope.row)"></i>
+              <svg-icon icon-class="zhangmu" class="icon-zhangmu" @click="subAccountSet(scope.row)" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <i class="el-icon-delete" @click="handleDelete(scope.row.shopId)"></i>
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
+      <div>
+        <div style="float:left">
+          <el-checkbox v-model="isAllChecked">全选</el-checkbox>
+          <el-button type="primary" :disabled="multipleSelection.length<=0" @click="subAccountSet">
+            <svg-icon icon-class="rmb" style="margin-right: 5px;" />分账配置</el-button>
+        </div>
+        <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
+      </div>
       <!-- 店铺详情 -->
-      <el-dialog title="店铺详情" :visible.sync="detailDialogVisible" width="540px">
+      <el-dialog title="店铺详情" :visible.sync="detailDialogVisible" width="768px">
+        <h3 class="detail-base-title">基本信息</h3>
         <ul class="deatil-list">
-          <li><span>店铺名称：</span>{{detailData.shopName}}</li>
-          <li><span>店铺类型：</span>{{detailData.shopTypeName}}</li>
-          <li><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</li>
-          <li><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</li>
-          <li><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</li>
-          <li><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</li>
-          <li><span>营业时间：</span>{{detailData.workTime}}</li>
-          <li><span>限时优惠：</span>{{detailData.isDiscount | isDiscountType}}</li>
-          <li><span>VIP卡：</span>{{detailData.hasVip | isHasVipType}}</li>
-          <li><span>VIP数量：</span>{{detailData.vipCount}}个</li>
-          <li><span>客服电话：</span>{{detailData.serviceTelephone}}</li>
-          <li><span>创建人：</span>{{detailData.createUser}}</li>
-          <li><span>创建时间：</span>{{detailData.createTime}}</li>
+          <li>
+            <div><span>店铺名称：</span>{{detailData.shopName}}</div>
+            <div><span>店铺类型：</span>{{detailData.shopTypeName}}</div>
+          </li>
+          <li>
+            <div><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</div>
+            <div><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</div>
+          </li>
+          <li>
+            <div><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</div>
+            <div><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</div>
+          </li>
+          <li>
+            <div><span>营业时间：</span>{{detailData.workTime}}</div>
+            <div> <span>限时优惠：</span>{{detailData.isDiscount | isDiscountType}}</div>
+          </li>
+          <li>
+            <div><span>VIP卡：</span>{{detailData.hasVip | isHasVipType}}</div>
+            <div><span>VIP数量：</span>{{detailData.vipCount}}个</div>
+          </li>
+          <li>
+            <div><span>客服电话：</span>{{detailData.serviceTelephone}}</div>
+            <div><span>创建人：</span>{{detailData.createUser}}</div>
+          </li>
+          <li>
+            <div><span>创建时间：</span>{{detailData.createTime}}</div>
+          </li>
         </ul>
+        <h3 class="detail-base-title" style="border:none">分账信息</h3>
+        <el-table>
+          <el-table-column prop="functionName" label="分账账户"></el-table-column>
+          <el-table-column prop="ifOpen" label="分账比例">
+            <template slot-scope="scope">
+              <span>%</span>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-dialog>
       <!-- 店铺设备数量 -->
       <shop-inmachine-list :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></shop-inmachine-list>
       <!-- 分账设置 -->
-      <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" @getShopDataToTable="getShopDataToTable"></sub-account-set>
+      <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" :isAllChecked.sync="isAllChecked" @getShopDataToTable="getShopDataToTable"></sub-account-set>
       <!-- </el-dialog> -->
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
@@ -158,7 +188,7 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi } from '@/service/shop';
 import { exportExcel } from '@/service/common';
-import { isReserveType, isHasVipType, isDiscountType, shopAttributeType } from '@/utils/mapping';
+import { isReserveType, isHasVipType, isDiscountType, subAccountType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import Area from '@/components/Area';
 import shopInmachineList from './shopInmachineList';
@@ -246,6 +276,7 @@ export default {
       multipleSelection: [],
       subAccountSetDialogVisible: false,
       subAccountSetTitle: '分账批量配置',
+      isAllChecked: false,
       addShopRules: {
         shopName: [{ required: true, trigger: 'blur', message: '请输入店铺名称' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9_-]{2,16}$/, message: '店铺名称需为2-16个字，只支持中英文、_和-', trigger: 'blur' }],
         shopType: [{ required: true, message: '请选择店铺类型', trigger: 'change' }],
@@ -269,6 +300,22 @@ export default {
     },
     tofixd(val) {
       return val >= 0 ? Number(val).toFixed(2) : val;
+    }
+  },
+  watch: {
+    // 全选和取消全选
+    isAllChecked(flag) {
+      if (flag) {
+        this.multipleSelection = this.shopDataToTable.filter(row => {
+          if (row.attribute == 1) {
+            this.$refs.shopDataToTable.toggleRowSelection(row, true);
+            return row;
+          }
+        });
+      } else {
+        this.$refs.shopDataToTable.clearSelection();
+        this.multipleSelection = [];
+      }
     }
   },
   mounted() {},
@@ -295,14 +342,20 @@ export default {
       this.$refs[formName].resetFields();
       this.getShopDataToTable();
     },
-    shopAttributeType(row, column, cellValue, index) {
-      return shopAttributeType[row.attribute];
+    fmsubAccountType(row) {
+      return subAccountType[row.attribute];
+    },
+    celClass(row) {
+      if (row.columnIndex === 0) {
+        return 'disable-selection';
+      }
     },
     checkboxInit(row, index) {
       return row.attribute === 1;
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
+      // this.multipleSelection.length === this.shopDataToTable.length ? (this.isAllChecked = true) : (this.isAllChecked = false);
     },
     async getShopDataToTable() {
       let payload = Object.assign({}, this.searchData);
@@ -503,14 +556,20 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
+.detail-base-title {
+  font-size: 16px;
+  padding: 10px 0;
+  font-weight: normal;
+}
 .deatil-list {
   padding-bottom: 15px;
-  :last-child {
-    border: none;
-  }
   li {
-    padding: 11px;
+    padding: 11px 0;
     border-bottom: 1px solid $under_line;
+    display: flex;
+    > div {
+      width: 50%;
+    }
     span {
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
@@ -518,9 +577,25 @@ export default {
     }
   }
 }
+[class^='icon-'] {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+}
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
+}
+.pagination-right {
+  width: auto;
+}
+.el-table /deep/ .disable-selection .cell .el-checkbox__inner {
+  display: none;
+  position: relative;
+}
+.el-table /deep/ .disable-selection .cell::before {
+  content: '选择';
+  position: absolute;
 }
 </style>
  

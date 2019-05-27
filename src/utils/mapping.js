@@ -162,7 +162,7 @@ export const memberIsLock = {
   1: false
 };
 // 人员管理禁用启用
-export const shopAttributeType = {
-  0: '非联营',
-  1: '联营'
+export const subAccountType = {
+  0: '已配置',
+  1: '未配置'
 };

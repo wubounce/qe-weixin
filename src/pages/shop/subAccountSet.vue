@@ -1,14 +1,14 @@
 <template>
   <el-dialog :title="title" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="600px">
     <el-form :model="dynamicValidateForm" :rules="dynamicValidateFormRules" ref="dynamicValidateForm" label-position="left" class="sub-account-form">
+      <h2>
+        <span>分账账户</span>
+        <span style="padding-left: 125px;">分账比例</span>
+      </h2>
       <div class="begin-add-accout" v-if="dynamicValidateForm.domains.length<=0" @click="addDomain">
         <i class="el-icon-plus"></i><span>添加账号</span>
       </div>
       <div v-else class="added-accout">
-        <h2>
-          <span>分账账户</span>
-          <span style="padding-left: 125px;">分账比例</span>
-        </h2>
         <ul>
           <li v-for="(item,index) in dynamicValidateForm.domains" :key="index">
             <el-row :gutter="20">
@@ -22,12 +22,12 @@
               </el-col>
               <el-col :span="9">
                 <el-form-item :prop="'domains.' + index + '.proportion'" :rules='dynamicValidateFormRules.proportion' class="proportion-input">
-                  <el-input v-model.trim="item.proportion" maxlength="5"></el-input><span>%</span>
+                  <el-input v-model.trim="item.proportion" maxlength="5" placeholder="请输入"></el-input><span>%</span>
                 </el-form-item>
               </el-col>
               <el-col :span="7">
-                <i class="el-icon-plus" v-if="index===(dynamicValidateForm.domains.length-1)" @click="addDomain"></i>
-                <i class="el-icon-minus" @click.prevent="removeDomain(item)"></i>
+                <svg-icon icon-class="accountadd" v-if="index===(dynamicValidateForm.domains.length-1)" @click="addDomain" />
+                <svg-icon icon-class="accountdel" @click.prevent="removeDomain(item)" />
               </el-col>
             </el-row>
           </li>
@@ -35,7 +35,7 @@
       </div>
       <el-form-item class="action">
         <el-button type="primary" @click="onHandleAddAcount('dynamicValidateForm')">确定</el-button>
-        <el-button @click="resetForm('deviceEditForm')">取消</el-button>
+        <el-button @click="resetForm('dynamicValidateForm')">取消</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
@@ -64,7 +64,7 @@ export default {
       },
       dynamicValidateFormRules: {
         account: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^[0-9]{1,2}([.]{1}[0-9]{1,2})?$/, message: '请输入0-99之间的数字，最多保留2位小数', trigger: 'blur' }]
+        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100)$/, message: '请输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
       }
     };
   },
@@ -110,6 +110,7 @@ export default {
             this.$Message.success('成功');
             this.modalClose();
             this.$listeners.getShopDataToTable && this.$listeners.getShopDataToTable(); //若组件传递事件confirm则执行
+            this.$emit('update:isAllChecked', false); // 直接修改父组件的属性
           }
         }
       });
@@ -156,11 +157,12 @@ export default {
     height: 54px;
     line-height: 54px;
     padding: 0 10px;
+    border-bottom: 1px solid $under_line;
   }
-  .el-icon-plus,
-  .el-icon-minus {
-    font-size: 16px;
-    padding: 0 10px;
+  .svg-icon {
+    width: 18px;
+    height: 18px;
+    margin: 0 10px;
     cursor: pointer;
   }
   .begin-add-accout {
@@ -169,6 +171,11 @@ export default {
     margin: 24px;
     text-align: center;
     cursor: pointer;
+    font-size: 20px;
+    color: $menuText;
+    span {
+      margin-left: 17px;
+    }
   }
 }
 .sub-account-form /deep/ .el-form-item {
@@ -180,6 +187,5 @@ export default {
 }
 .action {
   text-align: right;
-  border-top: 1px solid $under_line;
 }
 </style>
