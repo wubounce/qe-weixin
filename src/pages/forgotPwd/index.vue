@@ -19,7 +19,7 @@
           <el-input v-model="forgotPwdForm.rePassword" name="rePassword" type="password" @input="disabledBtn" placeholder="请再次输入新密码" />
         </el-form-item>
         <el-form-item class="forgot-btn">
-          <el-button type="primary" style="width:100%;font-size:16xp;" @click.native.prevent="doChangePwd" :disabled="disabled">确 定</el-button>
+          <el-button type="primary" style="width:100%;font-size:16px;" @click.native.prevent="doChangePwd" :disabled="disabled">确 定</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -150,7 +150,7 @@ export default {
     }
   }
   .verify-code {
-    width: 258px !important;
+    width: 252px !important;
     float: left;
   }
   .get-code {
@@ -177,7 +177,6 @@ export default {
   width: 100%;
   background-color: $regbg;
   position: relative;
-  border-radius: 12px;
   .login-logo {
     position: absolute;
     top: -43px;
@@ -193,6 +192,8 @@ export default {
     max-width: 100%;
     padding: 35px 26px 60px 26px;
     margin: 120px auto;
+    border-radius: 12px;
+    border: 3px solid #f5f5f5;
     h4 {
       font-weight: normal;
       font-size: 16px;
@@ -203,7 +204,7 @@ export default {
     font-size: 33px;
     font-weight: 400;
     color: $text-title;
-    padding: 77px 0 69px 0;
+    padding: 42px 0 69px 0;
     text-align: center;
   }
 }

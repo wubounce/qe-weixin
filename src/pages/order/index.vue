@@ -28,7 +28,11 @@
     <div class="table-content">
       <el-table :data="orederDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-        <el-table-column header-align="left" prop="orderNo" label="订单编号" width="180"></el-table-column>
+        <el-table-column header-align="left" prop="orderNo" label="订单编号" width="180">
+          <template slot-scope="scope">
+            <span class="rowstyle" @click="lookShopDetail(scope.row);detailDialogVisible = true;">{{scope.row.orderNo}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="orderStatus" label="订单状态" width="80">
           <template slot-scope="scope">
             <span>{{scope.row.orderStatus | orderStatus}}</span>
@@ -45,7 +49,7 @@
         <el-table-column header-align="left" prop="markPrice" label="原价(元)"></el-table-column>
         <el-table-column header-align="left" prop="detergentPrice" label="洗衣液价格(元)" width="120">
           <template slot-scope="scope">
-            <span>{{scope.row.detergentPrice ? scope.row.detergentPrice:'-' }}</span>
+            <span>{{ scope.row.detergentPrice||'-' }}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="" label="优惠金额(元)" width="120">
@@ -80,7 +84,7 @@
         <el-table-column header-align="left" label="操作" fixed="right" width="180px">
           <template slot-scope="scope">
             <div v-if="scope.row.orderStatus === 5">
-              <span class="rowstyle" @click="lookShopDetail(scope.row);detailDialogVisible=true">退款详情</span>
+              <span class="rowstyle" @click="lookShopDetail(scope.row);refundDialogVisible=true">退款详情</span>
             </div>
             <div v-if="scope.row.orderStatus === 2">
               <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
@@ -89,7 +93,7 @@
               <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4">
+              <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4&&isRefund===1">
                 <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
               </el-tooltip>
               <el-tooltip content="补偿券" placement="top" effect="dark" v-if="scope.row.shopState === 2">
@@ -100,8 +104,68 @@
         </el-table-column>
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
+      <!-- 订单详情 -->
+      <el-dialog title="订单详情" :visible.sync="detailDialogVisible" width="768px">
+        <h3 class="detail-base-title">基本信息</h3>
+        <ul class="deatil-list new-detail-list">
+          <li>
+            <div><span>订单编号：</span>{{detailData.orderNo}}</div>
+            <div><span>订单状态：</span>{{detailData.orderStatus | orderStatus}}</div>
+          </li>
+          <li>
+            <div><span>用户账号：</span>{{detailData.phone}}</div>
+            <div><span>店铺：</span>{{detailData.shopName}}</div>
+          </li>
+          <li>
+            <div><span>设备：</span>{{detailData.machineName }}</div>
+            <div><span>功能模式：</span>{{detailData.machineFunctionName}}/{{detailData.markMinutes}}分钟</div>
+          </li>
+          <li>
+            <div><span>原价(元)：</span>{{detailData.markPrice||'-'}}</div>
+            <div><span>洗衣液价格(元)：</span>{{detailData.detergentPayPrice||'-'}}</div>
+          </li>
+          <li>
+            <div><span>优惠金额(元)：</span>
+              <el-popover ref="popover" trigger="hover" placement="bottom" v-if="detailData.discountTotalPirce&&detailData.discountTotalPirce>0">
+                <p v-if="detailData.discountType==1 && detailData.discountPrice>0">VIP会员卡：{{ detailData.discountPrice }}</p>
+                <p v-if="detailData.discountType==2 && detailData.discountPrice>0 || detailData.discountType===null&&detailData.discountPrice>0">限时优惠：{{ detailData.discountPrice }}</p>
+                <div v-if="detailData.source!=3&&detailData.voucherPrice>0">
+                  <span>平台优惠券：{{ detailData.voucherPrice }}</span>
+                  <p class="rowstyle" style="font-size:10px;" v-if="detailData.platformPayPrice>0">(优惠券平台承担{{detailData.platformPayPrice}})</p>
+                </div>
+                <p v-if="detailData.source==3&&detailData.voucherPrice>0">商家优惠券：{{detailData.voucherPrice}}</p>
+                <div slot="reference" class="name-wrapper" style="   color: #595959;">
+                  {{ detailData.discountTotalPirce | tofixd}}
+                  <svg-icon icon-class="xialajiantouxia" class="arrow" v-if="detailData.discountTotalPirce>0" />
+                </div>
+              </el-popover>
+              <span v-else>{{ detailData.discountTotalPirce | tofixd}}</span>
+            </div>
+            <div><span>实付金额(元)：</span>{{detailData.payPrice}}</div>
+          </li>
+          <li>
+            <div><span>收益金额(元)：</span>{{detailData.profitPrice}}</div>
+            <div><span>支付方式 ：</span>{{detailData.payType | PayType}}</div>
+          </li>
+          <li>
+            <div><span>下单时间：</span>{{detailData.createTime}}</div>
+            <div><span>支付时间：</span>{{detailData.payTime}}</div>
+          </li>
+        </ul>
+        <h3 class="detail-base-title" style="border:none">分账信息</h3>
+        <el-table>
+          <el-table-column prop="functionName" label="分账账户"></el-table-column>
+          <el-table-column prop="functionName" label="运营商姓名"></el-table-column>
+          <el-table-column prop="ifOpen" label="分账比例">
+            <template slot-scope="scope">
+              <span>%</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="functionName" label="分账金额(元)"></el-table-column>
+        </el-table>
+      </el-dialog>
       <!-- 退款详情 -->
-      <el-dialog title="退款详情" :visible.sync="detailDialogVisible" width="540px">
+      <el-dialog title="退款详情" :visible.sync="refundDialogVisible" width="540px">
         <ul class="deatil-list">
           <li><span>用户账号：</span>{{detailData.phone}}</li>
           <li><span>退款金额：</span>{{detailData.payPrice}}元</li>
@@ -147,9 +211,9 @@
             <el-col :span="15" style=" color: rgba(23, 26, 46, 0.45);">有效期至{{validDaysEnd}}</el-col>
           </el-form-item>
           <el-form-item label="发放数量(张)：" prop="compensateNumber">
-            <el-input v-model="compensateFrom.compensateNumber" disabled placeholder="请填写" maxlength="3"></el-input>
+            <span>{{compensateFrom.compensateNumber}}张</span>
           </el-form-item>
-          <el-form-item>
+          <el-form-item class="action">
             <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">确定</el-button>
             <el-button @click="resetCompensateForm('compensateFrom')">取消</el-button>
           </el-form-item>
@@ -234,6 +298,7 @@ export default {
         ]
       },
       orederDataToTable: [],
+      refundDialogVisible: false,
       detailDialogVisible: false,
       detailData: {},
       compensateFrom: {
@@ -307,18 +372,10 @@ export default {
       let res = await orderListFun(payload);
       this.orederDataToTable = res.items || [];
       this.orederDataToTable.forEach(item => {
-        let tmp = null;
-        if (item.discountPrice && item.voucherPrice) {
-          tmp = Number(item.discountPrice) + Number(item.voucherPrice);
-        }
-        if (item.discountPrice && item.discountPrice > 0 && (!item.voucherPrice || item.voucherPrice < 0)) {
-          tmp = Number(item.discountPrice);
-        }
-        if ((!item.discountPrice || item.discountPrice < 0) && (item.voucherPrice && item.voucherPrice > 0)) {
-          tmp = Number(item.voucherPrice);
-        }
-        tmp = Number(tmp).toFixed(2);
-        this.$set(item, 'discountTotalPirce', tmp);
+        item.discountPrice = item.discountPrice || 0;
+        item.voucherPrice = item.voucherPrice || 0;
+        let tmp = Number(item.discountPrice) + Number(item.voucherPrice);
+        this.$set(item, 'discountTotalPirce', tmp.toFixed(2));
       });
       this.total = res.total;
     },
@@ -326,6 +383,12 @@ export default {
       let payload = { orderNo: row.orderNo, memberId: row.userId };
       let res = await orderDetailFun(payload);
       this.detailData = res;
+      console.log(this.detailData);
+      this.detailData.discountPrice = this.detailData.discountPrice || 0;
+      this.detailData.voucherPrice = this.detailData.voucherPrice || 0;
+      let tmp = Number(this.detailData.discountPrice) + Number(this.detailData.voucherPrice);
+      this.$set(this.detailData, 'discountTotalPirce', tmp.toFixed(2));
+      console.log(this.detailData);
     },
     onSubmitCompensateFrom(formName) {
       this.$refs[formName].validate(async valid => {
@@ -417,20 +480,36 @@ export default {
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
+  .action {
+    padding-top: 16px;
+    border-top: 1px solid $under_line;
+    text-align: right;
+  }
+}
+.detail-base-title {
+  font-size: 16px;
+  padding: 10px 0;
+  font-weight: normal;
 }
 .deatil-list {
   padding-bottom: 15px;
-  :last-child {
-    border: none;
-  }
   li {
     padding: 12px 0;
     border-bottom: 1px solid $under_line;
+    display: flex;
+    > div {
+      width: 50%;
+    }
     span {
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
       width: 70px;
     }
+  }
+}
+.new-detail-list {
+  li span {
+    width: 120px;
   }
 }
 [class^='icon-'] {

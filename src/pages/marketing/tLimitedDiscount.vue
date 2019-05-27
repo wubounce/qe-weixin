@@ -41,7 +41,7 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="parentTypeName" label="适用类型" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" label="优惠日期">
+        <el-table-column header-align="left" label="优惠日期" min-width="180">
           <template slot-scope="scope">
             <span>{{scope.row.noDiscountStart}}~{{scope.row.noDiscountEnd}}</span>
           </template>
@@ -113,8 +113,8 @@
             <div style="color:#bfbfbf;margin-left: 30px;">优惠折扣为用户支付时所享受的折扣</div>
           </div>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmitAddOrEditMaketFrom('addMaketFrom')">保存</el-button>
+        <el-form-item class="action">
+          <el-button type="primary" @click="onSubmitAddOrEditMaketFrom('addMaketFrom')">确定</el-button>
           <el-button @click="resetAddOrEditMaketFrom('addMaketFrom')">取消</el-button>
         </el-form-item>
       </el-form>
@@ -387,6 +387,11 @@ export default {
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
+  .action {
+    padding-top: 16px;
+    border-top: 1px solid $under_line;
+    text-align: right;
+  }
 }
 .add-discount {
   display: flex;
