@@ -514,7 +514,8 @@ export default {
       //筒自洁
       let payload = { machineId: row.machineId };
       this.$confirm(`确定筒自洁${row.machineName}?`, '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         tzjDeviceFun(payload).then(() => {
           this.$message.success('筒自洁成功');
@@ -531,7 +532,8 @@ export default {
         //复位
         let payload = { machineId: row.machineId };
         this.$confirm(`确认复位${row.machineName}?`, '提示', {
-          showClose: false
+          showClose: false,
+          center: true
         }).then(() => {
           manageResetDeviceFun(payload).then(() => {
             this.$message.success('复位成功');
@@ -567,25 +569,29 @@ export default {
       if (row.machineState === 2) {
         this.$confirm(`设备运行中，请先复位`, '提示', {
           showClose: false,
-          confirmButtonText: '确定'
+          confirmButtonText: '确定',
+          center: true
         });
       }
       if (row.machineState === 3) {
         this.$confirm(`设备已被预约，请先复位`, '提示', {
           showClose: false,
-          confirmButtonText: '确定'
+          confirmButtonText: '确定',
+          center: true
         });
       }
       if (row.machineState === 4) {
         this.$confirm(`设备故障，启动失败`, '提示', {
           showClose: false,
-          confirmButtonText: '确定'
+          confirmButtonText: '确定',
+          center: true
         });
       }
       if (row.machineState === 8) {
         this.$confirm(`设备离线，启动失败`, '提示', {
           showClose: false,
-          confirmButtonText: '确定'
+          confirmButtonText: '确定',
+          center: true
         });
       }
     },
@@ -594,7 +600,8 @@ export default {
       let payload = { machineId: machineId, functionId: row.functionId };
       this.$confirm(`<p>确定启动${machineName}?</p><p style="font-size: 12px;">启动模式：${row.functionName}</p>`, '提示', {
         dangerouslyUseHTMLString: true,
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         machineStartFun(payload).then(() => {
           this.deviceStartDialogVisible = false;
@@ -614,7 +621,8 @@ export default {
           let payload = Object.assign({ machineId: machineId }, this.quantifyStartForm);
           this.$confirm(`<p>确定启动${payload.functionName}?</p><p style="font-size: 12px;">充电时长：${payload.extra}小时</p>`, '提示', {
             dangerouslyUseHTMLString: true,
-            showClose: false
+            showClose: false,
+            center: true
           }).then(() => {
             quantifyStartFun(payload).then(() => {
               this.$message.success('启动成功');
@@ -638,7 +646,8 @@ export default {
       if (this.multipleSelection.length <= 0) {
         this.$alert(`请勾选想要批量编辑的设备`, '提示', {
           showClose: false,
-          confirmButtonText: '确定'
+          confirmButtonText: '确定',
+          center: true
         });
         return false;
       }
@@ -648,7 +657,8 @@ export default {
       if (allSame === false) {
         this.$alert(`请勾选同一店铺下相同设备型号进行批量编辑`, '提示', {
           showClose: false,
-          confirmButtonText: '确定'
+          confirmButtonText: '确定',
+          center: true
         });
         return false;
       }
@@ -708,11 +718,6 @@ export default {
   opacity: 0.85;
   border-radius: 20px;
   margin-right: 8px;
-}
-[class^='icon-'] {
-  width: 20px;
-  height: 20px;
-  margin-right: 20px;
 }
 .signal {
   background: #cccccc;

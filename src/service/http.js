@@ -29,24 +29,13 @@ http.interceptors.request.use(
       let token = getToken();
       let _timestamp = new Date().getTime();
       if (token) {
-        config.data = config.data
-          ? config.data + `&token=${token}`
-          : `token=${token}`;
-        // 阻止转义
-        if (
-          config.url == '/batchExecutePlan/updateBatchStart' ||
-          config.url == '/batchExecutePlan/add'
-        ) {
-          config.data = config.data.split('+').join(' ');
-        }
+        config.data = config.data ? config.data + `&token=${token}` : `token=${token}`;
         // 添加签名
         let _sign = get_sign(config.data, _timestamp);
-        config.data =
-          config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
+        config.data = config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
       } else {
         let _sign = get_sign(config.data, _timestamp);
-        config.data =
-          config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
+        config.data = config.data + `&_sign=${_sign}` + `&_timestamp=${_timestamp}`;
       }
     }
     // 请求之前加遮罩
@@ -64,37 +53,17 @@ http.interceptors.response.use(
   // 关闭遮罩
   response => {
     loading && loading.close();
-    if (response.status === 200 && response.data.code === 0) {
+    if (response.data.code === 0) {
       return Promise.resolve(response.data.data);
-    } else if (response.status === 200 && response.data.code === 11) {
-      //11:Token 过期了;
+    } else if (response.data.code === 11 || response.data.code === 7004 || response.data.code === 8002 || response.data.code === 10) {//11:Token 过期了; //7004:无权限;//8002:运营商不存在;
       store.dispatch('LogOut').then(() => {
         location.reload();
       });
-    } else if (response.status === 200 && response.data.code === 7004) {
-      //11:无权限;
-      store.dispatch('LogOut').then(() => {
-        location.reload();
-      });
-    } else if (response.status === 200 && response.data.code === 8002) {
-      //11:运营商不存在;
-      store.dispatch('LogOut').then(() => {
-        location.reload();
-      });
-    } else if (
-      response.headers['content-type'] ===
-      'application/octet-stream;charset=utf-8'
-    ) {
+    } else if (response.headers['content-type'] === 'application/octet-stream;charset=utf-8') {
       return response;
     } else {
-      if (response.data.code === 10) {
-        store.dispatch('LogOut').then(() => {
-          location.reload();
-        });
-      } else {
-        Message.error(response.data.msg);
-        return Promise.reject(response.data);
-      }
+      Message.error(response.data.msg);
+      return Promise.reject(response.data);
     }
   },
   error => {

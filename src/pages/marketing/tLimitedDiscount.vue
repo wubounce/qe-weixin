@@ -70,10 +70,10 @@
         <el-table-column header-align="left" label="操作">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark" v-if="scope.row.expired!==2">
-              <i class="el-icon-edit" @click="openAddBDDialog(scope.row)"></i>
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="openAddBDDialog(scope.row)" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <i class="el-icon-delete" @click="handleDeleteDiscount(scope.row)"></i>
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDeleteDiscount(scope.row)" />
             </el-tooltip>
           </template>
         </el-table-column>
@@ -329,8 +329,6 @@ export default {
             this.getTimeMaketingDataToTable();
             this.resetAddOrEditMaketFrom(formName);
           });
-        } else {
-          return false;
         }
       });
     },
@@ -342,7 +340,8 @@ export default {
     handleDeleteDiscount(row) {
       let payload = { timeId: row.id };
       this.$confirm('您确定要删除该优惠?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         delMarketFun(payload).then(() => {
           this.$message.success('删除成功');

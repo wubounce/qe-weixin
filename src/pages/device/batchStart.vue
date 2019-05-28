@@ -55,7 +55,7 @@
               <el-radio v-for="(item,index) in functionEditList" :key="index" :label="item.functionId">{{item.functionName}}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="启动时间：" prop="startTime">
+          <el-form-item label="启动时间：" class="add-batch-time" prop="startTime">
             <el-date-picker v-model="deviceBatchStartForm.startTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择">
             </el-date-picker>
           </el-form-item>
@@ -275,7 +275,8 @@ export default {
     handleDeviceStart(row) {
       let payload = { id: row.id };
       this.$confirm('您确定要立即批量启动设备?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         batchStartNowFun(payload).then(() => {
           this.$message.success('启动成功');
@@ -287,7 +288,8 @@ export default {
     handleDeviceDelete(row) {
       let payload = { id: row.id };
       this.$confirm('您确定要取消批量启动设备?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         delBatchStartFun(payload).then(() => {
           this.$message.success('删除成功');
@@ -305,11 +307,6 @@ export default {
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-[class^='icon-'] {
-  width: 20px;
-  height: 20px;
-  margin-right: 20px;
-}
 .batch-device-edit-wrap {
   color: #8c8c8c;
   padding-top: 16px;

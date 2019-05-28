@@ -1,12 +1,12 @@
 <template>
   <div class="login-container">
-    <img class="login-bg" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/login_bg.png" alt="">
+    <img class="login-bg" :src="`${staticUrl}login_bg.png`" alt="">
     <div class="login-form">
       <h3 class="title">企鹅商家管理平台</h3>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" label-position="left">
-        <img class="login-logo" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" alt="">
+        <img class="login-logo" :src="`${staticUrl}logo.png`" alt="">
         <h4>账户密码登录</h4>
-        <img class="login-person" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/login_person.png" alt="">
+        <img class="login-person" :src="`${staticUrl}login_person.png`" alt="">
         <el-form-item prop="userName">
           <el-input v-model="loginForm.userName" name="userName" type="text" placeholder="请输入用户名/手机号">
             <svg-icon slot="prefix" icon-class="yonghuming" />
@@ -41,6 +41,7 @@ export default {
   name: 'Login',
   data() {
     return {
+      staticUrl: process.env.VUE_APP_STATICURL,
       loginForm: {
         userName: '',
         password: ''

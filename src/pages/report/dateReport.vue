@@ -311,6 +311,7 @@ export default {
             type: 'line',
             yAxisIndex: 0,
             symbol: 'circle',
+            smooth: true,
             data: this.moneyDataList,
             itemStyle: {
               normal: {
@@ -322,7 +323,7 @@ export default {
             },
             areaStyle: {
               normal: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFECC9' }, { offset: 1, color: '#FDFDFD' }])
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFB300' }, { offset: 1, color: '#FDFDFD' }])
               }
             }
           },
@@ -331,6 +332,7 @@ export default {
             type: 'line',
             yAxisIndex: 1,
             symbol: 'circle',
+            smooth: true,
             data: this.oderDataList,
             itemStyle: {
               normal: {

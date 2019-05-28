@@ -41,10 +41,10 @@
         <el-table-column header-align="left" label="操作" fixed="right" width="100px">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <i class="el-icon-edit" @click="openAddBDDialog(scope.row)"></i>
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="openAddBDDialog(scope.row)" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row)" />
             </el-tooltip>
           </template>
         </el-table-column>
@@ -270,7 +270,8 @@ export default {
     handleDelete(row) {
       let payload = { id: row.id };
       this.$confirm('您确定要删除该账号?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         delOperatorFun(payload).then(() => {
           this.$message.success('账号删除成功');

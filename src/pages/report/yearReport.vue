@@ -296,6 +296,7 @@ export default {
             type: 'line',
             yAxisIndex: 0,
             symbol: 'circle',
+            smooth: true,
             data: this.moneyDataList,
             itemStyle: {
               normal: {
@@ -316,6 +317,7 @@ export default {
             type: 'line',
             yAxisIndex: 1,
             symbol: 'circle',
+            smooth: true,
             data: this.oderDataList,
             itemStyle: {
               normal: {

@@ -383,12 +383,10 @@ export default {
       let payload = { orderNo: row.orderNo, memberId: row.userId };
       let res = await orderDetailFun(payload);
       this.detailData = res;
-      console.log(this.detailData);
       this.detailData.discountPrice = this.detailData.discountPrice || 0;
       this.detailData.voucherPrice = this.detailData.voucherPrice || 0;
       let tmp = Number(this.detailData.discountPrice) + Number(this.detailData.voucherPrice);
       this.$set(this.detailData, 'discountTotalPirce', tmp.toFixed(2));
-      console.log(this.detailData);
     },
     onSubmitCompensateFrom(formName) {
       this.$refs[formName].validate(async valid => {
@@ -414,7 +412,8 @@ export default {
     handleDeviceReset(row) {
       let payload = { orderNo: row.orderNo, machineId: row.machineId };
       this.$confirm(`确认复位${row.machineName}此设备?`, '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         machineResetFun(payload).then(() => {
           this.$Message.success('设备复位成功');
@@ -425,7 +424,8 @@ export default {
     handleDeviceStart(row) {
       let payload = { orderId: row.id, memberId: row.userId };
       this.$confirm(`确认启动${row.machineName}此设备?`, '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         machineBootFun(payload).then(() => {
           this.$Message.success('设备启动成功');
@@ -436,7 +436,8 @@ export default {
     handleOrderRefund(row) {
       let payload = { orderNo: row.orderNo, refundMoney: row.payPrice, memberId: row.userId };
       this.$confirm(`确定发起退款？`, '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         ordeRrefundFun(payload).then(() => {
           this.$Message.success('退款成功');
@@ -511,11 +512,6 @@ export default {
   li span {
     width: 120px;
   }
-}
-[class^='icon-'] {
-  width: 20px;
-  height: 20px;
-  margin-right: 20px;
 }
 .arrow {
   width: 9px;

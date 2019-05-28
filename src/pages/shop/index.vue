@@ -75,8 +75,8 @@
         </el-table-column>
       </el-table>
       <div>
-        <div style="float:left">
-          <el-checkbox v-model="isAllChecked">全选</el-checkbox>
+        <div style="float:left;padding-left:14px;">
+          <el-checkbox v-model="isAllChecked" @change="handleCheckAllChange">全选</el-checkbox>
           <el-button type="primary" :disabled="multipleSelection.length<=0" @click="subAccountSet">
             <svg-icon icon-class="rmb" style="margin-right: 5px;" />分账配置</el-button>
         </div>
@@ -91,7 +91,7 @@
             <div><span>店铺类型：</span>{{detailData.shopTypeName}}</div>
           </li>
           <li>
-            <div><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</div>
+            <div><span>店铺地址：</span><i>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</i></div>
             <div><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</div>
           </li>
           <li>
@@ -302,22 +302,7 @@ export default {
       return val >= 0 ? Number(val).toFixed(2) : val;
     }
   },
-  watch: {
-    // 全选和取消全选
-    isAllChecked(flag) {
-      if (flag) {
-        this.multipleSelection = this.shopDataToTable.filter(row => {
-          if (row.attribute == 1) {
-            this.$refs.shopDataToTable.toggleRowSelection(row, true);
-            return row;
-          }
-        });
-      } else {
-        this.$refs.shopDataToTable.clearSelection();
-        this.multipleSelection = [];
-      }
-    }
-  },
+  watch: {},
   mounted() {},
   created() {
     this.getShopTypeList();
@@ -355,7 +340,22 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      // this.multipleSelection.length === this.shopDataToTable.length ? (this.isAllChecked = true) : (this.isAllChecked = false);
+      let arr = this.shopDataToTable.filter(row => row.attribute == 1);
+      this.multipleSelection.length === arr.length ? (this.isAllChecked = true) : (this.isAllChecked = false);
+    },
+    // 全选和取消全选
+    handleCheckAllChange(val) {
+      if (val) {
+        this.multipleSelection = this.shopDataToTable.filter(row => {
+          if (row.attribute == 1) {
+            this.$refs.shopDataToTable.toggleRowSelection(row, true);
+            return row;
+          }
+        });
+      } else {
+        this.$refs.shopDataToTable.clearSelection();
+        this.multipleSelection = [];
+      }
     },
     async getShopDataToTable() {
       let payload = Object.assign({}, this.searchData);
@@ -410,7 +410,8 @@ export default {
         if (this.multipleSelection.length <= 0) {
           this.$alert(`请勾选想要分账的店铺`, '提示', {
             showClose: false,
-            confirmButtonText: '确定'
+            confirmButtonText: '确定',
+            center: true
           });
           return false;
         } else {
@@ -503,7 +504,8 @@ export default {
     // 删除店铺
     handleDelete(shopId) {
       this.$confirm('您确定要删除该店铺?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         deleteShopFun({ shopId: shopId }).then(() => {
           this.$message.success('店铺删除成功');
@@ -571,16 +573,16 @@ export default {
       width: 50%;
     }
     span {
+      float: left;
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
       width: 70px;
+      height: 100%;
+    }
+    i {
+      font-style: normal;
     }
   }
-}
-[class^='icon-'] {
-  width: 20px;
-  height: 20px;
-  margin-right: 20px;
 }
 .add-shop-from {
   padding-top: 24px;

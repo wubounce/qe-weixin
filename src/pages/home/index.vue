@@ -362,6 +362,7 @@ export default {
         series: [
           {
             symbol: 'circle',
+            smooth: true,
             data: this.lineseriesData,
             name: '收益',
             type: 'line',
@@ -376,7 +377,7 @@ export default {
             areaStyle: {
               normal: {
                 /* eslint-disable */
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFB300' }, { offset: 1, color: '#FDFDFD' }])
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFB300' }, { offset: 1, color: '#FDFDFD' }], false)
               }
             }
           }

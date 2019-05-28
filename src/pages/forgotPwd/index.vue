@@ -1,7 +1,7 @@
 <template>
   <div class="register-container">
     <div class="register-form">
-      <img class="login-logo" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" alt="">
+      <img class="login-logo" :src="`${staticUrl}logo.png`" alt="">
       <h3 class="title">忘记密码</h3>
       <el-form ref="forgotPwdForm" :model="forgotPwdForm" :rules="forgotPwdRules" label-position="left">
         <el-form-item prop="phone">
@@ -62,6 +62,7 @@ export default {
       }
     };
     return {
+      staticUrl: process.env.VUE_APP_STATICURL,
       forgotPwdForm: {
         phone: '',
         code: '',

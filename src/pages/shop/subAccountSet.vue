@@ -103,7 +103,7 @@ export default {
               return;
             }
             if (proportionTotal <= 0 || proportionTotal > 100) {
-              this.$Message.error('分账比例总和需大于0并小于等于100');
+              this.$Message.error('总比例大于100%，请重新输入');
               return;
             }
           } else {

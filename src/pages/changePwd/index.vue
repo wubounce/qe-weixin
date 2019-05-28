@@ -1,7 +1,7 @@
 <template>
   <div class="register-container">
     <div class="register-form">
-      <img class="login-logo" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" alt="">
+      <img class="login-logo" :src="`${staticUrl}logo.png`" alt="">
       <h3 class="title">修改密码</h3>
       <el-form ref="changePwdForm" :model="changePwdForm" :rules="changePwdFormRules" label-position="left">
         <el-form-item prop="phone">
@@ -53,6 +53,7 @@ export default {
       }
     };
     return {
+      staticUrl: process.env.VUE_APP_STATICURL,
       changePwdForm: {
         phone: '',
         oldPassword: '',

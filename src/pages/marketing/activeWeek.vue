@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     handleClose(e) {
-      this.$emit('input', '');
+      this.customWeekCheckList = [];
       this.visibleModel = false;
     },
     changeCustomWeekVisible(val) {
@@ -63,7 +63,7 @@ export default {
       }
     },
     getCustomCheckedWeek() {
-      if (this.activeWeek == 10) {
+      if (this.activeWeek === 10) {
         let comWeeek = this.customWeekCheckList.join(',');
         this.$emit('input', comWeeek);
       } else {
