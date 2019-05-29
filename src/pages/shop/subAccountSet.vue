@@ -5,28 +5,27 @@
         <span>分账账户</span>
         <span style="padding-left: 125px;">分账比例</span>
       </h2>
-      <div class="begin-add-accout" v-if="dynamicValidateForm.domains.length<=0" @click="addDomain">
+      <div class="begin-add-accout" v-if="dynamicValidateForm.detail.length<=0" @click="addDomain">
         <i class="el-icon-plus"></i><span>添加账号</span>
       </div>
       <div v-else class="added-accout">
         <ul>
-          <li v-for="(item,index) in dynamicValidateForm.domains" :key="index">
+          <li v-for="(item,index) in dynamicValidateForm.detail" :key="index">
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item :prop="'domains.' + index + '.account'" :rules='dynamicValidateFormRules.account'>
-                  <el-select v-model="item.account" filterable clearable remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" :loading="loading">
-                    <el-option v-for="(item,index) in options" :key="index" :label="item" :value="item">
-                    </el-option>
+                <el-form-item :prop="'detail.' + index + '.shareOperaterId'" :rules='dynamicValidateFormRules.shareOperaterId'>
+                  <el-select v-model="item.shareOperaterId" filterable clearable remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" :loading="loading">
+                    <el-option v-for="(item,index) in options" :key="index" :label="item.userName" :value="item.id"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="9">
-                <el-form-item :prop="'domains.' + index + '.proportion'" :rules='dynamicValidateFormRules.proportion' class="proportion-input">
+                <el-form-item :prop="'detail.' + index + '.proportion'" :rules='dynamicValidateFormRules.proportion' class="proportion-input">
                   <el-input v-model.trim="item.proportion" maxlength="5" placeholder="请输入"></el-input><span>%</span>
                 </el-form-item>
               </el-col>
               <el-col :span="7">
-                <svg-icon icon-class="accountadd" v-if="index===(dynamicValidateForm.domains.length-1)" @click="addDomain" />
+                <svg-icon icon-class="accountadd" v-if="index===(dynamicValidateForm.detail.length-1)" @click="addDomain" />
                 <svg-icon icon-class="accountdel" @click.prevent="removeDomain(item)" />
               </el-col>
             </el-row>
@@ -42,7 +41,10 @@
 </template>
 
 <script type="text/ecmascript-6">
+import qs from 'qs';
+import { delay } from '@/utils/tools';
 import { getUserInfoInLocalstorage } from '@/utils/auth';
+import { revenueSharingAddFun, revenueSharingBatchAddFun, getByUserOperatornameFun } from '@/service/shop';
 export default {
   props: {
     visible: {
@@ -50,6 +52,10 @@ export default {
       default: false
     },
     title: {
+      type: String,
+      default: ''
+    },
+    shopIds: {
       type: String,
       default: ''
     }
@@ -60,11 +66,11 @@ export default {
       options: [],
       loading: false,
       dynamicValidateForm: {
-        domains: []
+        detail: []
       },
       dynamicValidateFormRules: {
-        account: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100)$/, message: '请输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
+        shareOperaterId: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
+        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100)$/, message: '分账比例请输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
       }
     };
   },
@@ -77,11 +83,11 @@ export default {
     remoteMethod(query) {
       if (query !== '') {
         this.loading = true;
-        setTimeout(() => {
+        let payload = { username: query };
+        delay(async () => {
+          let res = await getByUserOperatornameFun(qs.stringify(payload));
+          this.options = res ? [{ id: res.id, userName: res.userName }] : [];
           this.loading = false;
-          this.options = this.list.filter(item => {
-            return item.toLowerCase().indexOf(query.toLowerCase()) > -1;
-          });
         }, 200);
       } else {
         this.options = [];
@@ -90,47 +96,81 @@ export default {
     onHandleAddAcount(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.dynamicValidateForm.domains.length > 0) {
+          if (this.dynamicValidateForm.detail.length > 0) {
             let proportionTotal = 0;
-            let isSubAccountSAme = false;
+            let isShareOperaterIdSame = false;
             let user = getUserInfoInLocalstorage() ? getUserInfoInLocalstorage().phone : '';
-            this.dynamicValidateForm.domains.forEach((item, index, arr) => {
+            this.dynamicValidateForm.detail.forEach((item, index, arr) => {
               proportionTotal += Number(item.proportion);
-              isSubAccountSAme = item.account === arr[0].account || item.account === user;
+              isShareOperaterIdSame = item.shareOperaterId === user;
             });
-            if (isSubAccountSAme) {
+            var repeatOperatorArr = this.dynamicValidateForm.detail.map(item => item.shareOperaterId);
+            var setrepeatOperatorArr = new Set(repeatOperatorArr); //去重复
+            if (setrepeatOperatorArr.size !== this.dynamicValidateForm.detail.length) {
               this.$Message.error('当前添加的账户不允许重复');
+              return;
+            }
+            if (isShareOperaterIdSame) {
+              this.$Message.error('不允许添加操作者账号');
               return;
             }
             if (proportionTotal <= 0 || proportionTotal > 100) {
               this.$Message.error('总比例大于100%，请重新输入');
               return;
             }
+            this.submitreveneSharing();
           } else {
-            this.$Message.success('成功');
-            this.modalClose();
-            this.$listeners.getShopDataToTable && this.$listeners.getShopDataToTable(); //若组件传递事件confirm则执行
-            this.$emit('update:isAllChecked', false); // 直接修改父组件的属性
+            this.submitreveneSharing();
           }
         }
       });
     },
+    type(obj) {
+      return Object.prototype.toString
+        .call(obj)
+        .slice(8, -1)
+        .toLowerCase();
+    },
+    submitreveneSharing() {
+      if (this.type(this.shopIds) === 'array' && this.shopIds.length > 0) {
+        this.$confirm('此次配置将覆盖之前的配置记录。', '提示', {
+          showClose: false,
+          center: true
+        }).then(() => {
+          let payload = Object.assign({}, this.dynamicValidateForm, { shopIds: this.shopIds });
+          payload.detail = JSON.stringify(payload.detail);
+          payload.shopIds = JSON.stringify(payload.shopIds);
+          revenueSharingBatchAddFun(payload).then(() => this.handleParent());
+        });
+      } else {
+        let payload = Object.assign({}, this.dynamicValidateForm, { shopId: this.shopIds });
+        payload.detail = JSON.stringify(payload.detail);
+        payload.shopId = JSON.stringify(payload.shopId);
+        revenueSharingAddFun(payload).then(() => this.handleParent());
+      }
+    },
+    handleParent() {
+      this.$Message.success('成功');
+      this.modalClose();
+      this.$listeners.getShopDataToTable && this.$listeners.getShopDataToTable(); //若组件传递事件confirm则执行
+      this.$emit('update:isAllChecked', false); // 直接修改父组件的属性
+    },
     resetForm(formName) {
-      if (this.dynamicValidateForm.domains.length > 0) {
+      if (this.dynamicValidateForm.detail.length > 0) {
         this.$refs[formName].resetFields();
         this.$refs[formName].clearValidate();
       }
       this.modalClose();
     },
     removeDomain(item) {
-      var index = this.dynamicValidateForm.domains.indexOf(item);
+      let index = this.dynamicValidateForm.detail.indexOf(item);
       if (index !== -1) {
-        this.dynamicValidateForm.domains.splice(index, 1);
+        this.dynamicValidateForm.detail.splice(index, 1);
       }
     },
     addDomain() {
-      this.dynamicValidateForm.domains.push({
-        account: '',
+      this.dynamicValidateForm.detail.push({
+        shareOperaterId: '',
         proportion: ''
       });
     }

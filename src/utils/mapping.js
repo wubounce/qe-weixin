@@ -163,6 +163,6 @@ export const memberIsLock = {
 };
 // 人员管理禁用启用
 export const subAccountType = {
-  0: '已配置',
-  1: '未配置'
+  0: '未配置',
+  1: '已配置',
 };

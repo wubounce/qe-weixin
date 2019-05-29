@@ -17,10 +17,9 @@
         <el-input v-model.trim="searchData.address" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="分账配置：" prop="type">
-        <el-select v-model="searchData.type" clearable placeholder="请选择">
+        <el-select v-model="searchData.isRevenueSharing " clearable placeholder="请选择">
           <el-option label="全部" value=""></el-option>
-          <el-option label="已配置" value="1"></el-option>
-          <el-option label="未配置" value="2"></el-option>
+          <el-option v-for="(name, id) in subAccountType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -59,7 +58,7 @@
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="profit" label="分账配置" :formatter="fmsubAccountType"></el-table-column>
+        <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置" :formatter="fmsubAccountType"></el-table-column>
         <el-table-column header-align="left" fixed="right" label="操作">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
@@ -115,11 +114,16 @@
           </li>
         </ul>
         <h3 class="detail-base-title" style="border:none">分账信息</h3>
-        <el-table>
-          <el-table-column prop="functionName" label="分账账户"></el-table-column>
-          <el-table-column prop="ifOpen" label="分账比例">
+        <div class="revent-share"><span>创建时间：</span>{{revenueSharingDetail.createdAt}}</div>
+        <el-table :data="revenueSharingDetail.detail">
+          <el-table-column prop="shareOperaterId" label="分账账户">
             <template slot-scope="scope">
-              <span>%</span>
+              <span>{{scope.row.shareOperaterMobile}}{{scope.row.shareOperaterName}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="proportion" label="分账比例">
+            <template slot-scope="scope">
+              <span>{{scope.row.proportion}}%</span>
             </template>
           </el-table-column>
         </el-table>
@@ -127,7 +131,7 @@
       <!-- 店铺设备数量 -->
       <shop-inmachine-list :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></shop-inmachine-list>
       <!-- 分账设置 -->
-      <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" :isAllChecked.sync="isAllChecked" @getShopDataToTable="getShopDataToTable"></sub-account-set>
+      <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" :isAllChecked.sync="isAllChecked" :shopIds="shopIds" @getShopDataToTable="getShopDataToTable"></sub-account-set>
       <!-- </el-dialog> -->
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
@@ -186,7 +190,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi } from '@/service/shop';
+import qs from 'qs';
+import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi, getrevenueSharingFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
 import { isReserveType, isHasVipType, isDiscountType, subAccountType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
@@ -215,6 +220,7 @@ export default {
       shopDataToTable: [],
       detailDialogVisible: false,
       detailData: {},
+      revenueSharingDetail: {}, //分账详情
       deviceDialogVisible: false,
       shopIds: '', //店铺id
       deviceDialogTitle: '',
@@ -287,6 +293,11 @@ export default {
         serviceTelephone: [{ pattern: /^[0-9]*$/, message: '客服电话需为纯数字', trigger: 'blur' }]
       }
     };
+  },
+  computed: {
+    subAccountType() {
+      return subAccountType;
+    }
   },
   filters: {
     isReserveType: val => {
@@ -370,7 +381,9 @@ export default {
     async lookShopDetail(row) {
       let payload = { shopId: row.shopId };
       let res = await shopDetailFun(payload);
-      this.detailData = res;
+      let resSharingDetail = (await getrevenueSharingFun(qs.stringify(payload))) || {};
+      this.detailData = res || {};
+      this.revenueSharingDetail = resSharingDetail || {};
     },
     async getDeciveFromShop(row) {
       if (row.machineCount === 0) {
@@ -415,6 +428,7 @@ export default {
           });
           return false;
         } else {
+          this.shopIds = this.multipleSelection.map(item => item.shopId);
           this.subAccountSetTitle = '分账批量配置';
         }
       }
@@ -565,6 +579,7 @@ export default {
 }
 .deatil-list {
   padding-bottom: 15px;
+
   li {
     padding: 11px 0;
     border-bottom: 1px solid $under_line;
@@ -582,6 +597,13 @@ export default {
     i {
       font-style: normal;
     }
+  }
+}
+.revent-share {
+  margin: 15px 0;
+  span {
+    color: rgba(23, 26, 46, 0.45);
+    width: 70px;
   }
 }
 .add-shop-from {

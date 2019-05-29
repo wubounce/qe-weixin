@@ -67,7 +67,7 @@ export default {
         let comWeeek = this.customWeekCheckList.join(',');
         this.$emit('input', comWeeek);
       } else {
-        this.$emit('input', activeWeek);
+        this.$emit('input', this.activeWeek);
       }
       this.visibleModel = false;
     },
