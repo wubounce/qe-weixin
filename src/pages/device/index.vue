@@ -59,13 +59,13 @@
         </el-table-column>
         <el-table-column header-align="left" prop="shopName" label="所属店铺" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
-        <el-table-column header-align="left" prop="subTypeName" label="设备型号" min-width="160"></el-table-column>
+        <el-table-column header-align="left" prop="subTypeName" label="设备型号" min-width="180" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineState" label="状态">
           <template slot-scope="scope">
             <span class="status-clire" :style="machineStateBgColor(scope.row.machineState)"></span>{{scope.row.machineState | deviceStatus}}
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="imei" label="IMEI"></el-table-column>
+        <el-table-column header-align="left" prop="imei" label="IMEI" min-width="130"></el-table-column>
         <el-table-column header-align="left" prop="signal" label="信号值">
           <template slot-scope="scope">
             <el-tooltip content="设备离线" placement="top" effect="dark">
@@ -127,7 +127,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="profit" label="累计收益(元)">
+        <el-table-column header-align="left" prop="profit" label="累计收益(元)" min-width="100">
           <template slot-scope="scope">
             <span>{{scope.row.profit | tofixd}}</span>
           </template>

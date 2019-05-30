@@ -14,8 +14,8 @@
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item :prop="'detail.' + index + '.shareOperaterId'" :rules='dynamicValidateFormRules.shareOperaterId'>
-                  <el-select v-model="item.shareOperaterId" filterable clearable remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" :loading="loading">
-                    <el-option v-for="(item,index) in options" :key="index" :label="item.userName" :value="item.id"></el-option>
+                  <el-select v-model="item.shareOperaterId" filterable clear remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" no-match-text="无匹配数据" no-data-text="无匹配数据" :loading="loading" @clear="clearOptions" @focus="clearOptions">
+                    <el-option v-for="(name,id) in options" :key="id" :label="id" :value="name"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -63,7 +63,7 @@ export default {
   data() {
     return {
       list: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
-      options: [],
+      options: {},
       loading: false,
       dynamicValidateForm: {
         detail: []
@@ -86,12 +86,15 @@ export default {
         let payload = { username: query };
         delay(async () => {
           let res = await getByUserOperatornameFun(qs.stringify(payload));
-          this.options = res ? [{ id: res.id, userName: res.userName }] : [];
+          this.options = res ? { [res.userName]: res.id } : {};
           this.loading = false;
         }, 200);
       } else {
-        this.options = [];
+        this.options = {};
       }
+    },
+    clearOptions() {
+      this.options = {};
     },
     onHandleAddAcount(formName) {
       this.$refs[formName].validate(valid => {
@@ -99,10 +102,10 @@ export default {
           if (this.dynamicValidateForm.detail.length > 0) {
             let proportionTotal = 0;
             let isShareOperaterIdSame = false;
-            let user = getUserInfoInLocalstorage() ? getUserInfoInLocalstorage().phone : '';
+            let userid = getUserInfoInLocalstorage() ? getUserInfoInLocalstorage().id : '';
             this.dynamicValidateForm.detail.forEach((item, index, arr) => {
               proportionTotal += Number(item.proportion);
-              isShareOperaterIdSame = item.shareOperaterId === user;
+              isShareOperaterIdSame = item.shareOperaterId === userid;
             });
             var repeatOperatorArr = this.dynamicValidateForm.detail.map(item => item.shareOperaterId);
             var setrepeatOperatorArr = new Set(repeatOperatorArr); //去重复
@@ -173,6 +176,7 @@ export default {
         shareOperaterId: '',
         proportion: ''
       });
+      this.options = [];
     }
   }
 };

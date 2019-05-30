@@ -50,8 +50,8 @@
       </div>
       <el-table :data="voucherListDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="面额(元)/折扣" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="" label="条件" show-overflow-tooltip>
+        <el-table-column header-align="left" prop="faceValue" label="面额(元)/折扣" show-overflow-tooltip min-width="120px"></el-table-column>
+        <el-table-column header-align="left" prop="" label="条件" show-overflow-tooltip min-width="140px">
           <template slot-scope="scope">
             <span>满{{scope.row.faceValue}}元可用</span>
           </template>

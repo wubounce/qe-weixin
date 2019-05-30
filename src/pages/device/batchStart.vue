@@ -26,13 +26,13 @@
       </div>
       <el-table :data="batchStartDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-        <el-table-column header-align="left" prop="shopName" label="所属店铺" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="shopName" label="所属店铺" min-width="160" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
         <el-table-column header-align="left" prop="functionName" label="启动模式"></el-table-column>
-        <el-table-column header-align="left" prop="beginTime" label="启动时间"></el-table-column>
+        <el-table-column header-align="left" prop="beginTime" label="启动时间" min-width="160"></el-table-column>
         <el-table-column header-align="left" prop="createUserName" label="创建人"></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="创建时间" min-width="180"></el-table-column>
-        <el-table-column header-align="left" label="操作" fixed="right" width="300px">
+        <el-table-column header-align="left" prop="createTime" label="创建时间" min-width="160"></el-table-column>
+        <el-table-column header-align="left" label="操作" fixed="right" min-width="140px">
           <template slot-scope="scope">
             <el-tooltip content="启动" placement="top" effect="dark">
               <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />

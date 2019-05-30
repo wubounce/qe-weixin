@@ -48,7 +48,7 @@
             <span class="rowstyle" @click="getDeciveFromShop(scope.row)">{{scope.row.machineCount}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="profit" label="累计收益(元)">
+        <el-table-column header-align="left" prop="profit" label="累计收益(元)" min-width="100">
           <template slot-scope="scope">
             <span>{{scope.row.profit | tofixd}}</span>
           </template>
@@ -59,7 +59,7 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置" :formatter="fmsubAccountType"></el-table-column>
-        <el-table-column header-align="left" fixed="right" label="操作">
+        <el-table-column header-align="left" fixed="right" label="操作" min-width="160">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
               <svg-icon icon-class="bianji" class="icon-bianji" @click="onAddorEditShop(scope.row)" />
@@ -113,20 +113,22 @@
             <div><span>创建时间：</span>{{detailData.createTime}}</div>
           </li>
         </ul>
-        <h3 class="detail-base-title" style="border:none">分账信息</h3>
-        <div class="revent-share"><span>创建时间：</span>{{revenueSharingDetail.createdAt}}</div>
-        <el-table :data="revenueSharingDetail.detail">
-          <el-table-column prop="shareOperaterId" label="分账账户">
-            <template slot-scope="scope">
-              <span>{{scope.row.shareOperaterMobile}}{{scope.row.shareOperaterName}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="proportion" label="分账比例">
-            <template slot-scope="scope">
-              <span>{{scope.row.proportion}}%</span>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div v-if="revenueSharingDetail">
+          <h3 class="detail-base-title" style="border:none">分账信息</h3>
+          <div class="revent-share"><span>创建时间：</span>{{revenueSharingDetail.createdAt}}</div>
+          <el-table :data="revenueSharingDetail.detail">
+            <el-table-column prop="shareOperaterId" label="分账账户">
+              <template slot-scope="scope">
+                <span>{{scope.row.shareOperaterMobile}}{{scope.row.shareOperaterName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="proportion" label="分账比例">
+              <template slot-scope="scope">
+                <span>{{scope.row.proportion}}%</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </el-dialog>
       <!-- 店铺设备数量 -->
       <shop-inmachine-list :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></shop-inmachine-list>
@@ -220,7 +222,7 @@ export default {
       shopDataToTable: [],
       detailDialogVisible: false,
       detailData: {},
-      revenueSharingDetail: {}, //分账详情
+      revenueSharingDetail: null, //分账详情
       deviceDialogVisible: false,
       shopIds: '', //店铺id
       deviceDialogTitle: '',
@@ -381,9 +383,9 @@ export default {
     async lookShopDetail(row) {
       let payload = { shopId: row.shopId };
       let res = await shopDetailFun(payload);
-      let resSharingDetail = (await getrevenueSharingFun(qs.stringify(payload))) || {};
+      let resSharingDetail = await getrevenueSharingFun(qs.stringify(payload));
       this.detailData = res || {};
-      this.revenueSharingDetail = resSharingDetail || {};
+      this.revenueSharingDetail = resSharingDetail || null;
     },
     async getDeciveFromShop(row) {
       if (row.machineCount === 0) {

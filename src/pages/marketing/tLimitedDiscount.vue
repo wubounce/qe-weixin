@@ -51,7 +51,7 @@
             <span>{{scope.row.noWeek?scope.row.noWeek:'' | week}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="noTime" label="每日活动时段">
+        <el-table-column header-align="left" prop="noTime" label="每日活动时段" min-width="140px">
           <template slot-scope="scope">
             <span>{{scope.row.noTime === '00:00-23:59'? '全天':scope.row.noTime}}</span>
           </template>
@@ -67,7 +67,7 @@
             <el-switch v-model="scope.row.switchStatus" v-if="scope.row.expired!==2" @change="updataeStatus(scope.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" label="操作">
+        <el-table-column header-align="left" label="操作" min-width="100px">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark" v-if="scope.row.expired!==2">
               <svg-icon icon-class="bianji" class="icon-bianji" @click="openAddBDDialog(scope.row)" />
