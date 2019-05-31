@@ -119,7 +119,7 @@
           <el-table :data="revenueSharingDetail.detail">
             <el-table-column prop="shareOperaterId" label="分账账户">
               <template slot-scope="scope">
-                <span>{{scope.row.shareOperaterMobile}}{{scope.row.shareOperaterName}}</span>
+                <span>{{scope.row.shareOperaterMobile}}({{scope.row.shareOperaterName}})</span>
               </template>
             </el-table-column>
             <el-table-column prop="proportion" label="分账比例">
