@@ -5,27 +5,27 @@
         <span>分账账户</span>
         <span style="padding-left: 125px;">分账比例</span>
       </h2>
-      <div class="begin-add-accout" v-if="dynamicValidateForm.detail.length<=0" @click="addDomain">
+      <div class="begin-add-accout" v-if="dynamicValidateForm.detailJson.length<=0" @click="addDomain">
         <i class="el-icon-plus"></i><span>添加账号</span>
       </div>
       <div v-else class="added-accout">
         <ul>
-          <li v-for="(item,index) in dynamicValidateForm.detail" :key="index">
+          <li v-for="(item,index) in dynamicValidateForm.detailJson" :key="index">
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item :prop="'detail.' + index + '.shareOperaterId'" :rules='dynamicValidateFormRules.shareOperaterId'>
+                <el-form-item :prop="'detailJson.' + index + '.shareOperaterId'" :rules='dynamicValidateFormRules.shareOperaterId'>
                   <el-select v-model="item.shareOperaterId" filterable clear remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" no-match-text="无匹配数据" no-data-text="无匹配数据" :loading="loading" @clear="clearOptions" @focus="clearOptions">
                     <el-option v-for="(name,id) in options" :key="id" :label="id" :value="name"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="9">
-                <el-form-item :prop="'detail.' + index + '.proportion'" :rules='dynamicValidateFormRules.proportion' class="proportion-input">
+                <el-form-item :prop="'detailJson.' + index + '.proportion'" :rules='dynamicValidateFormRules.proportion' class="proportion-input">
                   <el-input v-model.trim="item.proportion" maxlength="5" placeholder="请输入"></el-input><span>%</span>
                 </el-form-item>
               </el-col>
               <el-col :span="7">
-                <svg-icon icon-class="accountadd" v-if="index===(dynamicValidateForm.detail.length-1)" @click="addDomain" />
+                <svg-icon icon-class="accountadd" v-if="index===(dynamicValidateForm.detailJson.length-1)" @click="addDomain" />
                 <svg-icon icon-class="accountdel" @click.prevent="removeDomain(item)" />
               </el-col>
             </el-row>
@@ -66,7 +66,7 @@ export default {
       options: {},
       loading: false,
       dynamicValidateForm: {
-        detail: []
+        detailJson: []
       },
       dynamicValidateFormRules: {
         shareOperaterId: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
@@ -99,17 +99,17 @@ export default {
     onHandleAddAcount(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.dynamicValidateForm.detail.length > 0) {
+          if (this.dynamicValidateForm.detailJson.length > 0) {
             let proportionTotal = 0;
             let isShareOperaterIdSame = false;
             let userid = getUserInfoInLocalstorage() ? getUserInfoInLocalstorage().id : '';
-            this.dynamicValidateForm.detail.forEach((item, index, arr) => {
+            this.dynamicValidateForm.detailJson.forEach((item, index, arr) => {
               proportionTotal += Number(item.proportion);
               isShareOperaterIdSame = item.shareOperaterId === userid;
             });
-            var repeatOperatorArr = this.dynamicValidateForm.detail.map(item => item.shareOperaterId);
+            var repeatOperatorArr = this.dynamicValidateForm.detailJson.map(item => item.shareOperaterId);
             var setrepeatOperatorArr = new Set(repeatOperatorArr); //去重复
-            if (setrepeatOperatorArr.size !== this.dynamicValidateForm.detail.length) {
+            if (setrepeatOperatorArr.size !== this.dynamicValidateForm.detailJson.length) {
               this.$Message.error('当前添加的账户不允许重复');
               return;
             }
@@ -140,15 +140,17 @@ export default {
           showClose: false,
           center: true
         }).then(() => {
-          let payload = Object.assign({}, this.dynamicValidateForm, { shopIds: this.shopIds });
-          payload.detail = JSON.stringify(payload.detail);
-          payload.shopIds = JSON.stringify(payload.shopIds);
+          let payload = Object.assign({}, this.dynamicValidateForm);
+          payload.detailJson = JSON.stringify(payload.detailJson);
+          payload.shopIdsJson = JSON.stringify(this.shopIds);
+          console.log(payload);
+
           revenueSharingBatchAddFun(payload).then(() => this.handleParent());
         });
       } else {
-        let payload = Object.assign({}, this.dynamicValidateForm, { shopId: this.shopIds });
-        payload.detail = JSON.stringify(payload.detail);
-        payload.shopId = JSON.stringify(payload.shopId);
+        let payload = Object.assign({}, this.dynamicValidateForm);
+        payload.detailJson = JSON.stringify(payload.detailJson);
+        payload.shopId = JSON.stringify(this.shopIds);
         revenueSharingAddFun(payload).then(() => this.handleParent());
       }
     },
@@ -159,20 +161,20 @@ export default {
       this.$emit('update:isAllChecked', false); // 直接修改父组件的属性
     },
     resetForm(formName) {
-      if (this.dynamicValidateForm.detail.length > 0) {
+      if (this.dynamicValidateForm.detailJson.length > 0) {
         this.$refs[formName].resetFields();
         this.$refs[formName].clearValidate();
       }
       this.modalClose();
     },
     removeDomain(item) {
-      let index = this.dynamicValidateForm.detail.indexOf(item);
+      let index = this.dynamicValidateForm.detailJson.indexOf(item);
       if (index !== -1) {
-        this.dynamicValidateForm.detail.splice(index, 1);
+        this.dynamicValidateForm.detailJson.splice(index, 1);
       }
     },
     addDomain() {
-      this.dynamicValidateForm.detail.push({
+      this.dynamicValidateForm.detailJson.push({
         shareOperaterId: '',
         proportion: ''
       });
