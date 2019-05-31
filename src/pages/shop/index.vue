@@ -581,7 +581,9 @@ export default {
 }
 .deatil-list {
   padding-bottom: 15px;
-
+  :last-child {
+    border: none;
+  }
   li {
     padding: 11px 0;
     border-bottom: 1px solid $under_line;

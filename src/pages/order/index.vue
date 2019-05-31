@@ -152,17 +152,20 @@
             <div><span>支付时间：</span>{{detailData.payTime}}</div>
           </li>
         </ul>
-        <h3 class="detail-base-title" style="border:none">分账信息</h3>
-        <el-table>
-          <el-table-column prop="functionName" label="分账账户"></el-table-column>
-          <el-table-column prop="functionName" label="运营商姓名"></el-table-column>
-          <el-table-column prop="ifOpen" label="分账比例">
-            <template slot-scope="scope">
-              <span>%</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="functionName" label="分账金额(元)"></el-table-column>
-        </el-table>
+        <div v-if="detailData.orderRevenueSharingLogList">
+          <h3 class="detail-base-title" style="border:none">分账信息</h3>
+          <el-table :data="detailData.orderRevenueSharingLogList">
+            <el-table-column prop="shareOperatorUsername" label="分账账户"></el-table-column>
+            <el-table-column prop="shareOperatorRealName" label="运营商姓名"></el-table-column>
+            <el-table-column prop="ifOpen" label="分账比例">
+              <template slot-scope="scope">
+                <span>{{scope.row.proportion}}%</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="amount" label="分账金额(元)"></el-table-column>
+          </el-table>
+
+        </div>
       </el-dialog>
       <!-- 退款详情 -->
       <el-dialog title="退款详情" :visible.sync="refundDialogVisible" width="540px">
@@ -494,6 +497,9 @@ export default {
 }
 .deatil-list {
   padding-bottom: 15px;
+  :last-child {
+    border: none;
+  }
   li {
     padding: 12px 0;
     border-bottom: 1px solid $under_line;
