@@ -154,7 +154,7 @@
         </ul>
         <div v-if="detailData.orderRevenueSharingLogList">
           <h3 class="detail-base-title" style="border:none">分账信息</h3>
-          <el-table :data="detailData.orderRevenueSharingLogList">
+          <el-table :data="detailData.orderRevenueSharingLogList" style="width: 100%" max-height="300">
             <el-table-column prop="shareOperatorUsername" label="分账账户"></el-table-column>
             <el-table-column prop="shareOperatorRealName" label="运营商姓名"></el-table-column>
             <el-table-column prop="ifOpen" label="分账比例">

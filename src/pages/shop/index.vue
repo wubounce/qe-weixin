@@ -120,7 +120,7 @@
         <div v-if="revenueSharingDetail">
           <h3 class="detail-base-title" style="border:none">分账信息</h3>
           <div class="revent-share"><span>创建时间：</span>{{revenueSharingDetail.createdAt}}</div>
-          <el-table :data="revenueSharingDetail.detail">
+          <el-table :data="revenueSharingDetail.detail" style="width: 100%" max-height="300">
             <el-table-column prop="shareOperaterId" label="分账账户">
               <template slot-scope="scope">
                 <span>{{scope.row.shareOperaterMobile}}({{scope.row.shareOperaterName}})</span>

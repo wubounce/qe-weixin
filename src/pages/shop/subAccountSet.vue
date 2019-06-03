@@ -9,7 +9,7 @@
         <i class="el-icon-plus"></i><span>添加账号</span>
       </div>
       <div v-else class="added-accout">
-        <ul>
+        <ul class="accout-scroll">
           <li v-for="(item,index) in dynamicValidateForm.detailJson" :key="index">
             <el-row :gutter="20">
               <el-col :span="8">
@@ -82,6 +82,13 @@ export default {
   methods: {
     async lookShopDetail() {
       let payload = { shopId: this.shopIds };
+      if (this.type(this.shopIds) === 'array') {
+        if (this.shopIds.length > 1) {
+          return;
+        } else {
+          payload.shopId = this.shopIds.join(',');
+        }
+      }
       let res = await getrevenueSharingFun(qs.stringify(payload));
       let detail = res ? res.detail : [];
       this.dynamicValidateForm.detailJson = res.detail.map(item => {
@@ -230,6 +237,10 @@ export default {
     height: 18px;
     margin: 0 10px;
     cursor: pointer;
+  }
+  .accout-scroll {
+    max-height: 330px;
+    overflow-y: auto;
   }
   .begin-add-accout {
     padding: 24px 0;
