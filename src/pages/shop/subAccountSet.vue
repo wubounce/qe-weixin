@@ -13,9 +13,9 @@
           <li v-for="(item,index) in dynamicValidateForm.detailJson" :key="index">
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item :prop="'detailJson.' + index + '.shareOperaterId'" :rules='dynamicValidateFormRules.shareOperaterId'>
-                  <el-select v-model="item.shareOperaterId" filterable clear remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" no-match-text="无匹配数据" no-data-text="无匹配数据" :loading="loading" @clear="clearOptions" @focus="clearOptions">
-                    <el-option v-for="(name,id) in options" :key="id" :label="id" :value="name"></el-option>
+                <el-form-item :prop="'detailJson.' + index + '.shareOperaterId'" :rules='dynamicValidateFormRules.shareOperaterName'>
+                  <el-select v-model="item.shareOperaterName" filterable clear remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" @change="changeOperator($event,item)" no-match-text="无匹配数据" no-data-text="无匹配数据" :loading="loading" @clear="clearOptions" @focus="clearOptions">
+                    <el-option v-for="(item,index) in options" :key="index" :data-shareOperaterId="item.shareOperaterId" :label="item.shareOperaterName" :value="item.shareOperaterId"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -44,7 +44,7 @@
 import qs from 'qs';
 import { delay } from '@/utils/tools';
 import { getUserInfoInLocalstorage } from '@/utils/auth';
-import { revenueSharingAddFun, revenueSharingBatchAddFun, getByUserOperatornameFun } from '@/service/shop';
+import { revenueSharingAddFun, revenueSharingBatchAddFun, getByUserOperatornameFun, getrevenueSharingFun } from '@/service/shop';
 export default {
   props: {
     visible: {
@@ -63,8 +63,9 @@ export default {
   data() {
     return {
       list: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
-      options: {},
+      options: [],
       loading: false,
+      getDetail: {},
       dynamicValidateForm: {
         detailJson: []
       },
@@ -75,8 +76,27 @@ export default {
     };
   },
   components: {},
-  created() {},
+  created() {
+    this.lookShopDetail();
+  },
   methods: {
+    async lookShopDetail() {
+      let payload = { shopId: this.shopIds };
+      let res = await getrevenueSharingFun(qs.stringify(payload));
+      let detail = res ? res.detail : [];
+      this.dynamicValidateForm.detailJson = res.detail.map(item => {
+        return {
+          shareOperaterName: item.shareOperaterName,
+          proportion: item.proportion,
+          shareOperaterId: item.shareOperaterId
+        };
+      });
+      console.log(this.dynamicValidateForm.detailJson);
+    },
+    changeOperator(event, item) {
+      item.shareOperaterId = event;
+      console.log(item);
+    },
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
@@ -86,7 +106,7 @@ export default {
         let payload = { username: query };
         delay(async () => {
           let res = await getByUserOperatornameFun(qs.stringify(payload));
-          this.options = res ? { [res.userName]: res.id } : {};
+          this.options = res ? [{ shareOperaterName: res.userName, shareOperaterId: res.id }] : {};
           this.loading = false;
         }, 200);
       } else {
@@ -97,6 +117,8 @@ export default {
       this.options = {};
     },
     onHandleAddAcount(formName) {
+      console.log(this.dynamicValidateForm);
+
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.dynamicValidateForm.detailJson.length > 0) {
@@ -150,7 +172,7 @@ export default {
       } else {
         let payload = Object.assign({}, this.dynamicValidateForm);
         payload.detailJson = JSON.stringify(payload.detailJson);
-        payload.shopId = JSON.stringify(this.shopIds);
+        payload.shopId = this.shopIds;
         revenueSharingAddFun(payload).then(() => this.handleParent());
       }
     },
@@ -175,8 +197,9 @@ export default {
     },
     addDomain() {
       this.dynamicValidateForm.detailJson.push({
-        shareOperaterId: '',
-        proportion: ''
+        shareOperaterName: '',
+        proportion: '',
+        shareOperaterId: ''
       });
       this.options = [];
     }
