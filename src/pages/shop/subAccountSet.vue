@@ -129,7 +129,7 @@ export default {
             var repeatOperatorArr = this.dynamicValidateForm.detailJson.map(item => item.shareOperaterId);
             var setrepeatOperatorArr = new Set(repeatOperatorArr); //去重复
             if (setrepeatOperatorArr.size !== this.dynamicValidateForm.detailJson.length) {
-              this.$Message.error('当前添加的账户不允许重复');
+              this.$Message.error('存在重复账号，请重新输入');
               return;
             }
             if (isShareOperaterIdSame) {

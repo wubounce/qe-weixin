@@ -58,7 +58,11 @@
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置" :formatter="fmsubAccountType"></el-table-column>
+        <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置">
+          <template slot-scope="scope">
+            {{scope.row.isRevenueSharing | subAccountType}}
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" fixed="right" label="操作" min-width="160">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
@@ -311,6 +315,9 @@ export default {
     isDiscountType: val => {
       return isDiscountType[val];
     },
+    subAccountType: val => {
+      return subAccountType[val];
+    },
     tofixd(val) {
       return val >= 0 ? Number(val).toFixed(2) : val;
     }
@@ -339,9 +346,6 @@ export default {
       this.total = 0;
       this.$refs[formName].resetFields();
       this.getShopDataToTable();
-    },
-    fmsubAccountType(row) {
-      return subAccountType[row.attribute];
     },
     celClass(row) {
       if (row.columnIndex === 0) {
