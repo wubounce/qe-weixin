@@ -86,7 +86,7 @@ export default {
       let detail = res ? res.detail : [];
       this.dynamicValidateForm.detailJson = res.detail.map(item => {
         return {
-          shareOperaterName: item.shareOperaterName,
+          shareOperaterName: item.shareOperaterMobile,
           proportion: item.proportion,
           shareOperaterId: item.shareOperaterId
         };
