@@ -91,7 +91,6 @@ export default {
           shareOperaterId: item.shareOperaterId
         };
       });
-      console.log(this.dynamicValidateForm.detailJson);
     },
     changeOperator(event, item) {
       item.shareOperaterId = event;
@@ -117,8 +116,6 @@ export default {
       this.options = {};
     },
     onHandleAddAcount(formName) {
-      console.log(this.dynamicValidateForm);
-
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.dynamicValidateForm.detailJson.length > 0) {
