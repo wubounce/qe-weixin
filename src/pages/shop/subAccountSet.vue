@@ -5,15 +5,17 @@
         <span>分账账户</span>
         <span style="padding-left: 125px;">分账比例</span>
       </h2>
-      <div class="begin-add-accout" v-if="dynamicValidateForm.detailJson.length<=0" @click="addDomain">
-        <i class="el-icon-plus"></i><span>添加账号</span>
+      <div class="begin-add-accout" v-if="dynamicValidateForm.detailJson.length<=0">
+        <div class="add-accout" @click="addDomain">
+          <i class="el-icon-plus"></i><span>添加账号</span>
+        </div>
       </div>
       <div v-else class="added-accout">
         <ul class="accout-scroll">
           <li v-for="(item,index) in dynamicValidateForm.detailJson" :key="index">
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item :prop="'detailJson.' + index + '.shareOperaterId'" :rules='dynamicValidateFormRules.shareOperaterName'>
+                <el-form-item :prop="'detailJson.' + index + '.shareOperaterName'" :rules='dynamicValidateFormRules.shareOperaterName'>
                   <el-select v-model="item.shareOperaterName" filterable clear remote reserve-keyword placeholder="请输入账号" :remote-method="remoteMethod" @change="changeOperator($event,item)" no-match-text="无匹配数据" no-data-text="无匹配数据" :loading="loading" @clear="clearOptions" @focus="clearOptions">
                     <el-option v-for="(item,index) in options" :key="index" :data-shareOperaterId="item.shareOperaterId" :label="item.shareOperaterName" :value="item.shareOperaterId"></el-option>
                   </el-select>
@@ -70,7 +72,7 @@ export default {
         detailJson: []
       },
       dynamicValidateFormRules: {
-        shareOperaterId: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
+        shareOperaterName: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
         proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100)$/, message: '分账比例请输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
       }
     };
@@ -91,7 +93,7 @@ export default {
       }
       let res = await getrevenueSharingFun(qs.stringify(payload));
       let detail = res ? res.detail : [];
-      this.dynamicValidateForm.detailJson = res.detail.map(item => {
+      this.dynamicValidateForm.detailJson = detail.map(item => {
         return {
           shareOperaterName: item.shareOperaterMobile,
           proportion: item.proportion,
@@ -239,19 +241,22 @@ export default {
     cursor: pointer;
   }
   .accout-scroll {
-    max-height: 330px;
+    min-height: 240px;
     overflow-y: auto;
   }
   .begin-add-accout {
-    padding: 24px 0;
-    border: 1px dashed #dfdfdf;
-    margin: 24px;
-    text-align: center;
-    cursor: pointer;
-    font-size: 20px;
-    color: $menuText;
-    span {
-      margin-left: 17px;
+    min-height: 192px;
+    .add-accout {
+      padding: 24px 0;
+      border: 1px dashed #dfdfdf;
+      margin: 24px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 20px;
+      color: $menuText;
+      span {
+        margin-left: 17px;
+      }
     }
   }
 }
