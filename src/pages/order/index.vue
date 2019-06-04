@@ -93,7 +93,7 @@
               <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4&&isRefund===1">
+              <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4 && scope.row.isRefund===1">
                 <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
               </el-tooltip>
               <el-tooltip content="补偿券" placement="top" effect="dark" v-if="scope.row.shopState === 2">
