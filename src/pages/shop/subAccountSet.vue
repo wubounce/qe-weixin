@@ -23,7 +23,7 @@
               </el-col>
               <el-col :span="9">
                 <el-form-item :prop="'detailJson.' + index + '.proportion'" :rules='dynamicValidateFormRules.proportion' class="proportion-input">
-                  <el-input v-model.trim="item.proportion" maxlength="5" placeholder="请输入"></el-input><span>%</span>
+                  <el-input v-model.trim="item.proportion" maxlength="6" placeholder="请输入"></el-input><span>%</span>
                 </el-form-item>
               </el-col>
               <el-col :span="7">
@@ -73,7 +73,7 @@ export default {
       },
       dynamicValidateFormRules: {
         shareOperaterName: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100)$/, message: '分账比例请输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
+        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100|100.0|100.00)$/, message: '分账比例请输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
       }
     };
   },

@@ -141,10 +141,10 @@
               </el-popover>
               <span v-else>{{ detailData.discountTotalPirce | tofixd}}</span>
             </div>
-            <div><span>实付金额(元)：</span>{{detailData.payPrice}}</div>
+            <div><span>实付金额(元)：</span>{{detailData.profitPrice}}</div>
           </li>
           <li>
-            <div><span>收益金额(元)：</span>{{detailData.profitPrice}}</div>
+            <div><span>收益金额(元)：</span>{{detailData.payPrice}}</div>
             <div><span>支付方式 ：</span>{{detailData.payType | PayType}}</div>
           </li>
           <li>
