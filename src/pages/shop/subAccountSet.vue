@@ -43,7 +43,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-import qs from 'qs';
 import { delay } from '@/utils/tools';
 import { getUserInfoInLocalstorage } from '@/utils/auth';
 import { revenueSharingAddFun, revenueSharingBatchAddFun, getByUserOperatornameFun, getrevenueSharingFun } from '@/service/shop';
@@ -73,7 +72,7 @@ export default {
       },
       dynamicValidateFormRules: {
         shareOperaterName: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100|100.0|100.00)$/, message: '分账比例请输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
+        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100|100.0|100.00)$/, message: '输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
       }
     };
   },
@@ -91,7 +90,7 @@ export default {
           payload.shopId = this.shopIds.join(',');
         }
       }
-      let res = await getrevenueSharingFun(qs.stringify(payload));
+      let res = await getrevenueSharingFun(payload);
       let detail = res ? res.detail : [];
       this.dynamicValidateForm.detailJson = detail.map(item => {
         return {
@@ -113,7 +112,7 @@ export default {
         this.loading = true;
         let payload = { username: query };
         delay(async () => {
-          let res = await getByUserOperatornameFun(qs.stringify(payload));
+          let res = await getByUserOperatornameFun(payload);
           this.options = res ? [{ shareOperaterName: res.userName, shareOperaterId: res.id }] : {};
           this.loading = false;
         }, 200);
@@ -233,8 +232,8 @@ export default {
     color: #262626;
   }
   li {
-    height: 54px;
-    line-height: 54px;
+    height: 60px;
+    line-height: 60px;
     padding: 0 10px;
     border-bottom: 1px solid $under_line;
   }

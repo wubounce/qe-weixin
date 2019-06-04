@@ -196,7 +196,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-import qs from 'qs';
 import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi, getrevenueSharingFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
 import { isReserveType, isHasVipType, isDiscountType, subAccountType } from '@/utils/mapping';
@@ -387,7 +386,7 @@ export default {
     async lookShopDetail(row) {
       let payload = { shopId: row.shopId };
       let res = await shopDetailFun(payload);
-      let resSharingDetail = await getrevenueSharingFun(qs.stringify(payload));
+      let resSharingDetail = await getrevenueSharingFun(payload);
       this.detailData = res || {};
       this.revenueSharingDetail = resSharingDetail || null;
     },
