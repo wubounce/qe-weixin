@@ -145,7 +145,11 @@ export default {
               this.$Message.error('不允许添加操作者账号');
               return;
             }
-            if (proportionTotal <= 0 || proportionTotal > 100) {
+            if (proportionTotal <= 0.0) {
+              this.$Message.error('总比例不可小于0%，请重新输入');
+              return;
+            }
+            if (proportionTotal > 100.0) {
               this.$Message.error('总比例大于100%，请重新输入');
               return;
             }
