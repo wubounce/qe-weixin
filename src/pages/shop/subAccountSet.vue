@@ -72,7 +72,7 @@ export default {
       },
       dynamicValidateFormRules: {
         shareOperaterName: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.\d{1,2}|100|100.0|100.00)$/, message: '输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
+        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2}|100|100.0|100.00)$/, message: '输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
       }
     };
   },
