@@ -135,7 +135,7 @@
         </div>
       </el-dialog>
       <!-- 店铺设备数量 -->
-      <shop-inmachine-list :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></shop-inmachine-list>
+      <machines-in-shop :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></machines-in-shop>
       <!-- 分账设置 -->
       <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" :isAllChecked.sync="isAllChecked" :shopIds="shopIds" @getShopDataToTable="getShopDataToTable"></sub-account-set>
       <!-- </el-dialog> -->
@@ -201,7 +201,7 @@ import { exportExcel } from '@/service/common';
 import { isReserveType, isHasVipType, isDiscountType, subAccountType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import Area from '@/components/Area';
-import shopInmachineList from './shopInmachineList';
+import machinesInShop from './machinesInShop';
 import subAccountSet from './subAccountSet';
 import PagerMixin from '@/mixins/PagerMixin';
 export default {
@@ -209,7 +209,7 @@ export default {
   components: {
     Pagination,
     Area,
-    shopInmachineList,
+    machinesInShop,
     subAccountSet
   },
   data() {

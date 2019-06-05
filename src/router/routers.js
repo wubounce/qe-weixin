@@ -67,7 +67,7 @@ export default [
     children: [
       {
         path: 'profit',
-        component: () => import('@/pages/report/index'),
+        component: () => import('@/pages/report/profitReport/index'),
         name: 'profit',
         meta: { title: '营收报表', noCache: true }
       },
@@ -109,13 +109,13 @@ export default [
     children: [
       {
         path: 'list',
-        component: () => import('@/pages/device/index'),
+        component: () => import('@/pages/deviceManage/deviceList/index'),
         name: 'devicelist',
         meta: { title: '设备列表', noCache: true }
       },
       {
         path: 'batchStart',
-        component: () => import('@/pages/device/batchStart'),
+        component: () => import('@/pages/deviceManage/deviceBatch/index'),
         name: 'batchStart',
         meta: { title: '设备批量启动', noCache: true }
       }
@@ -160,25 +160,25 @@ export default [
     children: [
       {
         path: 'discount',
-        component: () => import('@/pages/marketing/tLimitedDiscount'),
+        component: () => import('@/pages/marketingManage/timeLimitedDiscount/index'),
         name: 'discount',
         meta: { title: '限时优惠', noCache: true }
       },
       {
         path: 'couponsent',
-        component: () => import('@/pages/marketing/couponSent'),
+        component: () => import('@/pages/marketingManage/couponSent/index'),
         name: 'couponsent',
         meta: { title: '优惠券发放', noCache: true }
       },
       {
         path: 'couponactive',
-        component: () => import('@/pages/marketing/couponActive'),
+        component: () => import('@/pages/marketingManage/couponActive/index'),
         name: 'couponactive',
         meta: { title: '优惠券活动', noCache: true }
       },
       {
         path: 'couponrecord',
-        component: () => import('@/pages/marketing/couponRecord'),
+        component: () => import('@/pages/marketingManage/couponRecord/index'),
         name: 'couponrecord',
         meta: { title: '优惠券记录', noCache: true }
       }

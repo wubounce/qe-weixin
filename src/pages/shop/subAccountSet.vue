@@ -240,7 +240,7 @@ export default {
     cursor: pointer;
   }
   .accout-scroll {
-    min-height: 240px;
+    height: 240px;
     overflow-y: auto;
   }
   .begin-add-accout {
