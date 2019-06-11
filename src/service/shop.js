@@ -53,7 +53,7 @@ export const revenueSharingAddFun = payload => fetch.post(revenueSharingAddApi, 
 export const revenueSharingBatchAddFun = payload => fetch.post(revenueSharingBatchAddApi, payload);
 
 // 获取店铺分账信息接口
-export const getrevenueSharingFun = payload => fetch.get(getrevenueSharingApi, { params: payload });
+export const getrevenueSharingFun = payload => fetch.post(getrevenueSharingApi, payload)
 
 // 根据账号获取运营商
-export const getByUserOperatornameFun = payload => fetch.get(getByUserOperatornameApi, { params: payload }, { headers: { Accept: '/' } })
+export const getByUserOperatornameFun = payload => fetch.post(getByUserOperatornameApi, payload)
