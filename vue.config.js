@@ -2,7 +2,7 @@ const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
-function resolve(dir) {
+function resolve (dir) {
   return path.join(__dirname, dir);
 }
 
@@ -72,10 +72,7 @@ module.exports = {
     // config.resolve.alias.set('@', resolve('src')).set('static', path.join(__dirname, 'public/static'));
     config.resolve.alias
       .set('@', resolve('src'))
-      .set(
-        'static',
-        'https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/'
-      );
+      .set('assets', resolve('src/assets'));
 
     //打包文件带hash
     config.output.filename('[name].[hash].js').end();

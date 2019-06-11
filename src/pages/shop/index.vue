@@ -16,6 +16,12 @@
       <el-form-item label="地址：" prop="address">
         <el-input v-model.trim="searchData.address" clearable placeholder="请输入"></el-input>
       </el-form-item>
+      <el-form-item label="分账配置：" prop="type">
+        <el-select v-model="searchData.isRevenueSharing " clearable placeholder="请选择">
+          <el-option label="全部" value=""></el-option>
+          <el-option v-for="(name, id) in subAccountType" :key="id" :label="name" :value="id"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="searchForm">查 询</el-button>
         <el-button @click="resetSearchForm('searchForm')">重 置</el-button>
@@ -24,9 +30,11 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="onAddorEditShop">新增店铺</el-button>
+
         <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
-      <el-table :data="shopDataToTable" style="width: 100%">
+      <el-table :data="shopDataToTable" ref="shopDataToTable" style="width: 100%" @selection-change="handleSelectionChange" :header-cell-class-name="celClass">
+        <el-table-column type="selection" width="55" :selectable="checkboxInit"></el-table-column>
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="shopName" label="店铺名称" show-overflow-tooltip>
           <template slot-scope="scope">
@@ -40,7 +48,7 @@
             <span class="rowstyle" @click="getDeciveFromShop(scope.row)">{{scope.row.machineCount}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="profit" label="累计收益(元)">
+        <el-table-column header-align="left" prop="profit" label="累计收益(元)" min-width="100">
           <template slot-scope="scope">
             <span>{{scope.row.profit | tofixd}}</span>
           </template>
@@ -50,40 +58,87 @@
             <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" fixed="right" label="操作">
+        <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置">
+          <template slot-scope="scope">
+            {{scope.row.isRevenueSharing | subAccountType}}
+          </template>
+        </el-table-column>
+        <el-table-column header-align="left" fixed="right" label="操作" min-width="160">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <i class="el-icon-edit" @click="onAddorEditShop(scope.row)"></i>
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="onAddorEditShop(scope.row)" />
+            </el-tooltip>
+            <el-tooltip content="分账配置" placement="top" effect="dark" v-if="scope.row.attribute === 1">
+              <svg-icon icon-class="zhangmu" class="icon-zhangmu" @click="subAccountSet(scope.row)" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <i class="el-icon-delete" @click="handleDelete(scope.row.shopId)"></i>
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
-      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
+      <div>
+        <div style="float:left;padding-left:14px;">
+          <el-checkbox v-model="isAllChecked" @change="handleCheckAllChange">全选</el-checkbox>
+          <el-button type="primary" :disabled="multipleSelection.length<=0" @click="subAccountSet">
+            <svg-icon icon-class="rmb" style="margin-right: 5px;" />分账配置</el-button>
+        </div>
+        <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
+      </div>
       <!-- 店铺详情 -->
-      <el-dialog title="店铺详情" :visible.sync="detailDialogVisible" width="540px">
+      <el-dialog title="店铺详情" :visible.sync="detailDialogVisible" width="768px">
+        <h3 class="detail-base-title">基本信息</h3>
         <ul class="deatil-list">
-          <li><span>店铺名称：</span>{{detailData.shopName}}</li>
-          <li><span>店铺类型：</span>{{detailData.shopTypeName}}</li>
-          <li><span>店铺地址：</span>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</li>
-          <li><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</li>
-          <li><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</li>
-          <li><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</li>
-          <li><span>营业时间：</span>{{detailData.workTime}}</li>
-          <li><span>限时优惠：</span>{{detailData.isDiscount | isDiscountType}}</li>
-          <li><span>VIP卡：</span>{{detailData.hasVip | isHasVipType}}</li>
-          <li><span>VIP数量：</span>{{detailData.vipCount}}个</li>
-          <li><span>客服电话：</span>{{detailData.serviceTelephone}}</li>
-          <li><span>创建人：</span>{{detailData.createUser}}</li>
-          <li><span>创建时间：</span>{{detailData.createTime}}</li>
+          <li>
+            <div><span>店铺名称：</span>{{detailData.shopName}}</div>
+            <div><span>店铺类型：</span>{{detailData.shopTypeName}}</div>
+          </li>
+          <li>
+            <div><span>店铺地址：</span><i>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</i></div>
+            <div><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</div>
+          </li>
+          <li>
+            <div><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</div>
+            <div><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</div>
+          </li>
+          <li>
+            <div><span>营业时间：</span>{{detailData.workTime}}</div>
+            <div> <span>限时优惠：</span>{{detailData.isDiscount | isDiscountType}}</div>
+          </li>
+          <li>
+            <div><span>VIP卡：</span>{{detailData.hasVip | isHasVipType}}</div>
+            <div><span>VIP数量：</span>{{detailData.vipCount}}个</div>
+          </li>
+          <li>
+            <div><span>客服电话：</span>{{detailData.serviceTelephone}}</div>
+            <div><span>创建人：</span>{{detailData.createUser}}</div>
+          </li>
+          <li>
+            <div><span>创建时间：</span>{{detailData.createTime}}</div>
+          </li>
         </ul>
+        <div v-if="revenueSharingDetail">
+          <h3 class="detail-base-title" style="border:none">分账信息</h3>
+          <div class="revent-share"><span>创建时间：</span>{{revenueSharingDetail.createdAt}}</div>
+          <el-table :data="revenueSharingDetail.detail" style="width: 100%" max-height="300">
+            <el-table-column prop="shareOperaterId" label="分账账户">
+              <template slot-scope="scope">
+                <span>{{scope.row.shareOperaterMobile}}({{scope.row.shareOperaterName}})</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="proportion" label="分账比例">
+              <template slot-scope="scope">
+                <span>{{scope.row.proportion}}%</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </el-dialog>
       <!-- 店铺设备数量 -->
-      <el-dialog :title="deviceDialogTitle" :visible.sync="deviceDialogVisible" width="1100px">
-        <shop-inmachine-list :shopId="shopIdToMachine" v-if="deviceDialogVisible"></shop-inmachine-list>
-      </el-dialog>
+      <machines-in-shop :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></machines-in-shop>
+      <!-- 分账设置 -->
+      <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" :isAllChecked.sync="isAllChecked" :shopIds="shopIds" @getShopDataToTable="getShopDataToTable"></sub-account-set>
+      <!-- </el-dialog> -->
       <!-- 新增编辑店铺 -->
       <el-dialog :title="addOrEditShopTitle" :visible.sync="addShopDialogVisible" @close="resetaddOrEditShopForm('addShopFrom')" width="1100px" top="20px">
         <el-form ref="addShopFrom" :model="addShopFrom" :rules="addShopRules" class="add-shop-from" label-width="160px" v-if="addShopDialogVisible">
@@ -141,19 +196,21 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi } from '@/service/shop';
+import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi, getrevenueSharingFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
-import { isReserveType, isHasVipType, isDiscountType } from '@/utils/mapping';
+import { isReserveType, isHasVipType, isDiscountType, subAccountType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import Area from '@/components/Area';
-import shopInmachineList from './shopInmachineList';
+import machinesInShop from './machinesInShop';
+import subAccountSet from './subAccountSet';
 import PagerMixin from '@/mixins/PagerMixin';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
     Area,
-    shopInmachineList
+    machinesInShop,
+    subAccountSet
   },
   data() {
     let self = this;
@@ -168,8 +225,9 @@ export default {
       shopDataToTable: [],
       detailDialogVisible: false,
       detailData: {},
+      revenueSharingDetail: null, //分账详情
       deviceDialogVisible: false,
-      shopIdToMachine: '',
+      shopIds: '', //店铺id
       deviceDialogTitle: '',
       addShopDialogVisible: false,
       addOrEditShopTitle: '新增店铺',
@@ -226,7 +284,10 @@ export default {
           }
         }
       ],
-
+      multipleSelection: [],
+      subAccountSetDialogVisible: false,
+      subAccountSetTitle: '分账批量配置',
+      isAllChecked: false,
       addShopRules: {
         shopName: [{ required: true, trigger: 'blur', message: '请输入店铺名称' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9_-]{2,16}$/, message: '店铺名称需为2-16个字，只支持中英文、_和-', trigger: 'blur' }],
         shopType: [{ required: true, message: '请选择店铺类型', trigger: 'change' }],
@@ -238,6 +299,11 @@ export default {
       }
     };
   },
+  computed: {
+    subAccountType() {
+      return subAccountType;
+    }
+  },
   filters: {
     isReserveType: val => {
       return isReserveType[val];
@@ -248,10 +314,14 @@ export default {
     isDiscountType: val => {
       return isDiscountType[val];
     },
+    subAccountType: val => {
+      return subAccountType[val];
+    },
     tofixd(val) {
       return val >= 0 ? Number(val).toFixed(2) : val;
     }
   },
+  watch: {},
   mounted() {},
   created() {
     this.getShopTypeList();
@@ -276,6 +346,33 @@ export default {
       this.$refs[formName].resetFields();
       this.getShopDataToTable();
     },
+    celClass(row) {
+      if (row.columnIndex === 0) {
+        return 'disable-selection';
+      }
+    },
+    checkboxInit(row, index) {
+      return row.attribute === 1;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+      let arr = this.shopDataToTable.filter(row => row.attribute == 1);
+      this.multipleSelection.length === arr.length ? (this.isAllChecked = true) : (this.isAllChecked = false);
+    },
+    // 全选和取消全选
+    handleCheckAllChange(val) {
+      if (val) {
+        this.multipleSelection = this.shopDataToTable.filter(row => {
+          if (row.attribute == 1) {
+            this.$refs.shopDataToTable.toggleRowSelection(row, true);
+            return row;
+          }
+        });
+      } else {
+        this.$refs.shopDataToTable.clearSelection();
+        this.multipleSelection = [];
+      }
+    },
     async getShopDataToTable() {
       let payload = Object.assign({}, this.searchData);
       payload.provinceId = payload.areas[0];
@@ -289,14 +386,16 @@ export default {
     async lookShopDetail(row) {
       let payload = { shopId: row.shopId };
       let res = await shopDetailFun(payload);
-      this.detailData = res;
+      let resSharingDetail = await getrevenueSharingFun(payload);
+      this.detailData = res || {};
+      this.revenueSharingDetail = resSharingDetail || null;
     },
     async getDeciveFromShop(row) {
       if (row.machineCount === 0) {
         return false;
       }
       this.deviceDialogTitle = row.shopName;
-      this.shopIdToMachine = row.shopId;
+      this.shopIds = row.shopId;
       this.deviceDialogVisible = true;
     },
     //搜索城市获取经纬度
@@ -319,6 +418,26 @@ export default {
         this.addShopRules.orderLimitMinutes[0].required = true;
         this.isOffAndOnReservePlaceholder = '请填写1到9的数字';
       }
+    },
+    subAccountSet(row = {}) {
+      if (row.shopId) {
+        this.shopIds = row.shopId;
+        this.subAccountSetTitle = '分账配置';
+      } else {
+        //批量分账
+        if (this.multipleSelection.length <= 0) {
+          this.$alert(`请勾选想要分账的店铺`, '提示', {
+            showClose: false,
+            confirmButtonText: '确定',
+            center: true
+          });
+          return false;
+        } else {
+          this.shopIds = this.multipleSelection.map(item => item.shopId);
+          this.subAccountSetTitle = '分账批量配置';
+        }
+      }
+      this.subAccountSetDialogVisible = true;
     },
     async onAddorEditShop(row = {}) {
       this.addOrEditShopTitle = '新增店铺';
@@ -404,7 +523,8 @@ export default {
     // 删除店铺
     handleDelete(shopId) {
       this.$confirm('您确定要删除该店铺?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         deleteShopFun({ shopId: shopId }).then(() => {
           this.$message.success('店铺删除成功');
@@ -412,6 +532,7 @@ export default {
         });
       });
     },
+
     exportTable() {
       let payload = Object.assign({}, this.searchData);
       payload.provinceId = payload.areas[0];
@@ -456,24 +577,56 @@ export default {
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
+.detail-base-title {
+  font-size: 16px;
+  padding: 10px 0;
+  font-weight: normal;
+}
 .deatil-list {
   padding-bottom: 15px;
   :last-child {
     border: none;
   }
   li {
-    padding: 11px;
+    padding: 11px 0;
     border-bottom: 1px solid $under_line;
+    display: flex;
+    > div {
+      width: 50%;
+    }
     span {
+      float: left;
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
       width: 70px;
+      height: 100%;
     }
+    i {
+      font-style: normal;
+    }
+  }
+}
+.revent-share {
+  margin: 15px 0;
+  span {
+    color: rgba(23, 26, 46, 0.45);
+    width: 70px;
   }
 }
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
+}
+.pagination-right {
+  width: auto;
+}
+.el-table /deep/ .disable-selection .cell .el-checkbox__inner {
+  display: none;
+  position: relative;
+}
+.el-table /deep/ .disable-selection .cell::before {
+  content: '选择';
+  position: absolute;
 }
 </style>
  

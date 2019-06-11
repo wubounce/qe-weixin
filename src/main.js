@@ -35,6 +35,7 @@ window.VueAMap.initAMapApiLoader({
 Vue.config.productionTip = true;
 Vue.prototype.$ELEMENT = { size: Cookies.get('size') || 'small' };
 Vue.prototype.$Message = Message;
+Vue.prototype.STATIC_IMAGE = process.env.VUE_APP_STATICURL;
 // Vue.use(ElementUI, {
 //   size: Cookies.get('size') || 'small' // set element-ui default size
 // });

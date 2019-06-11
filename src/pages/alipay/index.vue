@@ -32,7 +32,7 @@
             <Upload v-model="TencentAlipayForm.shopPicUrl" />
           </span>
           <span class="qie-pic">
-            <img src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/qiezhaop.jpg" alt="企鹅共享洗衣" width="146" height="146">
+            <img :src="`${STATIC_IMAGE}qiezhaop.jpg`" alt="企鹅共享洗衣" width="146" height="146">
             <span class="example">示例</span>
           </span>
         </el-form-item>
@@ -45,17 +45,17 @@
 </template>
 
 <script>
-import { validatName, validatPhone, validatEmail } from "@/utils/validate";
+import { validatName, validatPhone, validatEmail } from '@/utils/validate';
 import { handleOperatorAgentSignFun, completeAgentSign } from '@/service/login';
-import Upload from "@/components/Upload";
+import Upload from '@/components/Upload';
 export default {
-  name: "Login",
-  data () {
+  name: 'Login',
+  data() {
     const validateContactName = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('姓名不能为空'));
       } else if (!validatName(value)) {
-        callback(new Error("姓名只能输入中文"));
+        callback(new Error('姓名只能输入中文'));
       } else {
         callback();
       }
@@ -64,7 +64,7 @@ export default {
       if (!value) {
         return callback(new Error('手机号不能为空'));
       } else if (!validatPhone(value)) {
-        callback(new Error("请输入正确的手机号"));
+        callback(new Error('请输入正确的手机号'));
       } else {
         callback();
       }
@@ -73,54 +73,54 @@ export default {
       if (!value) {
         return callback(new Error('邮箱不能为空'));
       } else if (!validatEmail(value)) {
-        callback(new Error("请输入正确的邮箱"));
+        callback(new Error('请输入正确的邮箱'));
       } else {
         callback();
       }
     };
     return {
       TencentAlipayForm: {
-        alipayAccount: "",
-        contactName: "",
-        contactMobile: "",
-        contactEmail: "",
-        rate: "",
-        shopPicUrl: '',
+        alipayAccount: '',
+        contactName: '',
+        contactMobile: '',
+        contactEmail: '',
+        rate: '',
+        shopPicUrl: ''
       },
       TencentAlipayRules: {
-        alipayAccount: [{ required: true, trigger: "blur", message: '请输入支付宝账号' }],
-        contactName: [{ required: true, trigger: "blur", validator: validateContactName }],
-        contactMobile: [{ required: true, trigger: "blur", validator: validatePhone }],
-        contactEmail: [{ required: true, trigger: "blur", validator: validateEmail }],
-        shopPicUrl: [{ required: true, trigger: "blur", message: '请上传门店照片' }],
+        alipayAccount: [{ required: true, trigger: 'blur', message: '请输入支付宝账号' }],
+        contactName: [{ required: true, trigger: 'blur', validator: validateContactName }],
+        contactMobile: [{ required: true, trigger: 'blur', validator: validatePhone }],
+        contactEmail: [{ required: true, trigger: 'blur', validator: validateEmail }],
+        shopPicUrl: [{ required: true, trigger: 'blur', message: '请上传门店照片' }]
       },
-      isAlreadySign: false,
+      isAlreadySign: false
     };
   },
   components: {
-    Upload,
+    Upload
   },
-  created () {
-    this.getCompleteAgentSign()
+  created() {
+    this.getCompleteAgentSign();
     this.param = new FormData();
   },
   methods: {
-    async getCompleteAgentSign () {
-      let res = await completeAgentSign()
+    async getCompleteAgentSign() {
+      let res = await completeAgentSign();
       if (res) {
-        this.isAlreadySign = true
+        this.isAlreadySign = true;
       }
     },
-    handleTencentAlipay () {//表单提交的事件
+    handleTencentAlipay() {
+      //表单提交的事件
       this.$refs.TencentAlipayForm.validate(valid => {
         if (valid) {
-          let payload = Object.assign({}, this.TencentAlipayForm)
+          let payload = Object.assign({}, this.TencentAlipayForm);
           handleOperatorAgentSignFun(payload).then(_ => {
             this.$Message.success('提交成功');
-          })
+          });
         }
-      })
-
+      });
     }
   }
 };
@@ -154,7 +154,7 @@ export default {
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "~@/styles/variables.scss";
+@import '~@/styles/variables.scss';
 .login-container {
   height: 100%;
   width: 100%;

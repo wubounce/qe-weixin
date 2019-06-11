@@ -41,7 +41,7 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="parentTypeName" label="适用类型" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" label="优惠日期">
+        <el-table-column header-align="left" label="优惠日期" min-width="180">
           <template slot-scope="scope">
             <span>{{scope.row.noDiscountStart}}~{{scope.row.noDiscountEnd}}</span>
           </template>
@@ -51,7 +51,7 @@
             <span>{{scope.row.noWeek?scope.row.noWeek:'' | week}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="noTime" label="每日活动时段">
+        <el-table-column header-align="left" prop="noTime" label="每日活动时段" min-width="140px">
           <template slot-scope="scope">
             <span>{{scope.row.noTime === '00:00-23:59'? '全天':scope.row.noTime}}</span>
           </template>
@@ -67,13 +67,13 @@
             <el-switch v-model="scope.row.switchStatus" v-if="scope.row.expired!==2" @change="updataeStatus(scope.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" label="操作">
+        <el-table-column header-align="left" label="操作" min-width="100px">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark" v-if="scope.row.expired!==2">
-              <i class="el-icon-edit" @click="openAddBDDialog(scope.row)"></i>
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="openAddBDDialog(scope.row)" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <i class="el-icon-delete" @click="handleDeleteDiscount(scope.row)"></i>
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDeleteDiscount(scope.row)" />
             </el-tooltip>
           </template>
         </el-table-column>
@@ -113,8 +113,8 @@
             <div style="color:#bfbfbf;margin-left: 30px;">优惠折扣为用户支付时所享受的折扣</div>
           </div>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmitAddOrEditMaketFrom('addMaketFrom')">保存</el-button>
+        <el-form-item class="action">
+          <el-button type="primary" @click="onSubmitAddOrEditMaketFrom('addMaketFrom')">确定</el-button>
           <el-button @click="resetAddOrEditMaketFrom('addMaketFrom')">取消</el-button>
         </el-form-item>
       </el-form>
@@ -329,8 +329,6 @@ export default {
             this.getTimeMaketingDataToTable();
             this.resetAddOrEditMaketFrom(formName);
           });
-        } else {
-          return false;
         }
       });
     },
@@ -342,7 +340,8 @@ export default {
     handleDeleteDiscount(row) {
       let payload = { timeId: row.id };
       this.$confirm('您确定要删除该优惠?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         delMarketFun(payload).then(() => {
           this.$message.success('删除成功');
@@ -387,6 +386,11 @@ export default {
 .add-shop-from {
   padding-top: 24px;
   padding-bottom: 24px;
+  .action {
+    padding-top: 16px;
+    border-top: 1px solid $under_line;
+    text-align: right;
+  }
 }
 .add-discount {
   display: flex;
