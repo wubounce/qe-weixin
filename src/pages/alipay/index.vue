@@ -32,7 +32,7 @@
             <Upload v-model="TencentAlipayForm.shopPicUrl" />
           </span>
           <span class="qie-pic">
-            <img :src="`${staticUrl}qiezhaop.jpg`" alt="企鹅共享洗衣" width="146" height="146">
+            <img :src="`${STATIC_IMAGE}qiezhaop.jpg`" alt="企鹅共享洗衣" width="146" height="146">
             <span class="example">示例</span>
           </span>
         </el-form-item>
@@ -79,7 +79,6 @@ export default {
       }
     };
     return {
-      staticUrl: process.env.VUE_APP_STATICURL,
       TencentAlipayForm: {
         alipayAccount: '',
         contactName: '',

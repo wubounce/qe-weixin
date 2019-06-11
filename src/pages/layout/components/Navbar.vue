@@ -13,7 +13,7 @@
       </template> -->
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="`${staticUrl}logo.png`" class="user-avatar" /><span style="display: inline-block;line-height:54px;">{{userInfoIn.realName}}</span>
+          <img :src="`${STATIC_IMAGE}logo.png`" class="user-avatar" /><span style="display: inline-block;line-height:54px;">{{userInfoIn.realName}}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -48,7 +48,6 @@ export default {
   },
   data() {
     return {
-      staticUrl: process.env.VUE_APP_STATICURL,
       userInfoIn: getUserInfoInLocalstorage() ? getUserInfoInLocalstorage() : {}
     };
   },
