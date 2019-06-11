@@ -22,6 +22,7 @@ const revenueSharingAddApi = 'revenueSharing/add'; // 设置分账接口 method 
 const revenueSharingBatchAddApi = 'revenueSharing/batchAdd'; // 批量设置分账接口 method 'post'
 const getrevenueSharingApi = 'revenueSharing/get'; // 获取店铺分账信息接口 method 'get'
 const getByUserOperatornameApi = 'operator/getByUsername'; // 根据账号获取运营商 method 'get'
+const scripttimeApi = 'revenueSharing/share'; // 根据账号获取运营商 method 'get'
 
 export const areaListFun = payload => fetch.post(areaListApi, payload); //获取区域列表
 export const manageListFun = payload => fetch.post(manageListApi, payload); //店铺列表
@@ -57,3 +58,6 @@ export const getrevenueSharingFun = payload => fetch.post(getrevenueSharingApi, 
 
 // 根据账号获取运营商
 export const getByUserOperatornameFun = payload => fetch.post(getByUserOperatornameApi, payload)
+
+// 脚本时间
+export const updatescripttimeFun = payload => fetch.post(scripttimeApi, payload)
