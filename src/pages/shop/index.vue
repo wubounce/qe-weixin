@@ -30,8 +30,9 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="onAddorEditShop">新增店铺</el-button>
-
         <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
+        <el-input v-model="startAt" placeholder="格式：2019-06-20" style="width:200px;"></el-input>
+        <el-button @click="hcangeScriptTime()">调整脚本时间</el-button>
       </div>
       <el-table :data="shopDataToTable" ref="shopDataToTable" style="width: 100%" @selection-change="handleSelectionChange" :header-cell-class-name="celClass">
         <el-table-column type="selection" width="55" :selectable="checkboxInit"></el-table-column>
@@ -196,7 +197,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi, getrevenueSharingFun } from '@/service/shop';
+import { shopTypeListFun, manageListFun, shopDetailFun, addOrEditShopFun, deleteShopFun, manageListApi, getrevenueSharingFun, updatescripttimeFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
 import { isReserveType, isHasVipType, isDiscountType, subAccountType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
@@ -215,6 +216,7 @@ export default {
   data() {
     let self = this;
     return {
+      startAt: '',
       searchData: {
         shopName: '',
         type: '',
@@ -328,6 +330,10 @@ export default {
     this.getShopDataToTable();
   },
   methods: {
+    async hcangeScriptTime() {
+      let payload = { startAt: this.startAt };
+      await updatescripttimeFun(payload);
+    },
     async getShopTypeList() {
       this.shopTypeList = await shopTypeListFun();
     },
