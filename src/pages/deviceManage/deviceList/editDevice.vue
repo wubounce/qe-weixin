@@ -184,7 +184,7 @@
             <el-table-column prop="waterLevel" label="属性值">
               <template slot-scope="scope">
                 <el-form-item prop="waterLevel" class="edit-waterLevel">
-                  <el-select v-model="scope.row.waterLevel" placeholder="请选择">
+                  <el-select v-model="deviceEditForm.waterLevel" placeholder="请选择">
                     <el-option v-for="(item,index) in waterLevelList" :key="index" :label="item.name" :value="item.value"></el-option>
                   </el-select>
                 </el-form-item>
