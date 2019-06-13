@@ -362,6 +362,7 @@ export default {
         series: [
           {
             symbol: 'circle',
+            smooth: true,
             data: this.lineseriesData,
             name: '收益',
             type: 'line',
@@ -376,7 +377,7 @@ export default {
             areaStyle: {
               normal: {
                 /* eslint-disable */
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFB300' }, { offset: 1, color: '#FDFDFD' }])
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFB300' }, { offset: 1, color: '#FDFDFD' }], false)
               }
             }
           }
@@ -532,7 +533,7 @@ export default {
     min-height: 169px;
     h2 {
       font-size: 16px;
-      font-weight: normal;
+      font-weight: 600;
       padding-bottom: 17px;
       border-bottom: 1px solid $under_line;
       .svg-icon {
@@ -588,6 +589,7 @@ export default {
   .chart-title {
     width: 100%;
     overflow: hidden;
+    font-weight: 600;
   }
   .change-type {
     float: right;

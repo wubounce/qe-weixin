@@ -1,24 +1,24 @@
 <template>
   <div class="login-container">
-    <img class="login-bg" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/login_bg.png" alt="">
+    <img class="login-bg" :src="`${STATIC_IMAGE}login_bg.png`" alt="">
     <div class="login-form">
       <h3 class="title">企鹅商家管理平台</h3>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" label-position="left">
-        <img class="login-logo" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" alt="">
+        <img class="login-logo" :src="`${STATIC_IMAGE}logo.png`" alt="">
         <h4>账户密码登录</h4>
-        <img class="login-person" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/login_person.png" alt="">
+        <img class="login-person" :src="`${STATIC_IMAGE}login_person.png`" alt="">
         <el-form-item prop="userName">
           <el-input v-model="loginForm.userName" name="userName" type="text" placeholder="请输入用户名/手机号">
-            <svg-icon slot="prefix" icon-class="user" />
+            <svg-icon slot="prefix" icon-class="yonghuming" />
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input v-model="loginForm.password" name="password" type="password" placeholder="请输入密码" @keyup.enter.native="handleLogin">
-            <svg-icon slot="prefix" icon-class="password" />
+            <svg-icon slot="prefix" icon-class="mima" />
           </el-input>
         </el-form-item>
         <el-form-item class="login-btn">
-          <el-button :loading="loading" type="primary" style="width:100%;font-size:16xp;" @click.native.prevent="handleLogin">登 录</el-button>
+          <el-button :loading="loading" type="primary" style="width:100%;font-size:16px;" @click.native.prevent="handleLogin">登 录</el-button>
         </el-form-item>
       </el-form>
       <div>
@@ -91,7 +91,8 @@ export default {
                 this.getPermsInfo();
               });
               this.loading = false;
-              this.$router.push('/');
+              let redirect = this.$route.query.redirect || '/';
+              this.$router.push(redirect);
             })
             .catch(() => {
               this.loading = false;
@@ -137,10 +138,9 @@ export default {
 .login-container {
   height: 100%;
   width: 100%;
-  // background-color: $regbg;
   background: linear-gradient(180deg, rgba(255, 252, 252, 1) 0%, rgba(255, 245, 245, 1) 100%);
   position: relative;
-  border-radius: 12px;
+
   .login-bg {
     position: absolute;
     top: 250px;
@@ -152,7 +152,7 @@ export default {
   }
   .login-person {
     position: absolute;
-    bottom: -68px;
+    bottom: -65px;
     left: -89px;
   }
   .login-logo {
@@ -171,6 +171,8 @@ export default {
     top: 220px;
     left: 51%;
     transform: translateX(-50%);
+    border-radius: 12px;
+    border: 3px solid #f5f5f5;
     h4 {
       font-weight: normal;
       font-size: 16px;
@@ -181,7 +183,7 @@ export default {
     font-size: 33px;
     font-weight: 400;
     color: $text-title;
-    padding: 77px 0 69px 0;
+    padding: 42px 0 69px 0;
     text-align: center;
   }
   .register,

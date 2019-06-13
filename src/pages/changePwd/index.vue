@@ -1,14 +1,14 @@
 <template>
   <div class="register-container">
     <div class="register-form">
-      <img class="login-logo" src="https://qiekj-static.oss-cn-shanghai.aliyuncs.com/merchant-pc/images/logo.png" alt="">
+      <img class="login-logo" :src="`${STATIC_IMAGE}logo.png`" alt="">
       <h3 class="title">修改密码</h3>
       <el-form ref="changePwdForm" :model="changePwdForm" :rules="changePwdFormRules" label-position="left">
         <el-form-item prop="phone">
-          <el-input v-model="changePwdForm.phone" name="phone" type="text" disabled placeholder="用户账号" />
+          <el-input name="phone" type="text" disabled :placeholder="'用户账号'+ changePwdForm.phone" />
         </el-form-item>
         <el-form-item prop="oldPassword">
-          <el-input v-model="changePwdForm.oldPassword" name="oldPassword" type="password" placeholder="请输入原密码" />
+          <el-input v-model="changePwdForm.oldPassword" name="oldPassword" type="password" placeholder="原密码" />
         </el-form-item>
         <el-form-item prop="password">
           <el-input v-model="changePwdForm.password" name="password" type="password" placeholder="请输入新密码" />
@@ -105,6 +105,9 @@ export default {
       border-radius: 4px !important;
     }
   }
+  .is-disabled .el-input__inner {
+    background: rgba(249, 249, 249, 1) !important;
+  }
   .verify-code {
     width: 258px !important;
     float: left;
@@ -136,7 +139,6 @@ export default {
   width: 100%;
   background-color: $regbg;
   position: relative;
-  border-radius: 12px;
   .login-logo {
     position: absolute;
     top: -43px;
@@ -152,6 +154,8 @@ export default {
     max-width: 100%;
     padding: 35px 26px 60px 26px;
     margin: 120px auto;
+    border-radius: 12px;
+    border: 3px solid #f5f5f5;
     h4 {
       font-weight: normal;
       font-size: 16px;
@@ -162,7 +166,7 @@ export default {
     font-size: 33px;
     font-weight: 400;
     color: $text-title;
-    padding: 77px 0 69px 0;
+    padding: 42px 0 69px 0;
     text-align: center;
   }
 }

@@ -10,9 +10,9 @@
 </template>
 
 <script type="text/ecmascript-6">
-import dateReport from '@/pages/report/dateReport';
-import monthReport from '@/pages/report/monthReport';
-import yearReport from '@/pages/report/yearReport';
+import dateReport from './dateReport';
+import monthReport from './monthReport';
+import yearReport from './yearReport';
 export default {
   data() {
     return {

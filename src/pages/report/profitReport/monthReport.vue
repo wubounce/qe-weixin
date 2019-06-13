@@ -1,8 +1,8 @@
 <template>
   <div class="date-earing">
-    <el-form :inline="true" ref="searchForm" :model="searchData" :rules="searchDataRules" class="earing-search">
+    <el-form :inline="true" ref="searchForm" :model="searchData" class="earing-search">
       <el-form-item label="时间筛选：" prop="time">
-        <el-date-picker size="small" v-model="searchData.time" @change="checkedTime" :picker-options="pickerOptions" type="daterange" align="right" :clearable="false" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
+        <el-date-picker v-model="searchData.time" type="monthrange" @change="checkedTime" :picker-options="pickerOptions" align="right" unlink-panels :clearable="false" range-separator="~" start-placeholder="开始月份" end-placeholder="结束月份" value-format="yyyy-MM">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="店铺筛选：" prop="shopIds">
@@ -48,8 +48,11 @@ import { dayReportFun, dayReportApi } from '@/service/report';
 import { exportExcel } from '@/service/common';
 import { calMax, calMin } from '@/utils/tools';
 import ShopFilter from '@/components/Shopfilter';
+import PagerMixin from '@/mixins/PagerMixin';
+
 export default {
   name: 'date-earing',
+  mixins: [PagerMixin],
   data() {
     return {
       linechart: null,
@@ -70,15 +73,15 @@ export default {
       reportDate: [],
       pickerOptions: {
         disabledDate(time) {
-          return time.getTime() > Date.now() + 8.64e7; //如果没有后面的-8.64e6就是不可以选择今天的
+          return time.getTime() > Date.now();
         }
       },
       searchData: {
         time: [
           moment()
-            .startOf('month')
-            .format('YYYY-MM-DD'),
-          moment().format('YYYY-MM-DD')
+            .startOf('year')
+            .format('YYYY-MM'),
+          moment().format('YYYY-MM')
         ],
         shopIds: []
       }
@@ -100,12 +103,16 @@ export default {
       this.linechart = echarts.init(document.getElementById('datelinechart'));
     },
     checkedTime(val) {
-      let oneTime = new Date().setTime(new Date(val[0]).getTime());
-      let twoTime = new Date().setTime(new Date(val[1]).getTime());
-      if (oneTime + 3600 * 1000 * 24 * 31 <= twoTime) {
-        //判断开始时间+30天是否小于结束时间
+      let minDate = new Date(val[0]);
+      let maxDate = new Date(val[1]);
+      let minYear = minDate.getFullYear();
+      let minMonth = minDate.getMonth() + 1;
+      let maxYear = maxDate.getFullYear();
+      let maxMonth = maxDate.getMonth() + 1;
+      let m = maxYear * 12 + maxMonth - (minYear * 12 + minMonth);
+      if (m >= 12) {
         val = [];
-        this.$Message.error('最多查询跨度31天');
+        this.$Message.error('最多查询跨度12个月');
       }
     },
     searchForm() {
@@ -117,7 +124,7 @@ export default {
     },
     async getProfitDate(shopId = '') {
       //收益数据
-      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), dateLevel: 1 });
+      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), dateLevel: 2 });
       let res = await dayReportFun(payload);
       this.oderDataList = [];
       this.moneyDataList = [];
@@ -147,9 +154,6 @@ export default {
       let k = a.date.replace(/\-/g, '');
       let h = b.date.replace(/\-/g, '');
       return h - k;
-    },
-    getFilterShop() {
-      this.filterShopVisible = true;
     },
     getSummaries(param) {
       const { columns } = param;
@@ -192,8 +196,8 @@ export default {
       return sums;
     },
     exportTable() {
-      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), dateLevel: 1, excel: true });
-      exportExcel(dayReportApi, '日报表.xlsx', payload);
+      let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds.join(','), dateLevel: 2, excel: true });
+      exportExcel(dayReportApi, '月报表.xlsx', payload);
     }
   },
   computed: {
@@ -218,7 +222,7 @@ export default {
         grid: {
           y: 10,
           x: 0,
-          x2: 12,
+          x2: 0,
           y2: 10, //网格下方距离
           containLabel: true
         },
@@ -311,6 +315,7 @@ export default {
             type: 'line',
             yAxisIndex: 0,
             symbol: 'circle',
+            smooth: true,
             data: this.moneyDataList,
             itemStyle: {
               normal: {
@@ -322,7 +327,7 @@ export default {
             },
             areaStyle: {
               normal: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFECC9' }, { offset: 1, color: '#FDFDFD' }])
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#FFB300' }, { offset: 1, color: '#FDFDFD' }])
               }
             }
           },
@@ -331,6 +336,7 @@ export default {
             type: 'line',
             yAxisIndex: 1,
             symbol: 'circle',
+            smooth: true,
             data: this.oderDataList,
             itemStyle: {
               normal: {
@@ -353,7 +359,7 @@ export default {
   }
 };
 </script>
-
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/profitreport.scss';
 </style>
+

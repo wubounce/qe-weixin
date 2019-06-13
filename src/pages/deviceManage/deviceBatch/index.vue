@@ -26,13 +26,13 @@
       </div>
       <el-table :data="batchStartDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-        <el-table-column header-align="left" prop="shopName" label="所属店铺" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="shopName" label="所属店铺" min-width="160" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
         <el-table-column header-align="left" prop="functionName" label="启动模式"></el-table-column>
-        <el-table-column header-align="left" prop="beginTime" label="启动时间"></el-table-column>
+        <el-table-column header-align="left" prop="beginTime" label="启动时间" min-width="160"></el-table-column>
         <el-table-column header-align="left" prop="createUserName" label="创建人"></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column header-align="left" label="操作" fixed="right" width="300px">
+        <el-table-column header-align="left" prop="createTime" label="创建时间" min-width="160"></el-table-column>
+        <el-table-column header-align="left" label="操作" fixed="right" min-width="140px">
           <template slot-scope="scope">
             <el-tooltip content="启动" placement="top" effect="dark">
               <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
@@ -55,7 +55,7 @@
               <el-radio v-for="(item,index) in functionEditList" :key="index" :label="item.functionId">{{item.functionName}}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="启动时间：" prop="startTime">
+          <el-form-item label="启动时间：" class="add-batch-time" prop="startTime">
             <el-date-picker v-model="deviceBatchStartForm.startTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择">
             </el-date-picker>
           </el-form-item>
@@ -89,7 +89,7 @@
               <el-radio :label="1">定时启动</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="启动时间：" prop="startTime" class="add-batch-wrap" v-if="isNowAndTimingStartAction">
+          <el-form-item label="启动时间：" prop="startTime" class="add-batch-time" v-if="isNowAndTimingStartAction">
             <el-date-picker v-model="addDeviceBatchStartForm.startTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择">
             </el-date-picker>
           </el-form-item>
@@ -275,7 +275,8 @@ export default {
     handleDeviceStart(row) {
       let payload = { id: row.id };
       this.$confirm('您确定要立即批量启动设备?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         batchStartNowFun(payload).then(() => {
           this.$message.success('启动成功');
@@ -287,7 +288,8 @@ export default {
     handleDeviceDelete(row) {
       let payload = { id: row.id };
       this.$confirm('您确定要取消批量启动设备?', '提示', {
-        showClose: false
+        showClose: false,
+        center: true
       }).then(() => {
         delBatchStartFun(payload).then(() => {
           this.$message.success('删除成功');
@@ -303,27 +305,18 @@ export default {
   }
 };
 </script>
-<style lang="scss">
-.batch-device-edit-wrap,
-.add-batch-wrap {
-  .el-input__inner {
-    width: 220px !important;
-    padding-left: 30px !important;
-  }
-}
-</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-[class^='icon-'] {
-  width: 20px;
-  height: 20px;
-  margin-right: 20px;
-}
 .batch-device-edit-wrap {
   color: #8c8c8c;
   padding-top: 16px;
 }
+.add-batch-time /deep/ .el-input__inner {
+  width: 220px !important;
+  padding-left: 30px !important;
+}
 .batch-device-edit-action {
+  border-top: 1px solid $under_line;
   padding-top: 16px;
   padding-bottom: 16px;
   text-align: right;
