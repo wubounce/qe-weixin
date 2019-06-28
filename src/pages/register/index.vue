@@ -216,43 +216,6 @@ export default {
   }
 };
 </script>
-<style rel="stylesheet/scss" lang="scss">
-.register-container {
-  .el-input {
-    display: inline-block;
-    height: 40px;
-    width: 100%;
-    .el-input__inner {
-      width: 100% !important;
-      background: #fff !important;
-      -webkit-appearance: none !important;
-      padding-left: 12px !important;
-      color: #171a2e;
-      height: 40px;
-      border-radius: 4px !important;
-    }
-  }
-  .verify-code {
-    width: 252px !important;
-    float: left;
-  }
-  .get-code {
-    width: 102px !important;
-    margin-left: 8px;
-    padding: 12px 0;
-  }
-  .reg-btn {
-    .el-form-item__content {
-      button {
-        width: 176px !important;
-      }
-    }
-  }
-  .el-checkbox {
-    margin-right: 8px;
-  }
-}
-</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@//styles/variables.scss';
 .register-container {
@@ -260,7 +223,7 @@ export default {
   width: 100%;
   background-color: $regbg;
   position: relative;
-
+  overflow: auto;
   .login-logo {
     position: absolute;
     top: -43px;
@@ -298,6 +261,39 @@ export default {
   .agreement {
     color: $menuText;
     cursor: pointer;
+  }
+  /deep/ .el-input {
+    display: inline-block;
+    height: 40px;
+    width: 100%;
+    .el-input__inner {
+      width: 100% !important;
+      background: #fff !important;
+      -webkit-appearance: none !important;
+      padding-left: 12px !important;
+      color: #171a2e;
+      height: 40px;
+      border-radius: 4px !important;
+    }
+  }
+  /deep/ .verify-code {
+    width: 252px !important;
+    float: left;
+  }
+  /deep/ .get-code {
+    width: 102px !important;
+    margin-left: 8px;
+    padding: 12px 0;
+  }
+  .reg-btn {
+    /deep/ .el-form-item__content {
+      button {
+        width: 176px !important;
+      }
+    }
+  }
+  /deep/ .el-checkbox {
+    margin-right: 8px;
   }
 }
 </style>
