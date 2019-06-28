@@ -46,23 +46,27 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmitShopFrom('addShopFrom')">保存</el-button>
-        <el-button @click="resetaddOrEditShopForm('addShopFrom')">取消</el-button>
+        <el-button @click="modalClose()">取消</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
 </template>
 
 <script type="text/ecmascript-6">
-import { shopTypeListFun, addOrEditShopFun } from '@/service/shop';
+import { shopTypeListFun, shopDetailFun, addOrEditShopFun } from '@/service/shop';
+import Area from '@/components/Area';
 export default {
+  components: {
+    Area
+  },
   props: {
-    shopId: {
-      type: String,
-      default: ''
-    },
     visible: {
       type: Boolean,
       default: false
+    },
+    shopId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -135,13 +139,43 @@ export default {
       }
     };
   },
-  components: {},
+  mounted() {
+    if (this.shopId) {
+      this.addOrEditShopTitle = '编辑店铺';
+      this.getShopDetail();
+    }
+  },
   created() {
     this.getShopTypeList();
   },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    async getShopDetail() {
+      let payload = { shopId: this.shopId };
+      let res = await shopDetailFun(payload);
+      this.addShopFrom.shopId = res.shopId;
+      this.addShopFrom.isReserve = String(res.isReserve);
+      this.addShopFrom.workTime = res.workTime.split('-');
+      this.addShopFrom.shopName = res.shopName;
+      this.addShopFrom.shopType = Number(res.shopTypeId);
+      this.addShopFrom.provinceId = res.provinceId;
+      this.addShopFrom.cityId = res.cityId;
+      this.addShopFrom.districtId = res.districtId;
+      this.addShopFrom.address = res.address;
+      this.addShopFrom.lat = res.lat;
+      this.addShopFrom.lng = res.lng;
+      this.addShopFrom.orderLimitMinutes = res.orderLimitMinutes;
+      this.addShopFrom.organization = res.organization;
+      this.addShopFrom.serviceTelephone = res.serviceTelephone;
+      // 地区组件
+      this.addShopFrom.areas = [res.provinceId, res.cityId, res.districtId];
+      // 地图相关
+      this.center = [res.lng, res.lat];
+      this.marker.position = [res.lng, res.lat];
+      this.searchOption.city = res.cityName;
+      this.offAndOnReserve(this.addShopFrom.isReserve);
     },
     async getShopTypeList() {
       this.shopTypeList = await shopTypeListFun();
@@ -167,6 +201,11 @@ export default {
         this.isOffAndOnReservePlaceholder = '请填写1到9的数字';
       }
     },
+    getAreaName(data) {
+      if (data.length >= 2) {
+        this.searchOption.city = data[1];
+      }
+    },
     onSubmitShopFrom(formName) {
       this.$refs[formName].validate(async valid => {
         this.addShopFrom.lng && this.addShopFrom.lat ? (this.isposition = true) : (this.isposition = false);
@@ -178,26 +217,49 @@ export default {
           payload.districtId = payload.areas[2];
           payload.areas = [];
           await addOrEditShopFun(payload);
-          this.resetaddOrEditShopForm(formName);
           this.$Message.success('操作成功！');
-          this.getShopDataToTable();
+          this.modalClose();
+          this.$listeners.getShopDataToTable && this.$listeners.getShopDataToTable();
         } else {
           return false;
         }
       });
-    },
-    resetaddOrEditShopForm(formName) {
-      this.$refs[formName].resetFields();
-      this.isposition = true;
-      this.addShopFrom.areas = [];
-      this.addShopDialogVisible = false;
-    },
-    addOrEditShopfrom(formName) {
-      this.resetaddOrEditShopForm(formName);
     }
   }
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+.el-vue-search-box-container {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  width: 468px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  z-index: 10000 !important;
+}
+.add-shop-from {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.add-shop-from {
+  .shop-name /deep/ .el-input__inner {
+    width: 468px !important;
+  }
+  /deep/ .el-radio {
+    margin-right: 15px;
+  }
+  /deep/ .el-radio + .el-radio {
+    margin-left: 0px;
+  }
+}
+/deep/.el-vue-search-box-container .search-box-wrapper .search-btn {
+  display: none !important;
+}
+.map-search /deep/ .el-form-item__label:before {
+  content: '*';
+  color: #f56c6c;
+  margin-right: 4px;
+}
 </style>

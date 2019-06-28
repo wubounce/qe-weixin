@@ -368,8 +368,8 @@ export default {
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
       this.$set(this.detailData, 'waterAndChargeMachinePirce', res.functionList[0].functionPrice || 0);
+      this.$set(this.detailData, 'waterMachineNeedMinutes', res.functionList[0].needMinutes || {});
       this.$set(this.detailData, 'extraAttr', res.functionList[0].extraAttr || {});
-      this.$set(this.detailData, 'chargeNeedMinutes', res.functionList[0].needMinutes || {});
       this.deviceEditdetailForm = Object.assign({}, res);
       this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
       this.deviceEditdetailForm.functionList.forEach(item => {

@@ -17,7 +17,8 @@
     <el-tabs v-model="detailActiveTab">
       <el-tab-pane label="功能设置" name="first">
         <div v-if="detailData.notQuantitative">
-          <p style="padding:20px 0;"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce}}元/升</p>
+          <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce}}元/升</p>
+          <p class="charge-base" style="margin-bottom: 24px;"><span>流量单位：</span>{{detailData.waterMachineNeedMinutes}}ml</p>
           <el-table :data="detailData.functionList" style="width: 100%">
             <el-table-column prop="functionName" label="出水口"></el-table-column>
             <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
@@ -58,7 +59,7 @@
             </ul>
           </div>
           <el-table :data="detailData.functionList" style="width: 100%">
-            <el-table-column prop="functionName" label="出水口"></el-table-column>
+            <el-table-column prop="functionName" label="充电口"></el-table-column>
             <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
               <template slot-scope="scope">
                 <span>{{scope.row.ifOpen | ifOpenType}}</span>
