@@ -2,11 +2,11 @@
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="所属店铺：" prop="shopId">
-        <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+        <el-select v-model="searchData.shopId" placeholder="请选择">
           <el-option v-for="(item) in shopList" :key="item.shopId" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="订单编号：" prop="orderNo">
+      <el-form-item label="订单编号：" clearable prop="orderNo">
         <el-input v-model.trim="searchData.orderNo" clearable placeholder="请输入" class="order-no"></el-input>
       </el-form-item>
       <el-form-item label="用户账号：" prop="phone">
