@@ -81,7 +81,9 @@ export default {
       if (pid > 0) {
         // 选中了数据
         // 重置后面的数据为null
-        this.data = this.data.slice(0, level + 1);
+        for (let i = level + 1; i <= 2; i++) {
+          this.$set(this.data, i, null);
+        }
         // 获取下一级的数据
         this.getAreaList(pid, level + 1);
       } else {
