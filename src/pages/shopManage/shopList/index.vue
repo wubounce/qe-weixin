@@ -5,7 +5,7 @@
         <el-input v-model.trim="searchData.shopName" clearable placeholder="请输入"></el-input>
       </el-form-item>
       <el-form-item label="店铺类型：" prop="type">
-        <el-select v-model="searchData.type" clearable placeholder="请选择">
+        <el-select v-model="searchData.type" placeholder="请选择">
           <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
@@ -153,9 +153,11 @@ import machinesInShop from './machinesInShop';
 import subAccountSet from './subAccountSet';
 import addOrEditShop from './addOrEditShop';
 import PagerMixin from '@/mixins/PagerMixin';
+import Area from '@/components/Area';
 export default {
   mixins: [PagerMixin],
   components: {
+    Area,
     Pagination,
     machinesInShop,
     subAccountSet,

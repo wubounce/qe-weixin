@@ -71,6 +71,13 @@ export default {
   },
   data() {
     let self = this;
+    const validateAres = (rule, value, callback) => {
+      if (value.length < 3) {
+        callback(new Error('请选择省市区'));
+      } else {
+        callback();
+      }
+    };
     return {
       shopTypeList: [],
       addShopDialogVisible: false,
@@ -131,7 +138,7 @@ export default {
       addShopRules: {
         shopName: [{ required: true, trigger: 'blur', message: '请输入店铺名称' }, { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9_-]{2,16}$/, message: '店铺名称需为2-16个字，只支持中英文、_和-', trigger: 'blur' }],
         shopType: [{ required: true, message: '请选择店铺类型', trigger: 'change' }],
-        areas: [{ type: 'array', required: true, message: '请选择区域', trigger: 'change' }],
+        areas: [{ type: 'array', required: true, message: '请选择省市区', trigger: 'change', validator: validateAres }],
         address: [{ required: true, message: '请填写详细地址', trigger: 'blur' }],
         orderLimitMinutes: [{ required: true, message: '请填写预约时长（分钟）', trigger: 'blur' }, { pattern: /^[1-9]+\d*$/, message: '预约时长请填写1到9的数字', trigger: 'blur' }],
         workTime: [{ required: true, message: '请选择营业时间', trigger: 'change' }],
