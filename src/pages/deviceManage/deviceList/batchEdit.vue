@@ -1,7 +1,7 @@
 <template>
   <el-dialog title="批量编辑设备" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
     <el-form :model="deviceEditForm" :rules="deviceEditFormRules" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
-      <div class="base" v-if="deviceEditForm.notQuantitative===false&&deviceEditForm.subTypeId !== '435871915014357627'">
+      <div class="base" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.subTypeId !== '435871915014357627'">
         <p class="device-type">设备类型：{{deviceEditForm.parentTypeName}}<span>|</span>设备型号：{{deviceEditForm.subTypeName}}</p>
         <el-form-item label="批量编辑选择：" class="check-batch-funtion">
           <el-radio-group v-model="checkBatchFuntion">
@@ -184,17 +184,17 @@
           </ul>
         </div>
       </div>
-      <div class="waterAndChargeMachinePirce" v-if="deviceEditForm.notQuantitative">
+      <div class="waterAndChargeMachinePirce" v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
         <p class="device-type waterAndChargeMachinePirce-type">设备类型：{{deviceEditForm.parentTypeName}}</p>
         <p class="device-type waterAndChargeMachinePirce-type">设备型号：{{deviceEditForm.subTypeName}}</p>
         <div class="water-machine-pirce">
           <el-form-item label="价格设置：" prop="waterMachinePirce">
             <div class="add-discount">
               <el-input v-model.trim="deviceEditForm.waterMachinePirce" placeholder="例：1"></el-input>
-              <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
+              <span style="position: absolute;left: 220px;color:#bfbfbf;">元/{{isSupportDosage(deviceEditForm.support)?'升':'秒'}}</span>
             </div>
           </el-form-item>
-          <el-form-item label="单位流量：" prop="waterMachineNeedMinutes">
+          <el-form-item label="单位流量：" prop="waterMachineNeedMinutes" v-if="isSupportDosage(deviceEditForm.support)">
             <div class="add-discount">
               <el-input v-model.trim="deviceEditForm.waterMachineNeedMinutes" maxlength="4" placeholder="例：1"></el-input>
               <span style="position: absolute;left: 220px;color:#bfbfbf;">ml</span>
@@ -215,7 +215,9 @@
 <script type="text/ecmascript-6">
 import { getFunctionSetListFun, batchEditDetergentListFun, batchEditFun, batchEditDetergentFun } from '@/service/device';
 import { validatNum } from '@/utils/validate';
+import waterMixin from './waterMixin';
 export default {
+  mixins: [waterMixin],
   props: {
     visible: {
       type: Boolean,
@@ -352,7 +354,7 @@ export default {
               } else {
                 item.ifOpen = 0;
               }
-              if (this.deviceEditForm.notQuantitative === true) {
+              if (this.deviceEditForm.parentTypeName === '饮水机' && this.isBoiledWater(this.deviceEditForm.support)) {
                 item.functionPrice = this.deviceEditForm.waterMachinePirce;
                 item.needMinutes = this.deviceEditForm.waterMachineNeedMinutes;
               }

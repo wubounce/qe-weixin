@@ -6,14 +6,14 @@
       </el-form-item>
       <el-tabs v-model="deviceEditTab">
         <el-tab-pane label="功能设置" name="first">
-          <div v-if="deviceEditForm.notQuantitative">
+          <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
             <el-form-item label="价格设置：" prop="waterMachinePirce">
               <div class="add-discount">
                 <el-input v-model.trim="deviceEditForm.waterMachinePirce" maxlength="5" placeholder="例：1"></el-input>
-                <span style="position: absolute;left: 220px;color:#bfbfbf;">元/升</span>
+                <span style="position: absolute;left: 220px;color:#bfbfbf;">元/{{isSupportDosage(deviceEditForm.support)?'升':'秒'}}</span>
               </div>
             </el-form-item>
-            <el-form-item label="单位流量：" prop="waterMachineNeedMinutes">
+            <el-form-item label="单位流量：" prop="waterMachineNeedMinutes" v-if="isSupportDosage(deviceEditForm.support)">
               <div class="add-discount">
                 <el-input v-model.trim="deviceEditForm.waterMachineNeedMinutes" maxlength="5" placeholder="例：1"></el-input>
                 <span style="position: absolute;left: 220px;color:#bfbfbf;">ml</span>
@@ -28,7 +28,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <p class="water-tip">1、关闭出水口开关用户则无法使用对应出水口接水 <br />2、单位流量为设备流量计每转1圈的流量</p>
+            <p class="water-tip">1、关闭出水口开关用户则无法使用对应出水口接水 <br /><span v-if="isSupportDosage(deviceEditForm.support)">2、单位流量为设备流量计每转1圈的流量</span></p>
           </div>
           <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
             <el-form-item label="充电单价：" prop="chargeMachinePirce">
@@ -134,7 +134,7 @@
             </el-table>
             <p class="water-tip">关闭充电口开关用户则无法使用对应充电口充电</p>
           </div>
-          <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="deviceEditForm.notQuantitative===false&&deviceEditForm.subTypeId !== '435871915014357627'">
+          <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.subTypeId !== '435871915014357627'">
             <el-table-column prop="functionName" label="功能"></el-table-column>
             <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
               <template slot-scope="scope">
@@ -227,7 +227,9 @@
 <script type="text/ecmascript-6">
 import { deviceAddorEditFun } from '@/service/device';
 import { validatNum } from '@/utils/validate';
+import waterMixin from './waterMixin';
 export default {
+  mixins: [waterMixin],
   props: {
     visible: {
       type: Boolean,
@@ -337,7 +339,7 @@ export default {
             } else {
               item.ifOpen = 0;
             }
-            if (this.deviceEditForm.notQuantitative === true) {
+            if (this.deviceEditForm.parentTypeName === '饮水机' && this.isBoiledWater(this.deviceEditForm.support)) {
               //开水机
               item.functionPrice = this.deviceEditForm.waterMachinePirce;
               item.needMinutes = this.deviceEditForm.waterMachineNeedMinutes;

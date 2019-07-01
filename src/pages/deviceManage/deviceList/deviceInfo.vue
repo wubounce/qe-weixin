@@ -16,9 +16,9 @@
     <h3 class="detail-base-title" style="border:none">功能属性</h3>
     <el-tabs v-model="detailActiveTab">
       <el-tab-pane label="功能设置" name="first">
-        <div v-if="detailData.notQuantitative">
-          <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce}}元/升</p>
-          <p class="charge-base" style="margin-bottom: 24px;"><span>流量单位：</span>{{detailData.waterMachineNeedMinutes}}ml</p>
+        <div v-if="detailData.parentTypeName === '饮水机'&&isBoiledWater(detailData.support)">
+          <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce}}元/{{isSupportDosage(detailData.support)?'升':'秒'}}</p>
+          <p class="charge-base" style="margin-bottom: 24px;" v-if="isSupportDosage(detailData.support)"><span>流量单位：</span>{{detailData.waterMachineNeedMinutes}}ml</p>
           <el-table :data="detailData.functionList" style="width: 100%">
             <el-table-column prop="functionName" label="出水口"></el-table-column>
             <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
@@ -67,7 +67,7 @@
             </el-table-column>
           </el-table>
         </div>
-        <el-table :data="detailData.functionList" style="width: 100%" v-if="detailData.notQuantitative===false&&detailData.subTypeId !== '435871915014357627'">
+        <el-table :data="detailData.functionList" style="width: 100%" v-if="isBoiledWater(detailData.support)===false&&detailData.subTypeId !== '435871915014357627'">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟"></el-table-column>
           <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
@@ -111,7 +111,9 @@
 
 <script type="text/ecmascript-6">
 import { communicateType, ifOpenType, waterStatus } from '@/utils/mapping';
+import waterMixin from './waterMixin';
 export default {
+  mixins: [waterMixin],
   props: {
     detailData: {
       type: Object,
@@ -140,7 +142,6 @@ export default {
       return waterStatus[val];
     }
   },
-  components: {},
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
