@@ -105,34 +105,6 @@ export default {
   }
 };
 </script>
-<style rel="stylesheet/scss" lang="scss">
-.login-container {
-  .el-input {
-    display: inline-block;
-    height: 40px;
-    width: 100%;
-    .el-input__inner {
-      width: 100% !important;
-      background: #fff !important;
-      -webkit-appearance: none !important;
-      padding-left: 36px !important;
-      color: #171a2e;
-      height: 40px;
-      border-radius: 4px !important;
-    }
-  }
-  .login-btn {
-    .el-form-item__content {
-      button {
-        height: 40px;
-      }
-    }
-  }
-  .el-input__prefix {
-    left: 15px;
-  }
-}
-</style>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .login-container {
@@ -140,6 +112,7 @@ export default {
   width: 100%;
   background: linear-gradient(180deg, rgba(255, 252, 252, 1) 0%, rgba(255, 245, 245, 1) 100%);
   position: relative;
+  overflow: auto;
 
   .login-bg {
     position: absolute;
@@ -193,6 +166,30 @@ export default {
   }
   .forget-pwd {
     float: right;
+  }
+  /deep/ .el-input {
+    display: inline-block;
+    height: 40px;
+    width: 100%;
+    /deep/ .el-input__inner {
+      width: 100% !important;
+      background: #fff !important;
+      -webkit-appearance: none !important;
+      padding-left: 36px !important;
+      color: #171a2e;
+      height: 40px;
+      border-radius: 4px !important;
+    }
+  }
+  .login-btn {
+    /deep/ .el-form-item__content {
+      button {
+        height: 40px;
+      }
+    }
+  }
+  /deep/ .el-input__prefix {
+    left: 15px;
   }
 }
 </style>

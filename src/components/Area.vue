@@ -70,7 +70,7 @@ export default {
       return areaListFun({ parentId: pid }).then(resp => {
         // 三级类型，如果不存在，就用二级类型
         if (level === 2 && resp.length === 0) {
-          resp = [this.list[1].find(item => item.id * 1 === pid * 1)];
+          resp = [this.list[1].find(item => item.areaId * 1 === pid * 1)];
         }
         // 更新数组需要使用$set
         this.$set(this.list, level, resp);
@@ -81,17 +81,17 @@ export default {
       if (pid > 0) {
         // 选中了数据
         // 重置后面的数据为null
-        this.data = this.data.slice(0, level);
+        this.data.length = level + 1;
         // 获取下一级的数据
         this.getAreaList(pid, level + 1);
       } else {
         // 选中了不限
         // 重置后面的数据列表为空array,重置后面的数据为null
-        this.data = this.data.slice(0, level);
-        this.dataName = this.dataName.slice(0, level);
         for (let i = level + 1; i <= 2; i++) {
           this.$set(this.list, i, []);
         }
+        this.data.length = level + 1;
+        this.dataName.length = level + 1;
       }
     }
   },

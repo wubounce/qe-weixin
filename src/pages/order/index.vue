@@ -1,7 +1,12 @@
 <template>
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="订单编号：" prop="orderNo">
+      <el-form-item label="所属店铺：">
+        <el-select v-model="searchData.shopId" placeholder="请选择">
+          <el-option v-for="(item) in shopList" :key="item.shopId" :label="item.shopName" :value="item.shopId"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="订单编号：" clearable prop="orderNo">
         <el-input v-model.trim="searchData.orderNo" clearable placeholder="请输入" class="order-no"></el-input>
       </el-form-item>
       <el-form-item label="用户账号：" prop="phone">
@@ -16,7 +21,7 @@
           <el-option v-for="(name, id) in orderStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="日期筛选：" prop="time">
+      <el-form-item label="日期筛选：">
         <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
@@ -229,6 +234,7 @@
 <script type="text/ecmascript-6">
 import { orderListFun, orderDetailFun, compensateFun, machineResetFun, machineBootFun, ordeRrefundFun, isReleaseCompensateFun } from '@/service/order';
 import { getlistParentTypeFun } from '@/service/device';
+import { shopListFun } from '@/service/report';
 import { orderStatus, PayType } from '@/utils/mapping';
 import { validatPrice, validatNum } from '@/utils/validate';
 import Pagination from '@/components/Pager';
@@ -289,6 +295,7 @@ export default {
     };
     return {
       searchData: {
+        shopId: '',
         orderNo: '',
         phone: '',
         machineName: '',
@@ -321,7 +328,8 @@ export default {
         compensateNumber: [{ trigger: 'blur', validator: validateCompensateNumber }]
       },
       machineParentTypeList: [],
-      hh: false
+      hh: false,
+      shopList: []
     };
   },
   filters: {
@@ -344,9 +352,15 @@ export default {
   },
   mounted() {},
   created() {
-    this.getOrderDataToTable();
+    this.getShopList();
   },
   methods: {
+    async getShopList() {
+      let res = await shopListFun();
+      this.shopList = res;
+      this.searchData.shopId = res.length > 0 ? res[0].shopId : '';
+      this.getOrderDataToTable();
+    },
     handlePagination(data) {
       this.searchData = Object.assign(this.searchData, data);
       this.getOrderDataToTable();
