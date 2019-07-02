@@ -378,6 +378,7 @@ export default {
       this.searchData.page = 1;
       this.total = 0;
       this.$refs[formName].resetFields();
+      this.searchData.shopId = this.shopList.length > 0 ? this.shopList[0].shopId : '';
       this.searchData.shopId && this.getOrderDataToTable();
     },
     async getmachineParentType(shopId = '') {
