@@ -359,13 +359,17 @@ export default {
       let res = await shopListFun();
       this.shopList = res;
       this.searchData.shopId = res.length > 0 ? res[0].shopId : '';
-      this.getOrderDataToTable();
+      this.searchData.shopId && this.getOrderDataToTable();
     },
     handlePagination(data) {
       this.searchData = Object.assign(this.searchData, data);
       this.getOrderDataToTable();
     },
     searchForm() {
+      if (!this.searchData.shopId) {
+        this.$Message.error('请选择店铺');
+        return false;
+      }
       this.searchData.page = 1;
       this.total = 0;
       this.getOrderDataToTable();
@@ -374,7 +378,7 @@ export default {
       this.searchData.page = 1;
       this.total = 0;
       this.$refs[formName].resetFields();
-      this.getOrderDataToTable();
+      this.searchData.shopId && this.getOrderDataToTable();
     },
     async getmachineParentType(shopId = '') {
       //获取设备类型
