@@ -28,7 +28,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <p class="water-tip">1、关闭出水口开关用户则无法使用对应出水口接水 <br /><span v-if="isSupportDosage(deviceEditForm.support)">2、单位流量为设备流量计每转1圈的流量</span></p>
+            <p class="water-tip"><span v-if="isSupportDosage(deviceEditForm.support)">1、</span>关闭出水口开关用户则无法使用对应出水口接水 <br /><span v-if="isSupportDosage(deviceEditForm.support)">2、单位流量为设备流量计每转1圈的流量</span></p>
           </div>
           <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
             <el-form-item label="充电单价：" prop="chargeMachinePirce">
