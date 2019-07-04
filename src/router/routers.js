@@ -94,7 +94,7 @@ export default [
     children: [
       {
         path: 'list',
-        component: () => import('@/pages/shop/index'),
+        component: () => import('@/pages/shopManage/shopList/index'),
         name: 'shoplist',
         meta: { title: '店铺列表', noCache: true }
       }
@@ -115,7 +115,7 @@ export default [
       },
       {
         path: 'batchStart',
-        component: () => import('@/pages/deviceManage/deviceBatch/index'),
+        component: () => import('@/pages/deviceManage/deviceBatchStart/index'),
         name: 'batchStart',
         meta: { title: '设备批量启动', noCache: true }
       }
@@ -130,7 +130,7 @@ export default [
     children: [
       {
         path: 'list',
-        component: () => import('@/pages/order/index'),
+        component: () => import('@/pages/orderManage/orderList/index'),
         name: 'orderlist',
         meta: { title: '订单列表', noCache: true }
       }
@@ -145,7 +145,7 @@ export default [
     children: [
       {
         path: 'list',
-        component: () => import('@/pages/member/index'),
+        component: () => import('@/pages/memberManage/memberList/index'),
         name: 'memberlist',
         meta: { title: '人员列表', noCache: true }
       }

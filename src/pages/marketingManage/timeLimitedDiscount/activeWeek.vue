@@ -39,15 +39,18 @@ export default {
     };
   },
   created() {
-    let tmpWeekList = this.activeWeek ? this.activeWeek.split(',') : [];
-    if (Number(this.activeWeek) !== 8 && Number(this.activeWeek) !== 9 && tmpWeekList.length > 1) {
-      this.customWeekCheckList = this.activeWeek ? this.activeWeek.split(',') : [];
-      this.activeWeek = 10;
-    } else {
-      this.activeWeek = Number(this.value);
-    }
+    this.initweek();
   },
   methods: {
+    initweek() {
+      let tmpWeekList = this.activeWeek ? String(this.activeWeek).split(',') : [];
+      if (Number(this.activeWeek) !== 8 && Number(this.activeWeek) !== 9 && tmpWeekList.length > 1) {
+        this.customWeekCheckList = this.activeWeek ? this.activeWeek.split(',') : [];
+        this.activeWeek = 10;
+      } else {
+        this.activeWeek = Number(this.value);
+      }
+    },
     handleClose(e) {
       this.customWeekCheckList = [];
       this.visibleModel = false;
@@ -75,6 +78,12 @@ export default {
       this.customWeekCheckList = [];
       this.visibleModel = false;
       this.$emit('input', '');
+    }
+  },
+  watch: {
+    value: function(val) {
+      this.activeWeek = val;
+      this.initweek();
     }
   }
 };
