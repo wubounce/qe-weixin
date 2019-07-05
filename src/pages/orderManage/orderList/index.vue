@@ -1,7 +1,12 @@
 <template>
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="订单编号：" prop="orderNo">
+      <el-form-item label="所属店铺：">
+        <el-select v-model="searchData.shopId" placeholder="请选择">
+          <el-option v-for="(item) in shopList" :key="item.shopId" :label="item.shopName" :value="item.shopId"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="订单编号：" clearable prop="orderNo">
         <el-input v-model.trim="searchData.orderNo" clearable placeholder="请输入" class="order-no"></el-input>
       </el-form-item>
       <el-form-item label="用户账号：" prop="phone">
@@ -16,7 +21,7 @@
           <el-option v-for="(name, id) in orderStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="日期筛选：" prop="time">
+      <el-form-item label="日期筛选：">
         <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
@@ -182,7 +187,7 @@
         </ul>
       </el-dialog>
       <!-- 订单补偿 -->
-      <el-dialog title="补偿券发放" :visible.sync="compensateDialogVisible" @close="resetCompensateForm('compensateFrom')" width="540px" top="20px">
+      <!-- <el-dialog title="补偿券发放" :visible.sync="compensateDialogVisible" @close="resetCompensateForm('compensateFrom')" width="540px" top="20px">
         <el-form ref="compensateFrom" :model="compensateFrom" :rules="compensateFormRules" class="add-shop-from" label-width="120px">
           <el-form-item label="发放用户：" class="shop-name">
             <span>{{compensateFrom.phone}}</span>
@@ -221,74 +226,29 @@
             <el-button @click="resetCompensateForm('compensateFrom')">取消</el-button>
           </el-form-item>
         </el-form>
-      </el-dialog>
+      </el-dialog> -->
+      <orderCompensate :visible.sync="compensateDialogVisible" v-if="compensateDialogVisible" :initCompensateForm="compensateFrom" @getOrderDataToTable="getOrderDataToTable" />
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { orderListFun, orderDetailFun, compensateFun, machineResetFun, machineBootFun, ordeRrefundFun, isReleaseCompensateFun } from '@/service/order';
-import { getlistParentTypeFun } from '@/service/device';
+import { orderListFun, orderDetailFun, machineResetFun, machineBootFun, ordeRrefundFun, isReleaseCompensateFun } from '@/service/order';
+import { shopListFun } from '@/service/report';
 import { orderStatus, PayType } from '@/utils/mapping';
-import { validatPrice, validatNum } from '@/utils/validate';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
+import orderCompensate from './orderCompensate';
 export default {
   mixins: [PagerMixin],
   components: {
-    Pagination
+    Pagination,
+    orderCompensate
   },
   data() {
-    const validateCompensateMoney = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('补偿金额不能为空'));
-      } else if (!validatPrice(value) || Number(value) === 0) {
-        callback(new Error('补偿金额必须大于0，支持两位小数'));
-      } else if (Number(value) > this.compensateFrom.markPrice) {
-        callback(new Error('补偿金额不能超过订单原价'));
-      } else if (Number(value) > 99) {
-        callback(new Error('补偿金额输入不能超过99'));
-      } else {
-        callback();
-      }
-    };
-    const validateConditionMoney = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('满减金额不能为空'));
-      } else if (!validatPrice(value) || Number(value) === 0) {
-        callback(new Error('满减金额必须大于0，支持两位小数'));
-      } else if (Number(value) > 99) {
-        callback(new Error('满减金额输入不能超过99'));
-      } else if (Number(value) !== 0 && Number(value) < Number(this.compensateFrom.compensateMoney)) {
-        callback(new Error('满减金额不能小于补偿金额'));
-      } else {
-        callback();
-      }
-    };
-    const validateValidDays = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('有效期不能为空'));
-      } else if (!validatNum(value)) {
-        callback(new Error('有效期必须为数字值'));
-      } else if (Number(value) > 999) {
-        callback(new Error('有效期不能超过999'));
-      } else {
-        callback();
-      }
-    };
-    const validateCompensateNumber = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('发放数量不能为空'));
-      } else if (!validatNum(value)) {
-        callback(new Error('发放数量必须为数字值'));
-      } else if (Number(value) > 999) {
-        callback(new Error('发放数量不能超过999'));
-      } else {
-        callback();
-      }
-    };
     return {
       searchData: {
+        shopId: '',
         orderNo: '',
         phone: '',
         machineName: '',
@@ -304,24 +264,9 @@ export default {
       refundDialogVisible: false,
       detailDialogVisible: false,
       detailData: {},
-      compensateFrom: {
-        parentTypeId: '',
-        compensateMoney: '',
-        conditionMoney: '',
-        validDays: '7',
-        compensateNumber: '1',
-        memberId: ''
-      },
+      compensateFrom: {},
       compensateDialogVisible: false,
-      compensateFormRules: {
-        parentTypeId: [{ required: true, trigger: 'change', message: '请选择适用类型' }],
-        compensateMoney: [{ trigger: 'blur', validator: validateCompensateMoney }],
-        conditionMoney: [{ trigger: 'blur', validator: validateConditionMoney }],
-        validDays: [{ trigger: 'blur', validator: validateValidDays }],
-        compensateNumber: [{ trigger: 'blur', validator: validateCompensateNumber }]
-      },
-      machineParentTypeList: [],
-      hh: false
+      shopList: []
     };
   },
   filters: {
@@ -344,14 +289,24 @@ export default {
   },
   mounted() {},
   created() {
-    this.getOrderDataToTable();
+    this.getShopList();
   },
   methods: {
+    async getShopList() {
+      let res = await shopListFun();
+      this.shopList = res;
+      this.searchData.shopId = res.length > 0 ? res[0].shopId : '';
+      this.searchData.shopId && this.getOrderDataToTable();
+    },
     handlePagination(data) {
       this.searchData = Object.assign(this.searchData, data);
       this.getOrderDataToTable();
     },
     searchForm() {
+      if (!this.searchData.shopId) {
+        this.$Message.error('请选择店铺');
+        return false;
+      }
       this.searchData.page = 1;
       this.total = 0;
       this.getOrderDataToTable();
@@ -360,12 +315,8 @@ export default {
       this.searchData.page = 1;
       this.total = 0;
       this.$refs[formName].resetFields();
-      this.getOrderDataToTable();
-    },
-    async getmachineParentType(shopId = '') {
-      //获取设备类型
-      let res = await getlistParentTypeFun({ shopId: shopId });
-      this.machineParentTypeList = res.length > 0 ? [{ id: '全部', name: '全部' }, ...res] : [];
+      this.searchData.shopId = this.shopList.length > 0 ? this.shopList[0].shopId : '';
+      this.searchData.shopId && this.getOrderDataToTable();
     },
     async getOrderDataToTable() {
       let payload = Object.assign({}, this.searchData);
@@ -390,27 +341,6 @@ export default {
       this.detailData.voucherPrice = this.detailData.voucherPrice || 0;
       let tmp = Number(this.detailData.discountPrice) + Number(this.detailData.voucherPrice);
       this.$set(this.detailData, 'discountTotalPirce', tmp.toFixed(2));
-    },
-    onSubmitCompensateFrom(formName) {
-      this.$refs[formName].validate(async valid => {
-        if (valid) {
-          let payload = Object.assign({}, this.compensateFrom);
-          payload.parentTypeId = payload.parentTypeId == '全部' ? '' : payload.parentTypeId;
-          await compensateFun(payload);
-          this.$Message.success('恭喜你，操作成功！');
-          this.$refs[formName].clearValidate();
-          this.$refs[formName].resetFields();
-          this.compensateDialogVisible = false;
-          this.getOrderDataToTable();
-        } else {
-          return false;
-        }
-      });
-    },
-    resetCompensateForm(formName) {
-      this.$refs[formName].clearValidate();
-      this.$refs[formName].resetFields();
-      this.compensateDialogVisible = false;
     },
     handleDeviceReset(row) {
       let payload = { orderNo: row.orderNo, machineId: row.machineId };
@@ -454,18 +384,8 @@ export default {
       if (Number(res.available) === 0) {
         this.$Message.error('一个订单只能补偿一次');
       } else {
+        this.compensateFrom = row;
         this.compensateDialogVisible = true;
-        this.$set(this.compensateFrom, 'shopName', row.shopName);
-        this.$set(this.compensateFrom, 'orderNo', row.orderNo);
-        this.$set(this.compensateFrom, 'phone', row.phone);
-        this.$set(this.compensateFrom, 'markPrice', row.markPrice);
-        this.compensateFrom.memberId = row.userId;
-        this.compensateFrom.parentTypeId = row.parentTypeId;
-        this.compensateFrom.compensateMoney = row.markPrice;
-        this.compensateFrom.conditionMoney = row.markPrice;
-        this.compensateFrom.validDays = 7;
-        this.compensateFrom.compensateNumber = 1;
-        this.getmachineParentType(row.shopId);
       }
     }
   }
@@ -481,15 +401,6 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.add-shop-from {
-  padding-top: 24px;
-  padding-bottom: 24px;
-  .action {
-    padding-top: 16px;
-    border-top: 1px solid $under_line;
-    text-align: right;
-  }
-}
 .detail-base-title {
   font-size: 16px;
   padding: 10px 0;

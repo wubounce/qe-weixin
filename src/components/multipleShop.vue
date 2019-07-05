@@ -153,9 +153,11 @@ export default {
     }
   },
   watch: {
-    value: function(val) {
-      this.checkedList = val;
-      // this.getShopList();
+    value: function(newval, oldval) {
+      if (newval.length > 0) {
+        this.checkedList = newval;
+        this.getShopList();
+      }
     },
     isTimeMaket: function(val) {
       this.isEditTime = val;

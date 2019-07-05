@@ -91,45 +91,6 @@ export default {
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .register-container {
-  .el-input {
-    display: inline-block;
-    height: 40px;
-    width: 100%;
-    .el-input__inner {
-      width: 100% !important;
-      background: #fff !important;
-      -webkit-appearance: none !important;
-      padding-left: 12px !important;
-      color: #171a2e;
-      height: 40px;
-      border-radius: 4px !important;
-    }
-  }
-  .is-disabled .el-input__inner {
-    background: rgba(249, 249, 249, 1) !important;
-  }
-  .verify-code {
-    width: 258px !important;
-    float: left;
-  }
-  .get-code {
-    width: 102px !important;
-    margin-left: 8px;
-    padding: 12px 0;
-  }
-  .forgot-btn {
-    .el-form-item__content {
-      display: flex;
-      button {
-        height: 40px;
-        flex: 1;
-        font-size: 16px;
-      }
-    }
-  }
-  .el-checkbox {
-    margin-right: 8px;
-  }
 }
 </style>
 <style rel="stylesheet/scss" lang="scss" scoped>
@@ -139,6 +100,7 @@ export default {
   width: 100%;
   background-color: $regbg;
   position: relative;
+  overflow: auto;
   .login-logo {
     position: absolute;
     top: -43px;
@@ -168,6 +130,33 @@ export default {
     color: $text-title;
     padding: 42px 0 69px 0;
     text-align: center;
+  }
+  /deep/ .el-input {
+    display: inline-block;
+    height: 40px;
+    width: 100%;
+    .el-input__inner {
+      width: 100% !important;
+      background: #fff !important;
+      -webkit-appearance: none !important;
+      padding-left: 12px !important;
+      color: #171a2e;
+      height: 40px;
+      border-radius: 4px !important;
+    }
+  }
+  /deep/ .is-disabled .el-input__inner {
+    background: rgba(249, 249, 249, 1) !important;
+  }
+  .forgot-btn {
+    /deep/.el-form-item__content {
+      display: flex;
+      button {
+        height: 40px;
+        flex: 1;
+        font-size: 16px;
+      }
+    }
   }
 }
 </style>
