@@ -334,7 +334,7 @@ export default {
       this.total = res.total;
     },
     async lookShopDetail(row) {
-      let payload = { orderNo: row.orderNo, memberId: row.userId };
+      let payload = { orderNo: row.orderNo, memberId: row.userId, shopId: row.shopId };
       let res = await orderDetailFun(payload);
       this.detailData = res;
       this.detailData.discountPrice = this.detailData.discountPrice || 0;
@@ -379,7 +379,7 @@ export default {
       });
     },
     async handleCompensate(row) {
-      let payload = { orderNo: row.orderNo, memberId: row.userId };
+      let payload = { orderNo: row.orderNo, memberId: row.userId, shopId: row.shopId };
       let res = await isReleaseCompensateFun(payload);
       if (Number(res.available) === 0) {
         this.$Message.error('一个订单只能补偿一次');
