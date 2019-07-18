@@ -95,7 +95,7 @@
               <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
                 <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
               </el-tooltip>
-              <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
+              <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false&&notAllowToStart(scope.row.support)">
                 <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
               </el-tooltip>
               <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4 && scope.row.isRefund===1">
@@ -187,46 +187,6 @@
         </ul>
       </el-dialog>
       <!-- 订单补偿 -->
-      <!-- <el-dialog title="补偿券发放" :visible.sync="compensateDialogVisible" @close="resetCompensateForm('compensateFrom')" width="540px" top="20px">
-        <el-form ref="compensateFrom" :model="compensateFrom" :rules="compensateFormRules" class="add-shop-from" label-width="120px">
-          <el-form-item label="发放用户：" class="shop-name">
-            <span>{{compensateFrom.phone}}</span>
-          </el-form-item>
-          <el-form-item label="适用店铺：">
-            <span>{{compensateFrom.shopName}}</span>
-          </el-form-item>
-          <el-form-item label="适用类型：" prop="parentTypeId">
-            <el-select v-model="compensateFrom.parentTypeId" placeholder="请选择" v-if="machineParentTypeList.length>0">
-              <el-option v-for="(item,index) in machineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
-            </el-select>
-            <el-select placeholder="请选择" v-else>
-              <span slot="empty" style="font-size: 12px;height: 80px;display: block;line-height: 80px;text-align: center;color: rgba(0,0,0,0.65);">此店铺下暂无适用类型</span>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="补偿金额(元)：" prop="compensateMoney">
-            <el-input v-model="compensateFrom.compensateMoney" placeholder="请填写" maxlength="5"></el-input>
-          </el-form-item>
-          <el-form-item label="满减金额(元)：" prop="conditionMoney">
-            <el-col :span="9">
-              <el-input v-model="compensateFrom.conditionMoney" placeholder="请填写" maxlength="5"></el-input>
-            </el-col>
-            <el-col :span="15" style=" color: rgba(23, 26, 46, 0.45);">满{{compensateFrom.conditionMoney}}可用 </el-col>
-          </el-form-item>
-          <el-form-item label="有效期(天)：" prop="validDays">
-            <el-col :span="9">
-              <el-input v-model="compensateFrom.validDays" placeholder="请填写" maxlength="3"></el-input>
-            </el-col>
-            <el-col :span="15" style=" color: rgba(23, 26, 46, 0.45);">有效期至{{validDaysEnd}}</el-col>
-          </el-form-item>
-          <el-form-item label="发放数量(张)：" prop="compensateNumber">
-            <span>{{compensateFrom.compensateNumber}}张</span>
-          </el-form-item>
-          <el-form-item class="action">
-            <el-button type="primary" @click="onSubmitCompensateFrom('compensateFrom')">确定</el-button>
-            <el-button @click="resetCompensateForm('compensateFrom')">取消</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog> -->
       <orderCompensate :visible.sync="compensateDialogVisible" v-if="compensateDialogVisible" :initCompensateForm="compensateFrom" @getOrderDataToTable="getOrderDataToTable" />
     </div>
   </div>
@@ -285,6 +245,16 @@ export default {
       return moment()
         .add(this.compensateFrom.validDays, 'days')
         .format('YYYY-MM-DD');
+    },
+    notAllowToStart: function() {
+      //不允许启动
+      return function(value) {
+        if ((value & 16) == 16) {
+          return false;
+        } else {
+          return true;
+        }
+      };
     }
   },
   mounted() {},
@@ -334,7 +304,7 @@ export default {
       this.total = res.total;
     },
     async lookShopDetail(row) {
-      let payload = { orderNo: row.orderNo, memberId: row.userId };
+      let payload = { orderNo: row.orderNo, memberId: row.userId, shopId: row.shopId };
       let res = await orderDetailFun(payload);
       this.detailData = res;
       this.detailData.discountPrice = this.detailData.discountPrice || 0;
@@ -379,7 +349,7 @@ export default {
       });
     },
     async handleCompensate(row) {
-      let payload = { orderNo: row.orderNo, memberId: row.userId };
+      let payload = { orderNo: row.orderNo, memberId: row.userId, shopId: row.shopId };
       let res = await isReleaseCompensateFun(payload);
       if (Number(res.available) === 0) {
         this.$Message.error('一个订单只能补偿一次');

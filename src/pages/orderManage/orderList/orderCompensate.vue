@@ -93,7 +93,8 @@ export default {
         shopName: '',
         orderNo: '',
         phone: '',
-        markPrice: ''
+        markPrice: '',
+        shopId: ''
       },
       compensateDialogVisible: false,
       compensateFormRules: {
@@ -115,13 +116,12 @@ export default {
     this.compensateFrom.parentTypeId = this.initCompensateForm.parentTypeId;
     this.compensateFrom.compensateMoney = this.initCompensateForm.markPrice;
     this.compensateFrom.conditionMoney = this.initCompensateForm.markPrice;
-    this.compensateFrom.validDays = 7;
-    this.compensateFrom.compensateNumber = 1;
     this.compensateFrom.memberId = this.initCompensateForm.userId;
     this.compensateFrom.shopName = this.initCompensateForm.shopName;
     this.compensateFrom.orderNo = this.initCompensateForm.orderNo;
     this.compensateFrom.phone = this.initCompensateForm.phone;
     this.compensateFrom.markPrice = this.initCompensateForm.markPrice;
+    this.compensateFrom.shopId = this.initCompensateForm.shopId;
     this.getmachineParentType(this.initCompensateForm.shopId);
   },
   methods: {
