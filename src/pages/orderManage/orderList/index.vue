@@ -325,7 +325,7 @@ export default {
       });
     },
     handleDeviceStart(row) {
-      let payload = { orderId: row.id, memberId: row.userId };
+      let payload = { orderId: row.id, memberId: row.userId, shopId: row.shopId };
       this.$confirm(`确认启动${row.machineName}此设备?`, '提示', {
         showClose: false,
         center: true
