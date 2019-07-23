@@ -2,7 +2,7 @@
   <div class="order-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="所属店铺：">
-        <el-select v-model="searchData.shopId" placeholder="请选择">
+        <el-select v-model="searchData.shopId" filterable placeholder="请选择">
           <el-option v-for="(item) in shopList" :key="item.shopId" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
