@@ -1,11 +1,13 @@
 <template>
   <el-dialog :title="title" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
-    <el-form label-position="left" label-width="120px" :model="addGoldDynamicForm" class="add_gold_dynamic_form">
-      <el-form-item label="适用店铺：">
-        <el-input v-model="addGoldDynamicForm.name" placeholder="请选择"></el-input>
+    <el-form label-position="left" label-width="120px" :model="addGoldDynamicForm" :rules="addGoldDynamicFormRules" class="add_gold_dynamic_form">
+      <el-form-item label="适用店铺：" prop="shopId">
+        <el-select v-model="addGoldDynamicForm.shopId" filterable clearable placeholder="请选择">
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="折扣比例(%)：">
-        <el-input v-model="addGoldDynamicForm.region" placeholder="请填写1-99的数字"></el-input>
+      <el-form-item label="折扣比例(%)：" prop="region">
+        <el-input v-model="addGoldDynamicForm.region" placeholder="请填写1-99的数字" :maxlength='4'></el-input>
       </el-form-item>
       <h2>
         <span class="gold_case">金币方案</span>
@@ -27,11 +29,11 @@
           <svg-icon icon-class="zhibiaoshuoming" />
         </el-tooltip>
       </h2>
-      <el-table :data="addGoldDynamicForm.tableData" class="gold_table">
+      <el-table :data="addGoldDynamicForm.tableData" class="gold_table" max-height="325" style="min-height:220px">
         <el-table-column prop="date" label="充值金额（元）">
           <template slot-scope="scope">
             <el-form-item :prop="'tableData.' + scope.$index + '.date'" :rules='addGoldDynamicFormRules.date'>
-              <el-input v-model.trim="scope.row.date"></el-input>
+              <el-input v-model.trim="scope.row.date" :maxlength='7'></el-input>
             </el-form-item>
           </template>
         </el-table-column>
@@ -43,13 +45,13 @@
         <el-table-column prop="address" label="赠送金币（枚）">
           <template slot-scope="scope">
             <el-form-item :prop="'tableData.' + scope.$index + '.address'" :rules='addGoldDynamicFormRules.address'>
-              <el-input v-model.trim="scope.row.address"></el-input>
+              <el-input v-model.trim="scope.row.address" :maxlength='6'></el-input>
             </el-form-item>
             <svg-icon icon-class="accountdel" class="accountdel" @click.prevent="removeDomain(scope.row)" />
           </template>
         </el-table-column>
       </el-table>
-      <div class="begin-add-accout" @click="addDomain">
+      <div class="begin-add-accout" v-if="addGoldDynamicForm.tableData.length<=9" @click="addDomain">
         <div class="add-accout">
           <i class="el-icon-plus"></i><span>添加账号</span>
         </div>
@@ -72,6 +74,12 @@ export default {
     shopIds: {
       type: String,
       default: ''
+    },
+    shopList: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
   },
   data() {
@@ -84,18 +92,16 @@ export default {
         tableData: [
           {
             date: '200',
-            name: '王小虎',
-            address: '1518 弄'
+            name: '2000',
+            address: '800'
           }
         ]
       },
-      loading: false,
-      getDetail: {},
       addGoldDynamicFormRules: {
-        date: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        address: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        shareOperaterName: [{ required: true, message: '请填写分账账户', trigger: 'change' }],
-        proportion: [{ required: true, message: '请填写分账比例', trigger: 'blur' }, { pattern: /^(([1-9][0-9]|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2}|100|100.0|100.00)$/, message: '输入1-100之间的数字，最多保留2位小数', trigger: 'blur' }]
+        date: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,2}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2}|1000|1000.0|1000.00)$/, message: '请填写1~1000之间数字', trigger: 'blur' }],
+        address: [{ required: true, message: '请填写赠送金币', trigger: 'blur' }, { pattern: /^(([0-9]{1,5})|100000)$/, message: '请填写0~100000之间数字', trigger: 'blur' }],
+        shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
+        region: [{ required: true, message: '请填折扣比例', trigger: 'blur' }, { pattern: /^([0-9]|[1-9]{1,2})(\.\d{0,1})?$/, message: '请填写1-99之间的数字,可保留一位小数', trigger: 'blur' }]
       }
     };
   },
@@ -113,10 +119,6 @@ export default {
       this.$emit('update:isAllChecked', false); // 直接修改父组件的属性
     },
     resetForm(formName) {
-      if (this.addGoldDynamicForm.tableData.length > 0) {
-        this.$refs[formName].resetFields();
-        this.$refs[formName].clearValidate();
-      }
       this.modalClose();
     },
     removeDomain(item) {
@@ -131,6 +133,16 @@ export default {
         name: '',
         address: ''
       });
+    },
+    checkRepeat(list) {
+      let isRepeat = false;
+      let newlist = list.sort();
+      for (var i = 0; i < newlist.length; i++) {
+        if (newlist[i] && newlist[i] === newlist[i + 1]) {
+          isRepeat = true;
+        }
+      }
+      return isRepeat;
     }
   }
 };
@@ -169,6 +181,9 @@ export default {
       width: 16px;
       height: 16px;
       cursor: pointer;
+    }
+    /deep/ .el-form-item__error {
+      width: 150%;
     }
   }
   .gold-tip {

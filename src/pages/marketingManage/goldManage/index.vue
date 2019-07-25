@@ -25,7 +25,7 @@
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="faceValue" label="适用店铺" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="rowstyle" @click="getActiveDetail(scope.row)">{{scope.row.merchantType | CouponType}}</span>
+            <span class="rowstyle" @click="detailDialogVisible = true;">{{scope.row.merchantType | CouponType}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="faceValue" label="折扣比例(%)" show-overflow-tooltip></el-table-column>
@@ -33,17 +33,20 @@
         <el-table-column header-align="left" label="操作" fixed="right">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <i class="el-icon-edit"></i>
+              <svg-icon icon-class="bianji" class="icon-bianji" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <i class="el-icon-delete"></i>
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
-    <add-gold v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible"></add-gold>
+    <!-- 新增方案 -->
+    <add-gold v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible" :shopList="shopList"></add-gold>
+    <!-- 金币方案详情 -->
+    <gold-infor v-if="detailDialogVisible" :visible.sync="detailDialogVisible" :shopList="shopList"></gold-infor>
   </div>
 </template>
 
@@ -52,13 +55,18 @@ import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
 import { voucherListFun } from '@/service/voucher';
 import { shopListFun } from '@/service/report';
+import { deleteShopFun } from '@/service/shop';
+import { exportExcel } from '@/service/common';
+
 import addGold from './addGold';
+import goldInfor from './goldInfor';
 
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    addGold
+    addGold,
+    goldInfor
   },
   data() {
     return {
@@ -67,7 +75,8 @@ export default {
         time: []
       },
       shopList: [],
-      addGoldDialogVisible: false
+      addGoldDialogVisible: false,
+      detailDialogVisible: false
     };
   },
   filters: {},
@@ -105,6 +114,27 @@ export default {
     },
     addGoldCase(row) {
       this.addGoldDialogVisible = true;
+    },
+    // 删除店铺
+    handleDelete(shopId) {
+      this.$confirm('您确定要删除该店铺?', '提示', {
+        showClose: false,
+        center: true
+      }).then(() => {
+        deleteShopFun({ shopId: shopId }).then(() => {
+          this.$message.success('店铺删除成功');
+          this.getShopDataToTable();
+        });
+      });
+    },
+    exportTable() {
+      let payload = Object.assign({}, this.searchData);
+      payload.provinceId = payload.areas[0];
+      payload.cityId = payload.areas[1];
+      payload.districtId = payload.areas[2];
+      payload.areas = [];
+      payload.excel = true;
+      exportExcel(manageListApi, '店铺列表.xlsx', payload);
     }
   }
 };
