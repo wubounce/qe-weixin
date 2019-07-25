@@ -4,7 +4,7 @@
       <el-form-item label="会员账号：" prop="type">
         <el-input v-model="searchData.type"></el-input>
       </el-form-item>
-      <el-form-item label="店铺：" prop="type">
+      <el-form-item label="店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" filterable clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
@@ -30,14 +30,17 @@
         <el-table-column header-align="left" label="操作" fixed="right">
           <template slot-scope="scope">
             <el-tooltip content="回收" placement="top" effect="dark">
-              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleRecycle(scope.row.shopId)" />
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
+    <!-- 金币充值 -->
     <recharge v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible" :shopList="shopList"></recharge>
+    <!-- 金币回收 -->
+    <recycle-gold v-if="recycleDialogVisible" :visible.sync="recycleDialogVisible"></recycle-gold>
   </div>
 </template>
 
@@ -49,22 +52,24 @@ import { shopListFun } from '@/service/report';
 import { deleteShopFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
 import recharge from './recharge';
+import recycleGold from './recycleGold';
 
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    recharge
+    recharge,
+    recycleGold
   },
   data() {
     return {
       searchData: {
-        phone: '',
-        time: []
+        type: '',
+        shopId: ''
       },
       shopList: [],
       addGoldDialogVisible: false,
-      detailDialogVisible: false
+      recycleDialogVisible: false
     };
   },
   filters: {},
@@ -104,16 +109,8 @@ export default {
       this.addGoldDialogVisible = true;
     },
     // 删除店铺
-    handleDelete(shopId) {
-      this.$confirm('您确定要删除该金币方案吗?', '提示', {
-        showClose: false,
-        center: true
-      }).then(() => {
-        deleteShopFun({ shopId: shopId }).then(() => {
-          this.$message.success('删除成功');
-          this.getShopDataToTable();
-        });
-      });
+    handleRecycle(row) {
+      this.recycleDialogVisible = true;
     },
     exportTable() {
       let payload = Object.assign({}, this.searchData);
