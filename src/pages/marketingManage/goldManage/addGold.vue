@@ -47,7 +47,7 @@
             <el-form-item :prop="'tableData.' + scope.$index + '.address'" :rules='addGoldDynamicFormRules.address'>
               <el-input v-model.trim="scope.row.address" :maxlength='6'></el-input>
             </el-form-item>
-            <svg-icon icon-class="accountdel" class="accountdel" @click.prevent="removeDomain(scope.row)" />
+            <svg-icon icon-class="accountdel" class="accountdel" v-if="addGoldDynamicForm.tableData.length>1" @click.prevent="removeDomain(scope.row)" />
           </template>
         </el-table-column>
       </el-table>
@@ -91,9 +91,34 @@ export default {
         type: '',
         tableData: [
           {
-            date: '200',
+            date: '5',
+            name: '500',
+            address: '100'
+          },
+          {
+            date: '10',
+            name: '1000',
+            address: '200'
+          },
+          {
+            date: '20',
             name: '2000',
-            address: '800'
+            address: '400'
+          },
+          {
+            date: '50',
+            name: '5000',
+            address: '1200'
+          },
+          {
+            date: '100',
+            name: '10000',
+            address: '2500'
+          },
+          {
+            date: '200',
+            name: '20000',
+            address: '5200'
           }
         ]
       },

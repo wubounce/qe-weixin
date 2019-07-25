@@ -29,7 +29,12 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="faceValue" label="折扣比例(%)" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="创建时间 " width="160"></el-table-column>
+        <el-table-column header-align="left" prop="createTime" label="创建时间 "></el-table-column>
+        <el-table-column header-align="left" prop="isLock" label="开启/关闭">
+          <template slot-scope="scope">
+            <el-switch v-model="scope.row.merchantType"></el-switch>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
