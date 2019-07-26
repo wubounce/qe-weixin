@@ -52,20 +52,23 @@ export default {
   },
   created() {
     // 初始化数据
-    let arr = [];
-    arr.push(this.getAreaList(0, 0));
-    for (let i = 0; i < 2; i++) {
-      if (this.value[i] > 0) {
-        arr.push(this.getAreaList(this.value[i], i + 1));
-      }
-    }
-    axios.all(arr).then(
-      axios.spread((...resp) => {
-        this.data = this.value;
-      })
-    );
+    this.init();
   },
   methods: {
+    init() {
+      let arr = [];
+      arr.push(this.getAreaList(0, 0));
+      for (let i = 0; i < 2; i++) {
+        if (this.value[i] > 0) {
+          arr.push(this.getAreaList(this.value[i], i + 1));
+        }
+      }
+      axios.all(arr).then(
+        axios.spread((...resp) => {
+          this.data = this.value;
+        })
+      );
+    },
     getAreaList(pid = 0, level = 0) {
       return areaListFun({ parentId: pid }).then(resp => {
         // 三级类型，如果不存在，就用二级类型
@@ -98,6 +101,7 @@ export default {
   watch: {
     value(val) {
       this.data = val;
+      this.init();
     },
     // 监听数据变化，触发数据更新
     data(v) {
