@@ -9,7 +9,7 @@
           <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
             <el-form-item label="价格设置：" prop="waterMachinePirce">
               <div class="add-discount">
-                <el-input v-model.trim="deviceEditForm.waterMachinePirce" maxlength="5" placeholder="例：1"></el-input>
+                <el-input v-model.trim="deviceEditForm.waterMachinePirce" maxlength="6" placeholder="例：1"></el-input>
                 <span style="position: absolute;left: 220px;color:#bfbfbf;">元/{{isSupportDosage(deviceEditForm.support)?'升':'秒'}}</span>
               </div>
             </el-form-item>
@@ -278,6 +278,23 @@ export default {
         callback();
       }
     };
+    var validatorWterMachinePirce = (rule, value, callback) => {
+      let reg1 = /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/;
+      let reg2 = /^([0-9]|[1-9][0-8])(\.\d{1,3})?$/;
+      if ((this.deviceEditForm.support & 2) === 2) {
+        if (!reg2.test(value)) {
+          return callback(new Error(`请输入0-99之间的数字,最多保留3位小数`));
+        } else {
+          callback();
+        }
+      } else {
+        if (!reg1.test(value)) {
+          return callback(new Error(`请输入0-99之间的数字,最多保留2位小数`));
+        } else {
+          callback();
+        }
+      }
+    };
     return {
       deviceEditTab: 'first',
       waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
@@ -287,7 +304,7 @@ export default {
         needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
         waterMachineNeedMinutes: [{ required: true, message: '请填写单位流量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字，无小数', trigger: 'blur' }],
         functionPrice: [{ required: true, message: '请填写原价', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
-        waterMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
+        waterMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
         chargeMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { pattern: /^[0-4]{1}([.]{1}[0-9]{1,2})?$/, message: '充电单价不能超过5，支持小数点后两位', trigger: 'blur' }],
         functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
