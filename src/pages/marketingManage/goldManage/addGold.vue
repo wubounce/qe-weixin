@@ -211,13 +211,14 @@ export default {
       width: 150%;
     }
   }
-  .gold-tip {
-    width: 16px;
-    height: 16px;
-  }
+
   .action {
     text-align: right;
   }
+}
+.gold-tip {
+  width: 16px;
+  height: 16px;
 }
 .gold_case {
   font-size: 16px;

@@ -2,10 +2,12 @@
   <el-dialog title="金币方案详情" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
     <ul class="deatil-list">
       <li>
-        <span>适用店铺：</span>店铺类型
+        <div><span>适用店铺：</span>创建时间：</div>
+        <div><span>折扣比例(%)：</span>创建时间：</div>
       </li>
       <li>
-        <span>折扣比例(%)：</span>90
+        <div><span>创建人：</span>创建时间：</div>
+        <div><span>创建时间：</span>创建时间：</div>
       </li>
     </ul>
     <h2 class="add_gold_dynamic_form">
@@ -79,23 +81,30 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import '~@/styles/variables.scss';
 .deatil-list {
-  padding-top: 16px;
+  padding-bottom: 15px;
   li {
     padding: 11px 0;
+    border-bottom: 1px solid $under_line;
+    display: flex;
+    > div {
+      width: 50%;
+    }
     span {
+      float: left;
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
-      width: 105px;
-      text-align: left;
+      width: 100px;
+      height: 100%;
+    }
+    i {
+      font-style: normal;
     }
   }
 }
 .add_gold_dynamic_form {
   padding: 18px 0;
-}
-h2 {
-  margin: 15px 0;
 }
 .gold_case {
   font-size: 16px;
@@ -109,5 +118,9 @@ h2 {
   .title {
     color: #f00;
   }
+}
+.gold-tip {
+  width: 16px;
+  height: 16px;
 }
 </style>
