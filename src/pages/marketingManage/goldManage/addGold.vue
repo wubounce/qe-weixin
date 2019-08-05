@@ -14,7 +14,7 @@
         <el-tooltip placement="bottom-start" class="gold-tip">
           <div slot="content" class="gold_tooltip">
             <p class="title">方案规则：</p>
-            <p>1.店铺可支持0~9个方案； </p>
+            <p>1.店铺可支持0~8个方案； </p>
             <p>2.运营商添加的方案，用户均可购买；</p>
             <p>3.若未添加任何金币方案，则用户可自定义金额购买金币本金，但无赠送金币。</p>
             <p class="title">金币含义：</p>
@@ -39,7 +39,7 @@
         </el-table-column>
         <el-table-column prop="name" label="金币本金（枚）">
           <template slot-scope="scope">
-            <span>{{scope.row.date*100 | numFormat}}</span>
+            <span>{{scope.row.date?scope.row.date*100:'' | numFormat}}</span>
           </template>
         </el-table-column>
         <el-table-column prop="address" label="赠送金币（枚）">
@@ -51,7 +51,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="begin-add-accout" v-if="addGoldDynamicForm.tableData.length<=9" @click="addDomain">
+      <div class="begin-add-accout" v-if="addGoldDynamicForm.tableData.length<=8" @click="addDomain">
         <div class="add-accout">
           <i class="el-icon-plus"></i><span>添加账号</span>
         </div>
@@ -123,8 +123,25 @@ export default {
         ]
       },
       addGoldDynamicFormRules: {
-        date: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,2}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2}|1000|1000.0|1000.00)$/, message: '请填写1~1000之间数字', trigger: 'blur' }],
-        address: [{ required: true, message: '请填写赠送金币', trigger: 'blur' }, { pattern: /^(([0-9]{1,5})|100000)$/, message: '请填写0~100000之间数字', trigger: 'blur' }],
+        date: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '请填写1~9999之间数字', trigger: 'blur' }],
+        address: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              let reg = /^[0-9]*$/;
+              if (!value) {
+                callback(new Error('请填写赠送金币'));
+              } else if (!reg.test(value)) {
+                callback(new Error('不支持输入小数点'));
+              } else if (Number(value) > 999900) {
+                callback(new Error('请填写0~999,900之间数字'));
+              } else {
+                callback();
+              }
+            }
+          }
+        ],
         shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
         region: [{ required: true, message: '请填折扣比例', trigger: 'blur' }, { pattern: /^([0-9]|[1-9]{1,2})(\.\d{0,1})?$/, message: '请填写1-99之间的数字,可保留一位小数', trigger: 'blur' }]
       }
@@ -135,13 +152,6 @@ export default {
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
-    },
-
-    handleParent() {
-      this.$Message.success('成功');
-      this.modalClose();
-      this.$listeners.getShopDataToTable && this.$listeners.getShopDataToTable(); //若组件传递事件confirm则执行
-      this.$emit('update:isAllChecked', false); // 直接修改父组件的属性
     },
     resetForm(formName) {
       this.modalClose();
@@ -168,6 +178,13 @@ export default {
         }
       }
       return isRepeat;
+    },
+    onHandleAddAcount(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          console.log('hhhhh');
+        }
+      });
     }
   }
 };

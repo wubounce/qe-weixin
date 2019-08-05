@@ -1,20 +1,20 @@
 <template>
   <el-dialog title="金币回收" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="125px" label-position="left" class="recharge-ruleForm">
-      <el-form-item label="用户账号：" prop="name">
+      <el-form-item label="用户账号：">
         dfasdfsdfsdfddf
       </el-form-item>
-      <el-form-item label="适用店铺：" prop="region">
+      <el-form-item label="适用店铺：">
         dfasdfsdfsdfddf
       </el-form-item>
-      <el-form-item label="金币本金(枚)：" prop="name">
-        <el-input v-model="ruleForm.name" placeholder="请填写金币本金"></el-input>
+      <el-form-item label="金币本金(枚)：" prop="date">
+        <el-input v-model="ruleForm.date" placeholder="请填写金币本金"></el-input>
       </el-form-item>
-      <el-form-item label="赠送金币(枚)：" prop="name">
-        <el-input v-model="ruleForm.name" placeholder="请填写赠送金币"></el-input>
+      <el-form-item label="赠送金币(枚)：" prop="address">
+        <el-input v-model="ruleForm.address" placeholder="请填写赠送金币"></el-input>
       </el-form-item>
-      <el-form-item label="金币金额(元)：" prop="name">
-        <el-input v-model="ruleForm.name" placeholder="请填写充值金额"></el-input>
+      <el-form-item label="金币金额(元)：">
+        {{ruleForm.date?ruleForm.date/100:'' | numFormat}}
       </el-form-item>
       <el-form-item class="action">
         <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
@@ -30,33 +30,71 @@ export default {
     visible: {
       type: Boolean,
       default: false
-    },
-    shopIds: {
-      type: String,
-      default: ''
-    },
-    shopList: {
-      type: Array,
-      default: () => {
-        return [];
-      }
     }
   },
   data() {
     return {
+      baseGold: 1500,
+      basePresent: 1500,
       ruleForm: {
-        name: '',
-        region: ''
+        date: 1500,
+        address: 1500
       },
       rules: {
-        name: [{ required: true, message: '请输入活动名称', trigger: 'blur' }, { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }],
-        region: [{ required: true, message: '请选择活动区域', trigger: 'change' }]
+        date: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              let reg = /^[0-9]*$/;
+              if (!value) {
+                callback(new Error('请输入金币本金数目'));
+              } else if (!reg.test(value)) {
+                callback(new Error('不支持输入小数点'));
+              } else if (Number(value) <= 0 || Number(value) > this.baseGold) {
+                callback(new Error(`不能大于剩余的余额${this.baseGold}`));
+              } else {
+                callback();
+              }
+            }
+          }
+        ],
+        address: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              let reg = /^[0-9]*$/;
+              if (!value) {
+                callback(new Error('请输入赠送金币数目'));
+              } else if (!reg.test(value)) {
+                callback(new Error('不支持输入小数点'));
+              } else if (Number(value) <= 0 || Number(value) > this.basePresent) {
+                callback(new Error(`不能大于剩余的余额${this.basePresent}`));
+              } else if (Number(this.ruleForm.date) === 0 && Number(value) === 0) {
+                callback(new Error('金币本金与赠送金币不可同时为0'));
+              } else {
+                callback();
+              }
+            }
+          }
+        ]
       }
     };
   },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    resetForm(formName) {
+      this.modalClose();
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          console.log('hhhhh');
+        }
+      });
     }
   }
 };
