@@ -1,13 +1,13 @@
 <template>
   <el-dialog :title="title" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
-    <el-form label-position="left" label-width="120px" :model="addGoldDynamicForm" :rules="addGoldDynamicFormRules" class="add_gold_dynamic_form">
+    <el-form label-position="left" label-width="120px" ref="addGoldDynamicForm" :model="addGoldDynamicForm" :rules="addGoldDynamicFormRules" class="add_gold_dynamic_form">
       <el-form-item label="适用店铺：" prop="shopId">
         <el-select v-model="addGoldDynamicForm.shopId" filterable clearable placeholder="请选择">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="折扣比例(%)：" prop="region">
-        <el-input v-model="addGoldDynamicForm.region" placeholder="请填写1-99的数字" :maxlength='4'></el-input>
+      <el-form-item label="折扣比例(%)：" prop="discountProportion">
+        <el-input v-model="addGoldDynamicForm.discountProportion" placeholder="请填写1-99的数字" :maxlength='4'></el-input>
       </el-form-item>
       <h2>
         <span class="gold_case">金币方案</span>
@@ -29,102 +29,70 @@
           <svg-icon icon-class="zhibiaoshuoming" />
         </el-tooltip>
       </h2>
-      <el-table :data="addGoldDynamicForm.tableData" class="gold_table" max-height="325" style="min-height:220px">
-        <el-table-column prop="date" label="充值金额（元）">
+      <el-table :data="addGoldDynamicForm.rewardsJson" class="gold_table" max-height="325" style="min-height:220px">
+        <el-table-column prop="cashValue" label="充值金额（元）">
           <template slot-scope="scope">
-            <el-form-item :prop="'tableData.' + scope.$index + '.date'" :rules='addGoldDynamicFormRules.date'>
-              <el-input v-model.trim="scope.row.date" :maxlength='7'></el-input>
+            <el-form-item :prop="'rewardsJson.' + scope.$index + '.cashValue'" :rules='addGoldDynamicFormRules.cashValue'>
+              <el-input v-model.trim="scope.row.cashValue" :maxlength='7'></el-input>
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="金币本金（枚）">
+        <el-table-column label="金币本金（枚）">
           <template slot-scope="scope">
-            <span>{{scope.row.date?scope.row.date*100:'' | numFormat}}</span>
+            <span>{{formatReach(scope) | numFormat}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="赠送金币（枚）">
+        <el-table-column prop="reward" label="赠送金币（枚）">
           <template slot-scope="scope">
-            <el-form-item :prop="'tableData.' + scope.$index + '.address'" :rules='addGoldDynamicFormRules.address'>
-              <el-input v-model.trim="scope.row.address" :maxlength='6'></el-input>
+            <el-form-item :prop="'rewardsJson.' + scope.$index + '.reward'" :rules='addGoldDynamicFormRules.reward'>
+              <el-input v-model.trim="scope.row.reward" :maxlength='6'></el-input>
             </el-form-item>
-            <svg-icon icon-class="accountdel" class="accountdel" v-if="addGoldDynamicForm.tableData.length>1" @click.prevent="removeDomain(scope.row)" />
+            <svg-icon icon-class="accountdel" class="accountdel" v-if="addGoldDynamicForm.rewardsJson.length>1" @click.prevent="removeDomain(scope.row)" />
           </template>
         </el-table-column>
       </el-table>
-      <div class="begin-add-accout" v-if="addGoldDynamicForm.tableData.length<=8" @click="addDomain">
+      <div class="begin-add-accout" v-if="addGoldDynamicForm.rewardsJson.length<=8" @click="addDomain">
         <div class="add-accout">
           <i class="el-icon-plus"></i><span>添加账号</span>
         </div>
       </div>
       <el-form-item class="action">
-        <el-button type="primary" @click="onHandleAddAcount('dynamicValidateForm')">确定</el-button>
-        <el-button @click="resetForm('dynamicValidateForm')">取消</el-button>
+        <el-button type="primary" @click="onHandleAddAcount('addGoldDynamicForm')">确定</el-button>
+        <el-button @click="resetForm('addGoldDynamicForm')">取消</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
 </template>
 
 <script type="text/ecmascript-6">
+import { tokenCoinAddFun, configTokenCoinFun, findlistInTokenCoinFun, getTokenCoinFun } from '@/service/tokenCoin';
 export default {
   props: {
     visible: {
       type: Boolean,
       default: false
     },
-    shopIds: {
+    shopTokenCoinId: {
       type: String,
       default: ''
-    },
-    shopList: {
-      type: Array,
-      default: () => {
-        return [];
-      }
     }
   },
   data() {
     return {
       title: '新增方案',
+      shopList: [],
+      maxRewardNum: 0,
+      exchangeRate: 0,
       addGoldDynamicForm: {
-        name: '',
-        region: '',
-        type: '',
-        tableData: [
-          {
-            date: '5',
-            name: '500',
-            address: '100'
-          },
-          {
-            date: '10',
-            name: '1000',
-            address: '200'
-          },
-          {
-            date: '20',
-            name: '2000',
-            address: '400'
-          },
-          {
-            date: '50',
-            name: '5000',
-            address: '1200'
-          },
-          {
-            date: '100',
-            name: '10000',
-            address: '2500'
-          },
-          {
-            date: '200',
-            name: '20000',
-            address: '5200'
-          }
-        ]
+        shopId: '',
+        discountProportion: '',
+        rewardsJson: []
       },
       addGoldDynamicFormRules: {
-        date: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '请填写1~9999之间数字', trigger: 'blur' }],
-        address: [
+        shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
+        discountProportion: [{ required: true, message: '请填折扣比例', trigger: 'blur' }, { pattern: /^([0-9]|[1-9]{1,2})(\.\d{0,1})?$/, message: '请填写1-99之间的数字,可保留一位小数', trigger: 'blur' }],
+        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '请填写1~9999之间数字', trigger: 'blur' }],
+        reward: [
           {
             required: true,
             trigger: 'blur',
@@ -141,29 +109,58 @@ export default {
               }
             }
           }
-        ],
-        shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
-        region: [{ required: true, message: '请填折扣比例', trigger: 'blur' }, { pattern: /^([0-9]|[1-9]{1,2})(\.\d{0,1})?$/, message: '请填写1-99之间的数字,可保留一位小数', trigger: 'blur' }]
+        ]
       }
     };
   },
   components: {},
-  created() {},
+  created() {
+    this.shoplistInTokenCoin();
+    if (this.shopTokenCoinId) {
+      this.getDetail();
+      this.title = '编辑金币';
+    } else {
+      this.getTokenCoinConfig();
+    }
+  },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    async getDetail() {
+      let payload = { id: this.shopTokenCoinId };
+      let res = await getTokenCoinFun(payload);
+      this.addGoldDynamicForm.rewardsJson = res.rewardSets || [];
+      let { shopId, discountProportion } = res.shopTokenCoinSet || {};
+      this.addGoldDynamicForm.shopId = shopId;
+      this.addGoldDynamicForm.discountProportion = discountProportion;
+    },
+    async shoplistInTokenCoin() {
+      let res = await findlistInTokenCoinFun({ page: 1, pageSize: 99999 });
+      this.shopList = res.items;
+    },
+    async getTokenCoinConfig() {
+      let res = await configTokenCoinFun();
+      this.addGoldDynamicForm.rewardsJson = res.rewardsConfig || [];
+      this.exchangeRate = res.exchangeRate || 100;
+      this.maxRewardNum = res.maxRewardNum || 8;
+    },
+    formatReach(scope) {
+      let reach = scope.row.cashValue ? scope.row.cashValue * 100 : '';
+      scope.row.reach = reach;
+      return reach;
     },
     resetForm(formName) {
       this.modalClose();
     },
     removeDomain(item) {
-      let index = this.addGoldDynamicForm.tableData.indexOf(item);
+      let index = this.addGoldDynamicForm.rewardsJson.indexOf(item);
       if (index !== -1) {
-        this.addGoldDynamicForm.tableData.splice(index, 1);
+        this.addGoldDynamicForm.rewardsJson.splice(index, 1);
       }
     },
     addDomain() {
-      this.addGoldDynamicForm.tableData.push({
+      this.addGoldDynamicForm.rewardsJson.push({
         date: '',
         name: '',
         address: ''
@@ -171,18 +168,32 @@ export default {
     },
     checkRepeat(list) {
       let isRepeat = false;
-      let newlist = list.sort();
-      for (var i = 0; i < newlist.length; i++) {
-        if (newlist[i] && newlist[i] === newlist[i + 1]) {
-          isRepeat = true;
-        }
+      // let newlist = list.sort();
+      // for (var i = 0; i < newlist.length; i++) {
+      //   if (newlist[i] && newlist[i] === newlist[i + 1]) {
+      //     isRepeat = true;
+      //   }
+      // }
+      let cashValueArr = this.dynamicValidateForm.rewardsJson.map(item => item.cashValue);
+      let setCashValueArr = new Set(cashValueArr); //去重复
+      if (setCashValueArr.size !== this.dynamicValidateForm.rewardsJson.length) {
+        isRepeat = true;
       }
       return isRepeat;
     },
     onHandleAddAcount(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log('hhhhh');
+          if (this.checkRepeat) {
+            this.$Message.error('充值金额重复，请重新输入');
+          }
+          console.log(this.addGoldDynamicForm);
+
+          let payload = Object.assign({}, this.addGoldDynamicForm);
+          payload.rewardsJson = JSON.stringify(payload.rewardsJson);
+          tokenCoinAddFun(payload).then(() => {
+            this.$Message.success('操作成功');
+          });
         }
       });
     }

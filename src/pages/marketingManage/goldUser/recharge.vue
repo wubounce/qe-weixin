@@ -28,7 +28,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { delay } from '@/utils/tools';
 import { shopListFun } from '@/service/report';
 import { getByUserOperatornameFun } from '@/service/shop';
 export default {

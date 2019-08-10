@@ -2,12 +2,12 @@
   <el-dialog title="金币方案详情" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
     <ul class="deatil-list">
       <li>
-        <div><span>适用店铺：</span>创建时间：</div>
-        <div><span>折扣比例(%)：</span>创建时间：</div>
+        <div><span>适用店铺：</span>{{shopTokenCoinSet.shopName}}</div>
+        <div><span>折扣比例(%)：</span>{{shopTokenCoinSet.discountProportion}}</div>
       </li>
       <li>
-        <div><span>创建人：</span>创建时间：</div>
-        <div><span>创建时间：</span>创建时间：</div>
+        <div><span>创建人：</span>{{shopTokenCoinSet.shopName}}</div>
+        <div><span>创建时间：</span>{{shopTokenCoinSet.createdAt}}</div>
       </li>
     </ul>
     <h2 class="add_gold_dynamic_form">
@@ -30,52 +30,47 @@
         <svg-icon icon-class="zhibiaoshuoming" />
       </el-tooltip>
     </h2>
-    <el-table :data="addGoldDynamicForm.tableData" class="gold_table" max-height="325" style="min-height:220px">
-      <el-table-column prop="date" label="充值金额（元）"></el-table-column>
-      <el-table-column prop="name" label="金币本金（枚）">
-        <template slot-scope="scope">
-          <span>{{scope.row.date*100 | numFormat}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="address" label="赠送金币（枚）"></el-table-column>
+    <el-table :data="rewardSets" class="gold_table" max-height="325" style="min-height:220px">
+      <el-table-column prop="cashValue" label="充值金额（元）"></el-table-column>
+      <el-table-column prop="reach" label="金币本金（枚）"></el-table-column>
+      <el-table-column prop="reward" label="赠送金币（枚）"></el-table-column>
     </el-table>
   </el-dialog>
 </template>
 
 <script type="text/ecmascript-6">
+import { getTokenCoinFun } from '@/service/tokenCoin';
 export default {
   props: {
     visible: {
       type: Boolean,
       default: false
     },
-    shopIds: {
+    shopTokenCoinId: {
       type: String,
       default: ''
     }
   },
   data() {
     return {
-      title: '新增方案',
-      addGoldDynamicForm: {
-        name: '',
-        region: '',
-        type: '',
-        tableData: [
-          {
-            date: '200',
-            name: '2000',
-            address: '800'
-          }
-        ]
-      }
+      shopTokenCoinSet: {},
+      rewardSets: []
     };
   },
   components: {},
-  created() {},
+  created() {
+    this.getDetail();
+  },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    async getDetail() {
+      let payload = { id: this.shopTokenCoinId };
+      let res = await getTokenCoinFun(payload);
+      let { shopTokenCoinSet, rewardSets } = res || {};
+      this.shopTokenCoinSet = shopTokenCoinSet || {};
+      this.rewardSets = rewardSets || [];
     }
   }
 };

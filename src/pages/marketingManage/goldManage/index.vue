@@ -25,7 +25,7 @@
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="faceValue" label="适用店铺" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="rowstyle" @click="detailDialogVisible = true;">{{scope.row.merchantType | CouponType}}</span>
+            <span class="rowstyle" @click="lookDetail(scope.row)">{{scope.row.merchantType | CouponType}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="faceValue" label="折扣比例(%)" show-overflow-tooltip></el-table-column>
@@ -47,9 +47,9 @@
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
     <!-- 新增方案 -->
-    <add-gold v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible" :shopList="shopList"></add-gold>
+    <add-gold v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible"></add-gold>
     <!-- 金币方案详情 -->
-    <gold-infor v-if="detailDialogVisible" :visible.sync="detailDialogVisible" :shopList="shopList"></gold-infor>
+    <gold-infor v-if="detailDialogVisible" :visible.sync="detailDialogVisible" :shopTokenCoinId="shopTokenCoinId"></gold-infor>
   </div>
 </template>
 
@@ -78,6 +78,7 @@ export default {
         time: []
       },
       shopList: [],
+      shopTokenCoinId: '',
       addGoldDialogVisible: false,
       detailDialogVisible: false
     };
@@ -117,6 +118,10 @@ export default {
     },
     addGoldCase(row) {
       this.addGoldDialogVisible = true;
+    },
+    lookDetail(row) {
+      this.shopTokenCoinId = row.shopTokenCoinId;
+      this.detailDialogVisible = true;
     },
     // 删除店铺
     handleDelete(shopId) {
