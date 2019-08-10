@@ -2,7 +2,7 @@
   <el-dialog :title="title" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
     <el-form label-position="left" label-width="120px" ref="addGoldDynamicForm" :model="addGoldDynamicForm" :rules="addGoldDynamicFormRules" class="add_gold_dynamic_form">
       <el-form-item label="适用店铺：" prop="shopId">
-        <el-select v-model="addGoldDynamicForm.shopId" filterable clearable placeholder="请选择">
+        <el-select v-model="addGoldDynamicForm.shopId" filterable clearable remote :remote-method="shoplistInTokenCoin" placeholder="请输入店铺名称">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
@@ -65,7 +65,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { tokenCoinAddFun, configTokenCoinFun, findlistInTokenCoinFun, getTokenCoinFun } from '@/service/tokenCoin';
+import { tokenCoinAddFun, configTokenCoinFun, shoplistInTokenCoinFun, getTokenCoinFun } from '@/service/tokenCoin';
 export default {
   props: {
     visible: {
@@ -115,7 +115,7 @@ export default {
   },
   components: {},
   created() {
-    this.shoplistInTokenCoin();
+    // this.shoplistInTokenCoin();
     if (this.shopTokenCoinId) {
       this.getDetail();
       this.title = '编辑金币';
@@ -135,8 +135,9 @@ export default {
       this.addGoldDynamicForm.shopId = shopId;
       this.addGoldDynamicForm.discountProportion = discountProportion;
     },
-    async shoplistInTokenCoin() {
-      let res = await findlistInTokenCoinFun({ page: 1, pageSize: 99999 });
+    async shoplistInTokenCoin(query = '') {
+      let payload = { shopName: query, page: 1, pageSize: 20 };
+      let res = await shoplistInTokenCoinFun(payload);
       this.shopList = res.items;
     },
     async getTokenCoinConfig() {
@@ -186,9 +187,8 @@ export default {
         if (valid) {
           if (this.checkRepeat) {
             this.$Message.error('充值金额重复，请重新输入');
+            return false;
           }
-          console.log(this.addGoldDynamicForm);
-
           let payload = Object.assign({}, this.addGoldDynamicForm);
           payload.rewardsJson = JSON.stringify(payload.rewardsJson);
           tokenCoinAddFun(payload).then(() => {
