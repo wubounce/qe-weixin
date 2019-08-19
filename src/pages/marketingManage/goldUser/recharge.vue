@@ -1,10 +1,9 @@
 <template>
   <el-dialog title="充值金币" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
     <el-form :model="rechargeForm" :rules="rechargeFormRules" ref="rechargeForm" label-width="125px" label-position="left" class="recharge-form">
-      <el-form-item label="用户账号：" prop="name">
-        <el-select v-model="rechargeForm.name" filterable remote clearable :loading="loading" :remote-method="getOperatorList" @change="changeOperator" placeholder="请填写用户手机号">
-          <el-option v-for="item in operatorList" :key="item.id" :label="item.userName" :value="item.id" :ref="item.id">
-          </el-option>
+      <el-form-item label="用户账号：" prop="phone">
+        <el-select v-model="rechargeForm.phone" filterable remote clearable :loading="loading" :remote-method="getUserList" placeholder="请填写用户手机号">
+          <el-option v-for="(item,index) in userList" :key="index" :label="item.phone" :value="item.phone"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="适用店铺：" prop="shopId">
@@ -12,12 +11,12 @@
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="金币金额(元)：" prop="date">
-        <el-input v-model="rechargeForm.date" placeholder="请填写充值金额"></el-input>
+      <el-form-item label="金币金额(元)：" prop="principalAmount">
+        <el-input v-model="rechargeForm.principalAmount" placeholder="请填写充值金额"></el-input>
       </el-form-item>
-      <el-form-item label="金币本金(枚)：" prop="name">{{rechargeForm.date?rechargeForm.date*100:'' | numFormat}}</el-form-item>
-      <el-form-item label="赠送金币(枚)：" prop="address">
-        <el-input v-model="rechargeForm.address" placeholder="请填写赠送金币"></el-input>
+      <el-form-item label="金币本金(枚)：">{{rechargeForm.principalAmount?rechargeForm.principalAmount*exchangeRate:'' | numFormat}}</el-form-item>
+      <el-form-item label="赠送金币(枚)：" prop="presentAmount">
+        <el-input v-model="rechargeForm.presentAmount" placeholder="请填写赠送金币"></el-input>
       </el-form-item>
       <el-form-item class="action">
         <el-button type="primary" @click="onHandleRecharge('rechargeForm')">确定</el-button>
@@ -28,8 +27,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopListFun } from '@/service/report';
-import { getByUserOperatornameFun } from '@/service/shop';
+import { tokenCoinListFun, getByPhoneFun, configTokenCoinFun, refillAndDeductFun } from '@/service/tokenCoin';
 export default {
   props: {
     visible: {
@@ -40,18 +38,19 @@ export default {
   data() {
     return {
       shopList: [],
-      operatorList: [{ userName: '', id: '' }],
+      userList: [],
+      exchangeRate: 100,
       rechargeForm: {
-        name: '',
+        phone: '',
         shopId: '',
-        date: '',
-        address: ''
+        principalAmount: '',
+        presentAmount: ''
       },
       rechargeFormRules: {
-        name: [{ required: true, message: '请填写用户手机号码', trigger: 'blur' }],
-        shopId: [{ required: true, message: '请选择适用店铺', trigger: 'blur' }],
-        date: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '请填写1~9999之间数字', trigger: 'blur' }],
-        address: [
+        phone: [{ required: true, message: '请填写用户手机号码', trigger: 'change' }],
+        shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
+        principalAmount: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '充值金额请输入0~9999之间数字', trigger: 'blur' }],
+        presentAmount: [
           {
             required: true,
             trigger: 'blur',
@@ -61,7 +60,7 @@ export default {
                 callback(new Error('请填写赠送金币'));
               } else if (!reg.test(value)) {
                 callback(new Error('不支持输入小数点'));
-              } else if (Number(value) <= 0 && Number(value) > 999900) {
+              } else if (Number(value) > 999900) {
                 callback(new Error('请填写0~999,900之间数字'));
               } else {
                 callback();
@@ -74,36 +73,44 @@ export default {
   },
   created() {
     this.getShopList();
+    this.getTokenCoinConfig();
   },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
-    async getShopList() {
-      let res = await shopListFun();
-      this.shopList = res;
+    async getTokenCoinConfig() {
+      let res = await configTokenCoinFun();
+      this.exchangeRate = res.exchangeRate || 100;
     },
-    async getOperatorList(query) {
+    async getShopList() {
+      let res = await tokenCoinListFun({ page: 1, pageSize: 999 });
+      let items = (res && res.items) || [];
+      this.shopList = items.filter(item => item.isDelete === 0);
+    },
+    async getUserList(query) {
       if (query !== '') {
         this.loading = true;
-        let payload = { username: query };
-        let res = await getByUserOperatornameFun(payload);
-        this.operatorList = res ? [{ userName: res.userName, id: res.id }] : [{ userName: '', id: '' }];
+        let payload = { phone: query };
+        let res = await getByPhoneFun(payload);
+        this.userList = this.options = res ? [{ phone: res.phone, id: res.id }] : {};
         this.loading = false;
-      } else {
-        this.operatorList = [{ userName: '', id: '' }];
       }
-    },
-    changeOperator(value) {
-      this.rechargeForm.name = this.$refs[value][0].label || '';
     },
     resetForm(formName) {
       this.modalClose();
     },
     onHandleRecharge(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          console.log('hhhhh');
+          let payload = Object.assign({}, this.rechargeForm);
+          payload.type = 1;
+          payload.principalAmount *= this.exchangeRate;
+          refillAndDeductFun(payload).then(() => {
+            this.$Message.success('充值成功');
+            this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
+            this.modalClose();
+          });
         }
       });
     }

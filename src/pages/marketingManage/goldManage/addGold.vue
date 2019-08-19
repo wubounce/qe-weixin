@@ -2,7 +2,8 @@
   <el-dialog :title="title" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
     <el-form label-position="left" label-width="120px" ref="addGoldDynamicForm" :model="addGoldDynamicForm" :rules="addGoldDynamicFormRules" class="add_gold_dynamic_form">
       <el-form-item label="适用店铺：" prop="shopId">
-        <el-select v-model="addGoldDynamicForm.shopId" filterable clearable remote :remote-method="shoplistInTokenCoin" placeholder="请输入店铺名称">
+        <span v-if="shopTokenCoinId">{{shopTokenCoinSet.shopName}}</span>
+        <el-select v-if="!shopTokenCoinId" v-model="addGoldDynamicForm.shopId" filterable clearable placeholder="请选择店铺">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
@@ -51,7 +52,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="begin-add-accout" v-if="addGoldDynamicForm.rewardsJson.length<=8" @click="addDomain">
+      <div class="begin-add-accout" v-if="addGoldDynamicForm.rewardsJson.length<=maxRewardNum" @click="addDomain">
         <div class="add-accout">
           <i class="el-icon-plus"></i><span>添加账号</span>
         </div>
@@ -65,7 +66,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { tokenCoinAddFun, configTokenCoinFun, shoplistInTokenCoinFun, getTokenCoinFun } from '@/service/tokenCoin';
+import { tokenCoinAddFun, configTokenCoinFun, shoplistInTokenCoinFun, getTokenCoinFun, tokenCoinUpdateFun } from '@/service/tokenCoin';
 export default {
   props: {
     visible: {
@@ -81,8 +82,9 @@ export default {
     return {
       title: '新增方案',
       shopList: [],
-      maxRewardNum: 0,
-      exchangeRate: 0,
+      maxRewardNum: 8,
+      exchangeRate: 100,
+      shopTokenCoinSet: {},
       addGoldDynamicForm: {
         shopId: '',
         discountProportion: '',
@@ -90,8 +92,8 @@ export default {
       },
       addGoldDynamicFormRules: {
         shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
-        discountProportion: [{ required: true, message: '请填折扣比例', trigger: 'blur' }, { pattern: /^([0-9]|[1-9]{1,2})(\.\d{0,1})?$/, message: '请填写1-99之间的数字,可保留一位小数', trigger: 'blur' }],
-        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '请填写1~9999之间数字', trigger: 'blur' }],
+        discountProportion: [{ required: true, message: '请填写抵扣比例', trigger: 'blur' }, { pattern: /^(([0-9]|[1-9][0-8])(\.\d{0,1})?|99|99.0)$/, message: '抵扣比例请输入1-99之间的数字', trigger: 'blur' }],
+        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '充值金额请输入0~9999之间数字', trigger: 'blur' }],
         reward: [
           {
             required: true,
@@ -115,12 +117,11 @@ export default {
   },
   components: {},
   created() {
-    // this.shoplistInTokenCoin();
+    this.shoplistInTokenCoin();
+    this.getTokenCoinConfig();
     if (this.shopTokenCoinId) {
       this.getDetail();
       this.title = '编辑金币';
-    } else {
-      this.getTokenCoinConfig();
     }
   },
   methods: {
@@ -134,20 +135,27 @@ export default {
       let { shopId, discountProportion } = res.shopTokenCoinSet || {};
       this.addGoldDynamicForm.shopId = shopId;
       this.addGoldDynamicForm.discountProportion = discountProportion;
+      this.shopTokenCoinSet = res.shopTokenCoinSet || {};
     },
-    async shoplistInTokenCoin(query = '') {
-      let payload = { shopName: query, page: 1, pageSize: 20 };
-      let res = await shoplistInTokenCoinFun(payload);
-      this.shopList = res.items;
+    async shoplistInTokenCoin() {
+      let res = await shoplistInTokenCoinFun({ page: 1, pageSize: 999 });
+      let items = (res && res.items) || [];
+      if (this.shopTokenCoinId) {
+        this.shopList = items;
+      } else {
+        this.shopList = items.filter(item => Boolean(item.isSet) === false);
+      }
     },
     async getTokenCoinConfig() {
       let res = await configTokenCoinFun();
-      this.addGoldDynamicForm.rewardsJson = res.rewardsConfig || [];
+      if (!this.shopTokenCoinId) {
+        this.addGoldDynamicForm.rewardsJson = res.rewardsConfig || [];
+      }
       this.exchangeRate = res.exchangeRate || 100;
       this.maxRewardNum = res.maxRewardNum || 8;
     },
     formatReach(scope) {
-      let reach = scope.row.cashValue ? scope.row.cashValue * 100 : '';
+      let reach = scope.row.cashValue ? scope.row.cashValue * this.exchangeRate : '';
       scope.row.reach = reach;
       return reach;
     },
@@ -167,17 +175,11 @@ export default {
         address: ''
       });
     },
-    checkRepeat(list) {
+    checkRepeat() {
       let isRepeat = false;
-      // let newlist = list.sort();
-      // for (var i = 0; i < newlist.length; i++) {
-      //   if (newlist[i] && newlist[i] === newlist[i + 1]) {
-      //     isRepeat = true;
-      //   }
-      // }
-      let cashValueArr = this.dynamicValidateForm.rewardsJson.map(item => item.cashValue);
+      let cashValueArr = this.addGoldDynamicForm.rewardsJson.map(item => Number(item.cashValue));
       let setCashValueArr = new Set(cashValueArr); //去重复
-      if (setCashValueArr.size !== this.dynamicValidateForm.rewardsJson.length) {
+      if (setCashValueArr.size !== this.addGoldDynamicForm.rewardsJson.length) {
         isRepeat = true;
       }
       return isRepeat;
@@ -185,17 +187,31 @@ export default {
     onHandleAddAcount(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.checkRepeat) {
+          if (this.checkRepeat()) {
             this.$Message.error('充值金额重复，请重新输入');
             return false;
           }
           let payload = Object.assign({}, this.addGoldDynamicForm);
-          payload.rewardsJson = JSON.stringify(payload.rewardsJson);
-          tokenCoinAddFun(payload).then(() => {
-            this.$Message.success('操作成功');
-          });
+          if (this.shopTokenCoinId) {
+            payload.updateRewardsJson = JSON.stringify(payload.rewardsJson);
+            payload.id = this.shopTokenCoinId;
+            payload.rewardsJson = [];
+            tokenCoinUpdateFun(payload).then(() => {
+              this.successFlow();
+            });
+          } else {
+            payload.rewardsJson = JSON.stringify(payload.rewardsJson);
+            tokenCoinAddFun(payload).then(() => {
+              this.successFlow();
+            });
+          }
         }
       });
+    },
+    successFlow() {
+      this.$Message.success('操作成功');
+      this.$listeners.getTokenCoinList && this.$listeners.getTokenCoinList(); //若组件传递事件confirm则执行
+      this.modalClose();
     }
   }
 };

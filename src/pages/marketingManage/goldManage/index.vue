@@ -4,7 +4,7 @@
       <el-form-item label="适用店铺：" prop="type">
         <el-select v-model="searchData.shopId" filterable clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
-          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+          <el-option v-for="(item) in shopList" :key="item.shopId" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="创建时间： " prop="type">
@@ -19,27 +19,26 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="addGoldCase">新增方案</el-button>
-        <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
       </div>
-      <el-table :data="couponSentDataToTable" style="width: 100%">
+      <el-table :data="tokenCoinListDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
         <el-table-column header-align="left" prop="faceValue" label="适用店铺" show-overflow-tooltip>
           <template slot-scope="scope">
-            <span class="rowstyle" @click="lookDetail(scope.row)">{{scope.row.merchantType | CouponType}}</span>
+            <span class="rowstyle" @click="lookDetail(scope.row)">{{scope.row.shopName}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="折扣比例(%)" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="创建时间 "></el-table-column>
+        <el-table-column header-align="left" prop="discountProportion" label="折扣比例(%)" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="createdAt" label="创建时间 "></el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right">
           <template slot-scope="scope">
             <el-tooltip content="开通/关闭" placement="top" effect="dark">
-              <el-switch v-model="scope.row.merchantType"></el-switch>
+              <el-switch v-model="scope.row.switchStatus" @change="updataeStatus(scope.row)"></el-switch>
             </el-tooltip>
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <svg-icon icon-class="bianji" class="icon-bianji" />
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="addGoldCase(scope.row)" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
-              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row)" />
             </el-tooltip>
           </template>
         </el-table-column>
@@ -47,20 +46,16 @@
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
     <!-- 新增方案 -->
-    <add-gold v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible"></add-gold>
+    <add-gold v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible" :shopTokenCoinId="shopTokenCoinId" @getTokenCoinList="getTokenCoinList"></add-gold>
     <!-- 金币方案详情 -->
-    <gold-infor v-if="detailDialogVisible" :visible.sync="detailDialogVisible" :shopTokenCoinId="shopTokenCoinId"></gold-infor>
+    <gold-infor v-if="detailDialogVisible&&shopTokenCoinId" :visible.sync="detailDialogVisible" :shopTokenCoinId="shopTokenCoinId"></gold-infor>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
-import { voucherListFun } from '@/service/voucher';
-import { shopListFun } from '@/service/report';
-import { deleteShopFun } from '@/service/shop';
-import { exportExcel } from '@/service/common';
-
+import { tokenCoinListFun, shoplistInTokenCoinFun, tokenCoinDelFun, tokenCoinCloseFun, tokenCoinOpenFun } from '@/service/tokenCoin';
 import addGold from './addGold';
 import goldInfor from './goldInfor';
 
@@ -74,11 +69,12 @@ export default {
   data() {
     return {
       searchData: {
-        phone: '',
+        shopId: '',
         time: []
       },
       shopList: [],
       shopTokenCoinId: '',
+      tokenCoinListDataToTable: [],
       addGoldDialogVisible: false,
       detailDialogVisible: false
     };
@@ -87,62 +83,73 @@ export default {
   computed: {},
   created() {
     this.getShopList();
-    this.getCouponSentDataToTable();
+    this.getTokenCoinList();
   },
   methods: {
     async getShopList() {
-      let res = await shopListFun();
-      this.shopList = res;
+      let res = await shoplistInTokenCoinFun({ page: 1, pageSize: 999 });
+      let items = (res && res.items) || [];
+      this.shopList = items.filter(item => Boolean(item.isSet) === true);
     },
     handlePagination(data) {
       this.searchData = Object.assign(this.searchData, data);
-      this.getCouponSentDataToTable();
+      this.getTokenCoinList();
     },
     searchForm() {
       this.searchData.page = 1;
-      this.getCouponSentDataToTable();
+      this.getTokenCoinList();
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
       this.$refs[formName].resetFields();
-      this.getCouponSentDataToTable();
+      this.getTokenCoinList();
     },
-    async getCouponSentDataToTable() {
+    async getTokenCoinList() {
       let payload = Object.assign({}, this.searchData);
       payload.startDate = payload.time ? payload.time[0] : null;
       payload.endDate = payload.time ? payload.time[1] : null;
       payload.time = null;
-      let res = await voucherListFun(payload);
-      this.couponSentDataToTable = res.page.items;
-      this.total = res.page.total;
+      let res = await tokenCoinListFun(payload);
+      if (res.items) {
+        res.items.forEach(item => {
+          if (item.isDelete === 0) {
+            item.switchStatus = true;
+          } else {
+            item.switchStatus = false;
+          }
+        });
+      }
+      this.tokenCoinListDataToTable = res.items;
+      this.total = res.total;
     },
-    addGoldCase(row) {
+    addGoldCase(row = {}) {
+      this.shopTokenCoinId = '';
+      if (row.id) {
+        this.shopTokenCoinId = row.id;
+      }
       this.addGoldDialogVisible = true;
     },
+    async updataeStatus(row) {
+      let payload = Object.assign({}, { id: row.id });
+      row.switchStatus === true ? await tokenCoinOpenFun(payload) : await tokenCoinCloseFun(payload);
+      this.$message.success('操作成功');
+      this.getTokenCoinList();
+    },
     lookDetail(row) {
-      this.shopTokenCoinId = row.shopTokenCoinId;
+      this.shopTokenCoinId = row.id;
       this.detailDialogVisible = true;
     },
     // 删除店铺
-    handleDelete(shopId) {
+    handleDelete(row) {
       this.$confirm('您确定要删除该店铺?', '提示', {
         showClose: false,
         center: true
       }).then(() => {
-        deleteShopFun({ shopId: shopId }).then(() => {
+        tokenCoinDelFun({ id: row.id }).then(() => {
           this.$message.success('店铺删除成功');
-          this.getShopDataToTable();
+          this.getTokenCoinList();
         });
       });
-    },
-    exportTable() {
-      let payload = Object.assign({}, this.searchData);
-      payload.provinceId = payload.areas[0];
-      payload.cityId = payload.areas[1];
-      payload.districtId = payload.areas[2];
-      payload.areas = [];
-      payload.excel = true;
-      exportExcel(manageListApi, '店铺列表.xlsx', payload);
     }
   }
 };

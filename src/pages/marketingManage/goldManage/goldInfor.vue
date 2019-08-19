@@ -6,7 +6,7 @@
         <div><span>折扣比例(%)：</span>{{shopTokenCoinSet.discountProportion}}</div>
       </li>
       <li>
-        <div><span>创建人：</span>{{shopTokenCoinSet.shopName}}</div>
+        <div><span>创建人：</span>{{managerOperatorName}}</div>
         <div><span>创建时间：</span>{{shopTokenCoinSet.createdAt}}</div>
       </li>
     </ul>
@@ -54,7 +54,8 @@ export default {
   data() {
     return {
       shopTokenCoinSet: {},
-      rewardSets: []
+      rewardSets: [],
+      managerOperatorName: ''
     };
   },
   components: {},
@@ -68,9 +69,10 @@ export default {
     async getDetail() {
       let payload = { id: this.shopTokenCoinId };
       let res = await getTokenCoinFun(payload);
-      let { shopTokenCoinSet, rewardSets } = res || {};
+      let { shopTokenCoinSet, rewardSets, managerOperatorName } = res || {};
       this.shopTokenCoinSet = shopTokenCoinSet || {};
       this.rewardSets = rewardSets || [];
+      this.managerOperatorName = managerOperatorName || '';
     }
   }
 };

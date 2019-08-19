@@ -1,30 +1,31 @@
 <template>
   <el-dialog title="金币回收" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
-    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="125px" label-position="left" class="recharge-ruleForm">
+    <el-form :model="recycleForm" :rules="recycleForm" ref="recycleRulesForm" label-width="125px" label-position="left" class="recharge-ruleForm">
       <el-form-item label="用户账号：">
-        dfasdfsdfsdfddf
+        {{recycleForm.phone}}
       </el-form-item>
       <el-form-item label="适用店铺：">
-        dfasdfsdfsdfddf
+        {{recycleForm.shopName}}
       </el-form-item>
-      <el-form-item label="金币本金(枚)：" prop="date">
-        <el-input v-model="ruleForm.date" placeholder="请填写金币本金"></el-input>
+      <el-form-item label="金币本金(枚)：" prop="totalAmount">
+        <el-input v-model="recycleForm.totalAmount" :placeholder="restPresentAmount>0?`最多${restPresentAmount}金币`:`请填写金币本金`"></el-input>
       </el-form-item>
-      <el-form-item label="赠送金币(枚)：" prop="address">
-        <el-input v-model="ruleForm.address" placeholder="请填写赠送金币"></el-input>
+      <el-form-item label="赠送金币(枚)：" prop="presentAmount">
+        <el-input v-model="recycleForm.presentAmount" :placeholder="restTotalAmount>0?`最多${restTotalAmount}金币`:`请填写赠送金币`"></el-input>
       </el-form-item>
       <el-form-item label="金币金额(元)：">
-        {{ruleForm.date?ruleForm.date/100:'' | numFormat}}
+        {{recycleForm.totalAmount?recycleForm.totalAmount/exchangeRate:'' | numFormat}}
       </el-form-item>
       <el-form-item class="action">
-        <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
-        <el-button @click="resetForm('ruleForm')">取消</el-button>
+        <el-button type="primary" @click="submitForm('recycleForm')">确定</el-button>
+        <el-button @click="resetForm('recycleForm')">取消</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
 </template>
 
 <script type="text/ecmascript-6">
+import { tokenCoinUsereFun, configTokenCoinFun, refillAndDeductFun } from '@/service/tokenCoin';
 export default {
   props: {
     visible: {
@@ -34,14 +35,19 @@ export default {
   },
   data() {
     return {
-      baseGold: 1500,
-      basePresent: 1500,
-      ruleForm: {
-        date: 1500,
-        address: 1500
+      restPresentAmount: 0,
+      restTotalAmount: 0,
+      exchangeRate: 100,
+      recycleForm: {
+        phone: '18311017120',
+        userId: 'a67673d5-fd9d-4e02-820d-80415826a2e4',
+        shopId: 'd36dc265-9a2d-43f6-ad1d-3cd26a34cd35',
+        shopName: '联合大厦10楼',
+        totalAmount: '',
+        presentAmount: ''
       },
-      rules: {
-        date: [
+      recycleRulesForm: {
+        totalAmount: [
           {
             required: true,
             trigger: 'blur',
@@ -51,15 +57,15 @@ export default {
                 callback(new Error('请输入金币本金数目'));
               } else if (!reg.test(value)) {
                 callback(new Error('不支持输入小数点'));
-              } else if (Number(value) <= 0 || Number(value) > this.baseGold) {
-                callback(new Error(`不能大于剩余的余额${this.baseGold}`));
+              } else if (Number(value) <= 0 || Number(value) > this.restTotalAmount) {
+                callback(new Error(`不能大于剩余的余额${this.restTotalAmount}`));
               } else {
                 callback();
               }
             }
           }
         ],
-        address: [
+        presentAmount: [
           {
             required: true,
             trigger: 'blur',
@@ -69,8 +75,8 @@ export default {
                 callback(new Error('请输入赠送金币数目'));
               } else if (!reg.test(value)) {
                 callback(new Error('不支持输入小数点'));
-              } else if (Number(value) <= 0 || Number(value) > this.basePresent) {
-                callback(new Error(`不能大于剩余的余额${this.basePresent}`));
+              } else if (Number(value) <= 0 || Number(value) > this.restPresentAmount) {
+                callback(new Error(`不能大于剩余的余额${this.restPresentAmount}`));
               } else if (Number(this.ruleForm.date) === 0 && Number(value) === 0) {
                 callback(new Error('金币本金与赠送金币不可同时为0'));
               } else {
@@ -82,17 +88,38 @@ export default {
       }
     };
   },
+  created() {
+    this.getTokenCoinConfig();
+    this.tokenCoinUsereFun();
+  },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
+    async getTokenCoinConfig() {
+      let res = await configTokenCoinFun();
+      this.exchangeRate = res.exchangeRate || 100;
+    },
+    async tokenCoinUsereFun() {
+      let payload = { searchUserId: this.recycleForm.userId, shopId: this.recycleForm.shopId };
+      let res = await tokenCoinUsereFun(payload);
+      this.restPresentAmount = (res && res.presentAmount) || 0;
+      this.restTotalAmount = (res && res.totalAmount) || 0;
+    },
     resetForm(formName) {
       this.modalClose();
     },
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    onHandleRecharge(formName) {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          console.log('hhhhh');
+          let payload = Object.assign({}, this.rechargeForm);
+          payload.type = 2;
+          payload.principalAmount = payload.totalAmount;
+          refillAndDeductFun(payload).then(() => {
+            this.$Message.success('回收成功');
+            this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
+            this.modalClose();
+          });
         }
       });
     }
