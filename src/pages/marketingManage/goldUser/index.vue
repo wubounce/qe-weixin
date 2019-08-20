@@ -21,11 +21,15 @@
       </div>
       <el-table :data="goleUserList" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="会员账号"></el-table-column>
-        <el-table-column header-align="left" prop="faceValue" label="店铺" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="金币余额(枚)"></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="金币本金余额(枚)"></el-table-column>
-        <el-table-column header-align="left" prop="createTime" label="赠送金币余额(枚)"></el-table-column>
+        <el-table-column header-align="left" prop="phone" label="会员账号">
+          <template slot-scope="scope">
+            <span class="rowstyle" @click="lookDetail(scope.row)">{{scope.row.phone}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column header-align="left" prop="shopName" label="店铺" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="totalAmount" label="金币余额(枚)"></el-table-column>
+        <el-table-column header-align="left" prop="principalAmount" label="金币本金余额(枚)"></el-table-column>
+        <el-table-column header-align="left" prop="presentAmount" label="赠送金币余额(枚)"></el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right">
           <template slot-scope="scope">
             <el-tooltip content="回收" placement="top" effect="dark">
@@ -40,13 +44,15 @@
     <recharge v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible" @getGoldUserDataToTable="getGoldUserDataToTable"></recharge>
     <!-- 金币回收 -->
     <recycle-gold v-if="recycleDialogVisible" :visible.sync="recycleDialogVisible"></recycle-gold>
+    <!-- 金币充值记录 -->
+    <record v-if="recordDialogVisible" :visible.sync="recordDialogVisible"></record>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
-import { tokenCoinListFun } from '@/service/tokenCoin';
+import { tokenCoinListFun, tokenCoinMemberListFun } from '@/service/tokenCoin';
 import recharge from './recharge';
 import recycleGold from './recycleGold';
 
@@ -66,19 +72,21 @@ export default {
       shopList: [],
       goleUserList: [],
       addGoldDialogVisible: false,
-      recycleDialogVisible: false
+      recycleDialogVisible: false,
+      recordDialogVisible: false
     };
   },
   filters: {},
   computed: {},
   created() {
     this.getShopList();
-    this.getGoldUserDataToTable();
   },
   methods: {
     async getShopList() {
       let res = await tokenCoinListFun({ page: 1, pageSize: 999 });
       this.shopList = (res && res.items) || [];
+      this.searchData.shopId = this.shopList.length > 0 ? this.shopList[0].shopId : '';
+      this.searchData.shopId && this.getGoldUserDataToTable();
     },
     handlePagination(data) {
       this.searchData = Object.assign(this.searchData, data);
@@ -95,17 +103,14 @@ export default {
     },
     async getGoldUserDataToTable() {
       let payload = Object.assign({}, this.searchData);
-      payload.startDate = payload.time ? payload.time[0] : null;
-      payload.endDate = payload.time ? payload.time[1] : null;
-      payload.time = null;
-      let res = await tokenCoinListFun(payload);
-      this.goleUserList = res.items;
+      let res = await tokenCoinMemberListFun(payload);
+      this.goleUserList = res.items || [];
       this.total = res.total;
     },
     addGoldCase(row) {
       this.addGoldDialogVisible = true;
     },
-    // 删除店铺
+    //回收
     handleRecycle(row) {
       this.recycleDialogVisible = true;
     }

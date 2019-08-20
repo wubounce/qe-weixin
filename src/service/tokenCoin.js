@@ -15,6 +15,8 @@ export const tokenCoinDelApi = 'tokenCoin/delete'; // 店铺金币删除 method 
 export const getByPhoneApi = 'member/getByPhone'; // 手机查询 method 'post'
 export const tokenCoinUsereApi = 'tokenCoin/user'; // 积分查询 method 'post'
 export const refillAndDeductApi = 'tokenCoin/refillAndDeduct'; // 商家金币充值扣除 method 'post'
+export const tokenCoinMemberListApi = 'tokenCoin/member/list'; // 金币会员管理 method 'post'
+export const tokenCoinMemberRecordApi = 'tokenCoin/member/record'; // 会员充值记录 method 'post'
 
 
 // 添加金币
@@ -41,3 +43,7 @@ export const getByPhoneFun = payload => fetch.post(getByPhoneApi, payload);
 export const tokenCoinUsereFun = payload => fetch.post(tokenCoinUsereApi, payload);
 // 商家金币充值扣除
 export const refillAndDeductFun = payload => fetch.post(refillAndDeductApi, payload);
+// 金币会员管理
+export const tokenCoinMemberListFun = payload => fetch.post(tokenCoinMemberListApi, payload);
+// 会员充值记录
+export const tokenCoinMemberRecordFun = payload => fetch.post(tokenCoinMemberRecordApi, payload);

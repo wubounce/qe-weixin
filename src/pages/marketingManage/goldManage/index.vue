@@ -7,7 +7,7 @@
           <el-option v-for="(item) in shopList" :key="item.shopId" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间： " prop="type">
+      <el-form-item label="创建时间： " prop="time">
         <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
@@ -106,8 +106,8 @@ export default {
     },
     async getTokenCoinList() {
       let payload = Object.assign({}, this.searchData);
-      payload.startDate = payload.time ? payload.time[0] : null;
-      payload.endDate = payload.time ? payload.time[1] : null;
+      payload.startTime = payload.time ? payload.time[0] : null;
+      payload.endTime = payload.time ? payload.time[1] : null;
       payload.time = null;
       let res = await tokenCoinListFun(payload);
       if (res.items) {
