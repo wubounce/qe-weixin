@@ -84,7 +84,7 @@ export default {
       this.exchangeRate = res.exchangeRate || 100;
     },
     async getShopList() {
-      let res = await tokenCoinListFun({ page: 1, pageSize: 999 });
+      let res = await tokenCoinListFun({ page: 1, pageSize: 999, isContainClose: 1 });
       let items = (res && res.items) || [];
       this.shopList = items.filter(item => item.isDelete === 0);
     },

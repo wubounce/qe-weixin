@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="金币回收" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
-    <el-form :model="recycleForm" :rules="recycleForm" ref="recycleRulesForm" label-width="125px" label-position="left" class="recharge-ruleForm">
+    <el-form :model="recycleForm" :rules="recycleForm" ref="recycleRulesForm" label-width="125px" label-position="left" class="recharge-recycleForm">
       <el-form-item label="用户账号：">
         {{recycleForm.phone}}
       </el-form-item>
@@ -77,7 +77,7 @@ export default {
                 callback(new Error('不支持输入小数点'));
               } else if (Number(value) <= 0 || Number(value) > this.restPresentAmount) {
                 callback(new Error(`不能大于剩余的余额${this.restPresentAmount}`));
-              } else if (Number(this.ruleForm.date) === 0 && Number(value) === 0) {
+              } else if (Number(this.recycleForm.totalAmount) === 0 && Number(value) === 0) {
                 callback(new Error('金币本金与赠送金币不可同时为0'));
               } else {
                 callback();
@@ -112,13 +112,18 @@ export default {
     onHandleRecharge(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
-          let payload = Object.assign({}, this.rechargeForm);
-          payload.type = 2;
-          payload.principalAmount = payload.totalAmount;
-          refillAndDeductFun(payload).then(() => {
-            this.$Message.success('回收成功');
-            this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
-            this.modalClose();
+          this.$confirm('确认要回收用户金币吗?', '提示', {
+            showClose: false,
+            center: true
+          }).then(() => {
+            let payload = Object.assign({}, this.rechargeForm);
+            payload.type = 2;
+            payload.principalAmount = payload.totalAmount;
+            refillAndDeductFun(payload).then(() => {
+              this.$Message.success('回收成功');
+              this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
+              this.modalClose();
+            });
           });
         }
       });
@@ -129,7 +134,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.recharge-ruleForm {
+.recharge-recycleForm {
   padding-top: 24px;
 }
 .action {

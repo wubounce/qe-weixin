@@ -5,8 +5,7 @@
         <el-input v-model="searchData.phone"></el-input>
       </el-form-item>
       <el-form-item label="店铺：" prop="shopId">
-        <el-select v-model="searchData.shopId" filterable clearable placeholder="请选择">
-          <el-option label="不限" value=""></el-option>
+        <el-select v-model="searchData.shopId" filterable placeholder="请选择">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
@@ -83,7 +82,7 @@ export default {
   },
   methods: {
     async getShopList() {
-      let res = await tokenCoinListFun({ page: 1, pageSize: 999 });
+      let res = await tokenCoinListFun({ page: 1, pageSize: 999, isContainClose: 2 });
       this.shopList = (res && res.items) || [];
       this.searchData.shopId = this.shopList.length > 0 ? this.shopList[0].shopId : '';
       this.searchData.shopId && this.getGoldUserDataToTable();
