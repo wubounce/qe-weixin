@@ -49,7 +49,7 @@ export default {
       rechargeFormRules: {
         phone: [{ required: true, message: '请填写用户手机号码', trigger: 'change' }],
         shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
-        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-9]{1,2}([0-8])?)(\.\d{1,2})?|0\.[1-9]{1,2}|9999|9999.0|9999.00)$/, message: '充值金额请输入0~9999之间数字', trigger: 'blur' }],
+        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-9]{1,2}([0-8])?)(\.\d{0,2})?|0\.\d{0,2}|9999|9999.0|9999.00)$/, message: '充值金额请输入0~9999之间数字', trigger: 'blur' }],
         presentAmount: [{ required: true, message: '请填写赠送金币', trigger: 'blur' }, { pattern: /^(([0-9])|[1-9]([0-9]{1,3})?[0]{0,2})$/, message: '金币请填写0~999,900之间整数', trigger: 'blur' }, { pattern: /^[0-9]*$/, message: '金币请填写0~999,900之间整数', trigger: 'blur' }]
       }
     };
