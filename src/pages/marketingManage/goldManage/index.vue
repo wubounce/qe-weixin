@@ -1,14 +1,11 @@
 <template>
   <div class="coupon-active-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="适用店铺：" prop="type">
-        <el-select v-model="searchData.shopId" filterable clearable placeholder="请选择">
-          <el-option label="不限" value=""></el-option>
-          <el-option v-for="(item) in shopList" :key="item.shopId" :label="item.shopName" :value="item.shopId"></el-option>
-        </el-select>
+      <el-form-item label="适用店铺：" prop="shopName">
+        <el-input v-model.trim="searchData.shopName" clearable placeholder="请输入店铺名称"></el-input>
       </el-form-item>
       <el-form-item label="创建时间： " prop="time">
-        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :default-time="['00:00:00', '23:59:59']">
+        <el-date-picker size="small" v-model="searchData.time" type="daterange" align="right" unlink-panels range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" :default-time="['00:00:00', '23:59:59']">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -69,7 +66,7 @@ export default {
   data() {
     return {
       searchData: {
-        shopId: '',
+        shopName: '',
         time: []
       },
       shopList: [],

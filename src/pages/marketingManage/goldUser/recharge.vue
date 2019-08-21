@@ -2,7 +2,7 @@
   <el-dialog title="充值金币" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
     <el-form :model="rechargeForm" :rules="rechargeFormRules" ref="rechargeForm" label-width="125px" label-position="left" class="recharge-form">
       <el-form-item label="用户账号：" prop="phone">
-        <el-select v-model="rechargeForm.phone" filterable remote clearable :loading="loading" :remote-method="getUserList" placeholder="请填写用户手机号">
+        <el-select v-model.trim="rechargeForm.phone" filterable remote clearable :loading="loading" :remote-method="getUserList" placeholder="请填写用户手机号">
           <el-option v-for="(item,index) in userList" :key="index" :label="item.phone" :value="item.phone"></el-option>
         </el-select>
       </el-form-item>
@@ -11,12 +11,12 @@
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="金币金额(元)：" prop="principalAmount">
-        <el-input v-model="rechargeForm.principalAmount" placeholder="请填写充值金额"></el-input>
+      <el-form-item label="金币金额(元)：" prop="cashValue">
+        <el-input v-model.trim="rechargeForm.cashValue" placeholder="请填写充值金额"></el-input>
       </el-form-item>
-      <el-form-item label="金币本金(枚)：">{{rechargeForm.principalAmount?rechargeForm.principalAmount*exchangeRate:'' | numFormat}}</el-form-item>
+      <el-form-item label="金币本金(枚)：">{{rechargeForm.cashValue?rechargeForm.cashValue*exchangeRate:'' | numFormat}}</el-form-item>
       <el-form-item label="赠送金币(枚)：" prop="presentAmount">
-        <el-input v-model="rechargeForm.presentAmount" placeholder="请填写赠送金币"></el-input>
+        <el-input v-model.trim="rechargeForm.presentAmount" placeholder="请填写赠送金币"></el-input>
       </el-form-item>
       <el-form-item class="action">
         <el-button type="primary" @click="onHandleRecharge('rechargeForm')">确定</el-button>
@@ -43,31 +43,14 @@ export default {
       rechargeForm: {
         phone: '',
         shopId: '',
-        principalAmount: '',
+        cashValue: '',
         presentAmount: ''
       },
       rechargeFormRules: {
         phone: [{ required: true, message: '请填写用户手机号码', trigger: 'change' }],
         shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
-        principalAmount: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '充值金额请输入0~9999之间数字', trigger: 'blur' }],
-        presentAmount: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: (rule, value, callback) => {
-              let reg = /^[0-9]*$/;
-              if (!value) {
-                callback(new Error('请填写赠送金币'));
-              } else if (!reg.test(value)) {
-                callback(new Error('不支持输入小数点'));
-              } else if (Number(value) > 999900) {
-                callback(new Error('请填写0~999,900之间数字'));
-              } else {
-                callback();
-              }
-            }
-          }
-        ]
+        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-9]{1,2}([0-8])?)(\.\d{1,2})?|0\.[1-9]{1,2}|9999|9999.0|9999.00)$/, message: '充值金额请输入0~9999之间数字', trigger: 'blur' }],
+        presentAmount: [{ required: true, message: '请填写赠送金币', trigger: 'blur' }, { pattern: /^(([0-9])|[1-9]([0-9]{1,3})?[0]{0,2})$/, message: '金币请填写0~999,900之间整数', trigger: 'blur' }, { pattern: /^[0-9]*$/, message: '金币请填写0~999,900之间整数', trigger: 'blur' }]
       }
     };
   },
@@ -103,13 +86,14 @@ export default {
     onHandleRecharge(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
-          let payload = Object.assign({}, this.rechargeForm);
-          payload.type = 1;
-          payload.principalAmount *= this.exchangeRate;
+          let payload = Object.assign({ type: 1 }, this.rechargeForm);
+          payload.principalAmount = payload.cashValue * this.exchangeRate;
           refillAndDeductFun(payload).then(() => {
-            this.$Message.success('充值成功');
-            this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
-            this.modalClose();
+            setTimeout(() => {
+              this.$Message.success('充值成功');
+              this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
+              this.modalClose();
+            }, 1000);
           });
         }
       });

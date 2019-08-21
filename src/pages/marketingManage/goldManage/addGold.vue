@@ -8,7 +8,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="折扣比例(%)：" prop="discountProportion">
-        <el-input v-model="addGoldDynamicForm.discountProportion" placeholder="请填写1-99的数字" :maxlength='4'></el-input>
+        <el-input v-model.trim="addGoldDynamicForm.discountProportion" placeholder="请填写1-99的数字" :maxlength='4'></el-input>
       </el-form-item>
       <h2>
         <span class="gold_case">金币方案</span>
@@ -92,26 +92,9 @@ export default {
       },
       addGoldDynamicFormRules: {
         shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
-        discountProportion: [{ required: true, message: '请填写抵扣比例', trigger: 'blur' }, { pattern: /^(([0-9]|[1-9][0-8])(\.\d{0,1})?|99|99.0)$/, message: '抵扣比例请输入1-99之间的数字', trigger: 'blur' }],
-        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9][0-9]{1,3}|[1-9])(\.\d{1,2})?|0\.[1-9]{1,2})$/, message: '充值金额请输入0~9999之间数字', trigger: 'blur' }],
-        reward: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: (rule, value, callback) => {
-              let reg = /^[0-9]*$/;
-              if (!value) {
-                callback(new Error('请填写赠送金币'));
-              } else if (!reg.test(value)) {
-                callback(new Error('不支持输入小数点'));
-              } else if (Number(value) > 999900) {
-                callback(new Error('请填写0~999,900之间数字'));
-              } else {
-                callback();
-              }
-            }
-          }
-        ]
+        discountProportion: [{ required: true, message: '请填写抵扣比例', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,1})?|0\.[1-9]{1}|99|99.0)$/, message: '抵扣比例请输入1-99之间的数字,最多一位小数', trigger: 'blur' }],
+        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-9]{1,2}([0-8])?)(\.\d{1,2})?|0\.[1-9]{1,2}|9999|9999.0|9999.00)$/, message: '请输入0~9999之间数字', trigger: 'blur' }],
+        reward: [{ required: true, message: '请填写赠送金币', trigger: 'blur' }, { pattern: /^(([0-9])|[1-9]([0-9]{1,3})?[0]{0,2})$/, message: '请填写0~999,900之间整数', trigger: 'blur' }, { pattern: /^[0-9]*$/, message: '请填写0~999,900之间整数', trigger: 'blur' }]
       }
     };
   },

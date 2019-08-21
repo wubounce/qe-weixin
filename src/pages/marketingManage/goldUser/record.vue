@@ -8,13 +8,22 @@
         <span>充值店铺：</span>{{defaultInfo.shopName}}
       </li>
     </ul>
-    <el-table :data="list" class="gold_table" max-height="325" style="min-height:220px">
-      <el-table-column prop="principalAmount" label="充值金额"></el-table-column>
-      <el-table-column prop="amount" label="充值金币"></el-table-column>
-      <el-table-column prop="afterAmount" label="金币本金"></el-table-column>
-      <el-table-column prop="presentAmount" label="赠送金币"></el-table-column>
+    <el-table :data="list" class="gold_table" max-height="600">
+      <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
+      <el-table-column prop="principalAmount" label="充值金额">
+        <template slot-scope="scope">{{formatAmount(scope.row.principalAmount,scope.row.subType,1)}}</template>
+      </el-table-column>
+      <el-table-column prop="amount" label="充值金币">
+        <template slot-scope="scope">{{formatAmount(scope.row.principalAmount,scope.row.subType)}}</template>
+      </el-table-column>
+      <el-table-column prop="presentAmount" label="赠送金币">
+        <template slot-scope="scope">{{formatAmount(scope.row.presentAmount,scope.row.subType)}}</template>
+      </el-table-column>
+      <el-table-column prop="afterAmount" label="金币本金">
+        <template slot-scope="scope">{{formatAmount(scope.row.amount,scope.row.subType)}}</template>
+      </el-table-column>
       <el-table-column prop="remark" label="充值方式"></el-table-column>
-      <el-table-column prop="createdAt" label="充值时间"></el-table-column>
+      <el-table-column prop="createdAt" label="充值时间" width="140"></el-table-column>
     </el-table>
     <div class="pagination-right">
       <el-pagination v-show="pageShow" @size-change="pageSizeChange" @current-change="currentChange" :current-page="searchData.page" :page-sizes="pageSizeOpts" :page-size="searchData.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -33,9 +42,11 @@ export default {
       type: Boolean,
       default: false
     },
-    shopTokenCoinId: {
-      type: String,
-      default: ''
+    userInfo: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     }
   },
   data() {
@@ -44,6 +55,19 @@ export default {
     };
   },
   components: {},
+  computed: {
+    formatAmount() {
+      return function(value, subType, flag = 0) {
+        value = flag === 1 ? (Number(value) / 100).toFixed(0) : value;
+        let map = {
+          101: `+${value}`,
+          102: `+${value}`,
+          202: `-${value}`
+        };
+        return map[subType] || value;
+      };
+    }
+  },
   created() {
     this._getList();
   },
@@ -52,7 +76,7 @@ export default {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
     async _getList() {
-      let payload = Object.assign({ shopId: this.shopId, phone: this.phone }, this.searchData);
+      let payload = Object.assign({ shopId: this.userInfo.shopId, phone: this.userInfo.phone }, this.searchData);
       let res = await tokenCoinMemberRecordFun(payload);
       this.list = res.items || [];
       this.defaultInfo = res && res.items.length > 0 ? res.items[0] : {};
@@ -67,7 +91,6 @@ export default {
   padding-bottom: 15px;
   li {
     padding: 11px 0;
-    border-bottom: 1px solid $under_line;
     span {
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
@@ -75,5 +98,8 @@ export default {
       height: 100%;
     }
   }
+}
+.pagination-right {
+  padding: 24px 0;
 }
 </style>

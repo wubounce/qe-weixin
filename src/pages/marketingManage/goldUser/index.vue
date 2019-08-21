@@ -2,7 +2,7 @@
   <div class="coupon-active-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="会员账号：" prop="phone">
-        <el-input v-model="searchData.phone"></el-input>
+        <el-input v-model.trim="searchData.phone" clearable placeholder="请输入会员账号"></el-input>
       </el-form-item>
       <el-form-item label="店铺：" prop="shopId">
         <el-select v-model="searchData.shopId" filterable placeholder="请选择">
@@ -32,7 +32,7 @@
         <el-table-column header-align="left" label="操作" fixed="right">
           <template slot-scope="scope">
             <el-tooltip content="回收" placement="top" effect="dark">
-              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleRecycle(scope.row.shopId)" />
+              <svg-icon icon-class="recycle" class="icon-recycle" @click="handleRecycle(scope.row)" />
             </el-tooltip>
           </template>
         </el-table-column>
@@ -42,9 +42,9 @@
     <!-- 金币充值 -->
     <recharge v-if="addGoldDialogVisible" :visible.sync="addGoldDialogVisible" @getGoldUserDataToTable="getGoldUserDataToTable"></recharge>
     <!-- 金币回收 -->
-    <recycle-gold v-if="recycleDialogVisible" :visible.sync="recycleDialogVisible"></recycle-gold>
+    <recycle-gold v-if="recycleDialogVisible" :visible.sync="recycleDialogVisible" :userInfo="userInfo" @getGoldUserDataToTable="getGoldUserDataToTable"></recycle-gold>
     <!-- 金币充值记录 -->
-    <record v-if="recordDialogVisible" :visible.sync="recordDialogVisible"></record>
+    <record v-if="recordDialogVisible" :visible.sync="recordDialogVisible" :userInfo="userInfo"></record>
   </div>
 </template>
 
@@ -54,13 +54,15 @@ import PagerMixin from '@/mixins/PagerMixin';
 import { tokenCoinListFun, tokenCoinMemberListFun } from '@/service/tokenCoin';
 import recharge from './recharge';
 import recycleGold from './recycleGold';
+import record from './record';
 
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
     recharge,
-    recycleGold
+    recycleGold,
+    record
   },
   data() {
     return {
@@ -72,7 +74,8 @@ export default {
       goleUserList: [],
       addGoldDialogVisible: false,
       recycleDialogVisible: false,
-      recordDialogVisible: false
+      recordDialogVisible: false,
+      userInfo: {}
     };
   },
   filters: {},
@@ -97,8 +100,10 @@ export default {
     },
     resetSearchForm(formName) {
       this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
-      this.getGoldUserDataToTable();
+      this.searchData.shopId = this.shopList.length > 0 ? this.shopList[0].shopId : '';
+      this.searchData.shopId && this.getGoldUserDataToTable();
     },
     async getGoldUserDataToTable() {
       let payload = Object.assign({}, this.searchData);
@@ -106,11 +111,16 @@ export default {
       this.goleUserList = res.items || [];
       this.total = res.total;
     },
+    lookDetail(row) {
+      this.userInfo = row;
+      this.recordDialogVisible = true;
+    },
     addGoldCase(row) {
       this.addGoldDialogVisible = true;
     },
     //回收
     handleRecycle(row) {
+      this.userInfo = row;
       this.recycleDialogVisible = true;
     }
   }
