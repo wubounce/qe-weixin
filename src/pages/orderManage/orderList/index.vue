@@ -67,6 +67,7 @@
                 <p class="rowstyle" style="font-size:10px;" v-if="scope.row.platformPayPrice>0">(优惠券平台承担{{scope.row.platformPayPrice}})</p>
               </div>
               <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券：{{scope.row.voucherPrice}}</p>
+              <p v-if="scope.row.tokenCoinDiscount>0">金币抵扣：{{scope.row.voucherPrice}}</p>
               <div slot="reference" class="name-wrapper">
                 <span size="medium">
                   <span>{{ scope.row.discountTotalPirce | tofixd}}</span>
@@ -139,6 +140,7 @@
                   <p class="rowstyle" style="font-size:10px;" v-if="detailData.platformPayPrice>0">(优惠券平台承担{{detailData.platformPayPrice}})</p>
                 </div>
                 <p v-if="detailData.source==3&&detailData.voucherPrice>0">商家优惠券：{{detailData.voucherPrice}}</p>
+                <p v-if="detailData.tokenCoinDiscount>0">金币抵扣：{{detailData.tokenCoinDiscount}}</p>
                 <div slot="reference" class="name-wrapper" style="   color: #595959;">
                   {{ detailData.discountTotalPirce | tofixd}}
                   <svg-icon icon-class="xialajiantouxia" class="arrow" v-if="detailData.discountTotalPirce>0" />
@@ -298,7 +300,8 @@ export default {
       this.orederDataToTable.forEach(item => {
         item.discountPrice = item.discountPrice || 0;
         item.voucherPrice = item.voucherPrice || 0;
-        let tmp = Number(item.discountPrice) + Number(item.voucherPrice);
+        item.tokenCoinDiscount = item.tokenCoinDiscount || 0;
+        let tmp = Number(item.discountPrice) + Number(item.voucherPrice) + Number(item.tokenCoinDiscount);
         this.$set(item, 'discountTotalPirce', tmp.toFixed(2));
       });
       this.total = res.total;
@@ -309,7 +312,8 @@ export default {
       this.detailData = res;
       this.detailData.discountPrice = this.detailData.discountPrice || 0;
       this.detailData.voucherPrice = this.detailData.voucherPrice || 0;
-      let tmp = Number(this.detailData.discountPrice) + Number(this.detailData.voucherPrice);
+      this.detailData.tokenCoinDiscount = this.detailData.tokenCoinDiscount || 0;
+      let tmp = Number(this.detailData.discountPrice) + Number(this.detailData.voucherPrice) + Number(this.detailData.tokenCoinDiscount);
       this.$set(this.detailData, 'discountTotalPirce', tmp.toFixed(2));
     },
     handleDeviceReset(row) {
