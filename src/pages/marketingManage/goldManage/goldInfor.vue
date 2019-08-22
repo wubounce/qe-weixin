@@ -30,7 +30,7 @@
         <svg-icon icon-class="zhibiaoshuoming" />
       </el-tooltip>
     </h2>
-    <el-table :data="rewardSets" class="gold_table" max-height="325" style="min-height:220px">
+    <el-table :data="rewardSets" class="gold_table">
       <el-table-column prop="cashValue" label="充值金额（元）"></el-table-column>
       <el-table-column prop="reach" label="金币本金（枚）"></el-table-column>
       <el-table-column prop="reward" label="赠送金币（枚）"></el-table-column>
