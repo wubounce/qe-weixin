@@ -8,7 +8,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="折扣比例(%)：" prop="discountProportion">
-        <el-input v-model.trim="addGoldDynamicForm.discountProportion" placeholder="请填写1-99的数字" :maxlength='4'></el-input>
+        <el-input v-model.trim="addGoldDynamicForm.discountProportion" placeholder="请填写1-99内的数字" :maxlength='4'></el-input>
       </el-form-item>
       <h2>
         <span class="gold_case">金币方案</span>
