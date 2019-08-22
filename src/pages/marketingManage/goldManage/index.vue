@@ -138,7 +138,7 @@ export default {
     },
     // 删除店铺
     handleDelete(row) {
-      this.$confirm('您确定要删除该店铺?', '提示', {
+      this.$confirm('确定要删除该金币方案吗?', '提示', {
         showClose: false,
         center: true
       }).then(() => {

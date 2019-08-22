@@ -22,7 +22,9 @@
       <el-table-column prop="afterAmount" label="金币本金">
         <template slot-scope="scope">{{formatAmount(scope.row.amount,scope.row.subType)}}</template>
       </el-table-column>
-      <el-table-column prop="remark" label="充值方式"></el-table-column>
+      <el-table-column prop="remark" label="充值方式">
+        <template slot-scope="scope">{{scope.row.subType|rechargeWay}}</template>
+      </el-table-column>
       <el-table-column prop="createdAt" label="充值时间" width="140"></el-table-column>
     </el-table>
     <div class="pagination-right">
@@ -55,6 +57,16 @@ export default {
     };
   },
   components: {},
+  filters: {
+    rechargeWay: function(value) {
+      let map = {
+        101: `用户直充`,
+        102: `商户代充`,
+        202: `金币回收`
+      };
+      return map[value];
+    }
+  },
   computed: {
     formatAmount() {
       return function(value, subType, flag = 0) {

@@ -53,7 +53,7 @@
       </el-table>
       <div class="begin-add-accout" v-if="addGoldDynamicForm.rewardsJson.length<maxRewardNum" @click="addDomain">
         <div class="add-accout">
-          <i class="el-icon-plus"></i><span>添加账号</span>
+          <i class="el-icon-plus"></i><span>添加</span>
         </div>
       </div>
       <el-form-item class="action">
