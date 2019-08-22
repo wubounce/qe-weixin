@@ -1,13 +1,13 @@
 <template>
   <el-dialog :title="title" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
     <el-form label-position="left" label-width="120px" ref="addGoldDynamicForm" :model="addGoldDynamicForm" :rules="addGoldDynamicFormRules" class="add_gold_dynamic_form">
-      <el-form-item label="适用店铺：" prop="shopId">
+      <el-form-item label="适用店铺：" prop="shopId" class="input_width">
         <span v-if="shopTokenCoinId">{{shopTokenCoinSet.shopName}}</span>
-        <el-select v-if="!shopTokenCoinId" v-model="addGoldDynamicForm.shopId" filterable clearable placeholder="请选择店铺">
+        <el-select v-if="!shopTokenCoinId" v-model="addGoldDynamicForm.shopId" filterable clearable placeholder="未选择">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="折扣比例(%)：" prop="discountProportion">
+      <el-form-item label="折扣比例(%)：" prop="discountProportion" class="input_width">
         <el-input v-model.trim="addGoldDynamicForm.discountProportion" placeholder="请填写1-99内的数字" :maxlength='4'></el-input>
       </el-form-item>
       <h2>
@@ -53,7 +53,7 @@
       </el-table>
       <div class="begin-add-accout" v-if="addGoldDynamicForm.rewardsJson.length<maxRewardNum" @click="addDomain">
         <div class="add-accout">
-          <i class="el-icon-plus"></i><span>添加账号{{addGoldDynamicForm.rewardsJson.length}}</span>
+          <i class="el-icon-plus"></i><span>添加账号</span>
         </div>
       </div>
       <el-form-item class="action">
@@ -205,7 +205,9 @@ export default {
   h2 {
     margin: 15px 0;
   }
-
+  /deep/ .input_width .el-input__inner {
+    width: 220px !important;
+  }
   .begin-add-accout {
     .add-accout {
       padding: 24px 0;
