@@ -68,17 +68,24 @@
           <span>退款金额(元)<span class="num">{{refundMoney}}</span></span>
         </span>
       </div>
+      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import Pagination from '@/components/Pager';
+import PagerMixin from '@/mixins/PagerMixin';
 import { balanceLogFlowListFun, balanceLogFlowListApi, shopListFun } from '@/service/report';
 import { exportExcel } from '@/service/common';
 import { manageSimpleListFun } from '@/service/shop';
 import { sourceType, earningType } from '@/utils/mapping';
+
 export default {
-  components: {},
+  mixins: [PagerMixin],
+  components: {
+    Pagination
+  },
   data() {
     return {
       tableDataList: [],
@@ -129,18 +136,29 @@ export default {
         //判断开始时间+30天是否小于结束时间
         this.$Message.error('最多查询跨度31天');
         return false;
+      } else {
+        return true;
       }
     },
     checkedShop(val) {
       this.searchData.machineId = '';
       this.getmachineParentType(val);
     },
-    searchForm() {
-      this.searchData.page = 1;
-      this.checkedTime(this.searchData.time);
+    handlePagination(data) {
+      this.searchData = Object.assign(this.searchData, data);
       this.getProfitDate();
     },
+    searchForm() {
+      this.searchData.page = 1;
+      this.total = 0;
+      let res = this.checkedTime(this.searchData.time);
+      if (res) {
+        this.getProfitDate();
+      }
+    },
     resetSearchForm(formName) {
+      this.searchData.page = 1;
+      this.total = 0;
       this.$refs[formName].resetFields();
       this.getProfitDate();
     },
@@ -161,6 +179,7 @@ export default {
       payload.time = [];
       let res = await balanceLogFlowListFun(payload);
       this.tableDataList = res.items || [];
+      this.total = res.total;
       this.profitMoney = res.profitMoney;
       this.refundMoney = res.refundMoney;
       this.totalMoney = res.totalMoney;

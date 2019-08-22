@@ -10,7 +10,7 @@
             <el-radio :label="3" v-if="deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">其他属性</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="checkBatchFuntion === 1">
+        <el-table :data="deviceEditForm.functionList" style="width: 100%" key="functionList" v-if="checkBatchFuntion === 1">
           <el-table-column prop="functionName" label="功能"></el-table-column>
           <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
             <template slot-scope="scope">
@@ -48,7 +48,7 @@
             <el-switch v-model="deviceEditForm.isOpenDetergentStatus">
             </el-switch>
           </el-form-item>
-          <el-table :data="deviceEditForm.detergentFunctionList" style="width: 100%">
+          <el-table :data="deviceEditForm.detergentFunctionList" key="detergentFunctionList" style="width: 100%">
             <el-table-column prop="functionName" label="功能"></el-table-column>
             <el-table-column prop="detergentLiquid" label="用量/ml">
               <template slot-scope="scope">
@@ -67,7 +67,7 @@
               </template></el-table-column>
           </el-table>
         </div>
-        <el-table :data="deviceEditForm.waterLevel" style="width: 100%" v-if="checkBatchFuntion === 3&&deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
+        <el-table :data="deviceEditForm.waterLevel" style="width: 100%" key="waterLevel" v-if="checkBatchFuntion === 3&&deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
           <el-table-column prop="functionName" label="属性名称">
             <template slot-scope="scope">
               <span>水位设置</span>
