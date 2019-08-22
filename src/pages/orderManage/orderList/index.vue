@@ -67,7 +67,7 @@
                 <p class="rowstyle" style="font-size:10px;" v-if="scope.row.platformPayPrice>0">(优惠券平台承担{{scope.row.platformPayPrice}})</p>
               </div>
               <p v-if="scope.row.source==3&&scope.row.voucherPrice>0">商家优惠券：{{scope.row.voucherPrice}}</p>
-              <p v-if="scope.row.tokenCoinDiscount>0">金币抵扣：{{scope.row.voucherPrice}}</p>
+              <p v-if="scope.row.tokenCoinDiscount>0">金币抵扣：{{scope.row.tokenCoinDiscount}}</p>
               <div slot="reference" class="name-wrapper">
                 <span size="medium">
                   <span>{{ scope.row.discountTotalPirce | tofixd}}</span>
