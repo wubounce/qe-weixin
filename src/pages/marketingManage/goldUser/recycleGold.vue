@@ -60,7 +60,7 @@ export default {
               } else if (!reg.test(value)) {
                 callback(new Error('不支持输入小数点'));
               } else if (Number(value) > this.userInfo.principalAmount) {
-                callback(new Error(`不能大于剩余的余额${this.userInfo.principalAmount}`));
+                callback(new Error('金币本金数目超限'));
               } else {
                 callback();
               }
@@ -78,7 +78,7 @@ export default {
               } else if (!reg.test(value)) {
                 callback(new Error('不支持输入小数点'));
               } else if (Number(value) > this.userInfo.presentAmount) {
-                callback(new Error(`不能大于剩余的余额${this.userInfo.presentAmount}`));
+                callback(new Error('赠送金币数目超限'));
               } else if (Number(this.recycleForm.principalAmount) === 0 && Number(value) === 0) {
                 callback(new Error('金币本金与赠送金币不可同时为0'));
               } else {
