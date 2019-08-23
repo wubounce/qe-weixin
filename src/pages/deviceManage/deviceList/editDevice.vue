@@ -7,28 +7,46 @@
       <el-tabs v-model="deviceEditTab">
         <el-tab-pane label="功能设置" name="first">
           <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
-            <el-form-item label="价格设置：" prop="waterMachinePirce">
-              <div class="add-discount">
-                <el-input v-model.trim="deviceEditForm.waterMachinePirce" maxlength="6" placeholder="例：1"></el-input>
-                <span style="position: absolute;left: 220px;color:#bfbfbf;">元/{{isSupportDosage(deviceEditForm.support)?'升':'秒'}}</span>
-              </div>
-            </el-form-item>
-            <el-form-item label="单位流量：" prop="waterMachineNeedMinutes" v-if="isSupportDosage(deviceEditForm.support)">
-              <div class="add-discount">
-                <el-input v-model.trim="deviceEditForm.waterMachineNeedMinutes" maxlength="5" placeholder="例：1"></el-input>
-                <span style="position: absolute;left: 220px;color:#bfbfbf;">ml</span>
-              </div>
-            </el-form-item>
             <el-table :data="deviceEditForm.functionList" style="width: 100%">
-              <el-table-column prop="functionName" label="出水口"></el-table-column>
-              <el-table-column prop="ifOpenStatus" label="状态" header-align="right" align="right">
+              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+              <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
+                <template slot-scope="scope">
+                  <el-form-item v-if="configVO.time.join" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
+                    <el-input v-model.trim="scope.row.needMinutes">
+                    </el-input>
+                  </el-form-item>
+                  <div v-else>
+                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
+                      <el-input v-model.trim="scope.row.needMinutes">
+                      </el-input>
+                    </el-form-item>
+                    <span v-else>{{getRestNeedMinutes(scope.row)}}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                <template slot-scope="scope">
+                  <el-form-item v-if="configVO.price.join" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
+                    <el-input v-model.trim="scope.row.functionPrice">
+                    </el-input>
+                  </el-form-item>
+                  <div v-else>
+                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
+                      <el-input v-model.trim="scope.row.functionPrice">
+                      </el-input>
+                    </el-form-item>
+                    <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
                 <template slot-scope="scope">
                   <el-switch v-model="scope.row.ifOpenStatus">
                   </el-switch>
                 </template>
               </el-table-column>
             </el-table>
-            <p class="water-tip"><span v-if="isSupportDosage(deviceEditForm.support)">1、</span>关闭出水口开关用户则无法使用对应出水口接水 <br /><span v-if="isSupportDosage(deviceEditForm.support)">2、单位流量为设备流量计每转1圈的流量</span></p>
+
           </div>
           <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
             <el-form-item label="充电单价：" prop="chargeMachinePirce">
@@ -124,8 +142,23 @@
               </ul>
             </div>
             <el-table :data="deviceEditForm.functionList" style="width: 100%">
-              <el-table-column prop="functionName" label="充电口"></el-table-column>
-              <el-table-column prop="ifOpenStatus" label="状态" header-align="right" align="right">
+              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+              <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                <template slot-scope="scope">
+                  <el-form-item v-if="configVO.price.join" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
+                    <el-input v-model.trim="scope.row.functionPrice">
+                    </el-input>
+                  </el-form-item>
+                  <div v-else>
+                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
+                      <el-input v-model.trim="scope.row.functionPrice">
+                      </el-input>
+                    </el-form-item>
+                    <span v-else>{{getRestFunctionPrice(row.functionPrice)}}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.price.available">
                 <template slot-scope="scope">
                   <el-switch v-model="scope.row.ifOpenStatus">
                   </el-switch>
@@ -318,7 +351,14 @@ export default {
       //充电时间选择
       chargeTimeMax: 0,
       chargeTimeMin: 0,
-      chargeTimeStep: 0
+      chargeTimeStep: 0,
+      configVO: {
+        extra: {},
+        name: {},
+        open: {},
+        price: {},
+        time: {}
+      }
     };
   },
   components: {},
@@ -328,12 +368,14 @@ export default {
     }
   },
   created() {
-    this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice || 0);
-    this.$set(this.deviceEditForm, 'waterMachineNeedMinutes', this.deviceEditForm.functionList[0].needMinutes || 0);
-    this.$set(this.deviceEditForm, 'chargeMachinePirce', this.deviceEditForm.functionList[0].functionPrice || 0);
-    this.$set(this.deviceEditForm, 'extraAttr', this.deviceEditForm.functionList[0].extraAttr || {});
+    this.configVO = this.deviceEditForm.configVO || {};
+    this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
+    this.deviceEditForm.functionList.forEach(item => {
+      item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
+    });
+    let extraAttr = _.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
+    this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     if (this.deviceEditForm.subTypeId === '435871915014357627') {
-      let extraAttr = this.deviceEditForm.functionList.length > 0 ? (this.deviceEditForm.functionList[0].extraAttr ? this.deviceEditForm.functionList[0].extraAttr : {}) : {};
       let tmpext = Object.assign({}, extraAttr);
       this.chargeTimeMax = tmpext.max || 0;
       this.chargeTimeMin = tmpext.min || 0;
@@ -343,6 +385,12 @@ export default {
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    getRestNeedMinutes(row) {
+      return (row.needMinutes = _.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
+    },
+    getRestFunctionPrice(row) {
+      return (row.functionPrice = _.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
     },
     onEditDecive(formName) {
       this.$refs[formName].validate(valid => {
@@ -355,15 +403,6 @@ export default {
               ifOpenLen = ifOpenLen + 1;
             } else {
               item.ifOpen = 0;
-            }
-            if (this.deviceEditForm.parentTypeName === '饮水机' && this.isBoiledWater(this.deviceEditForm.support)) {
-              //开水机
-              item.functionPrice = this.deviceEditForm.waterMachinePirce;
-              item.needMinutes = this.deviceEditForm.waterMachineNeedMinutes;
-            }
-            if (this.deviceEditForm.subTypeId === '435871915014357627') {
-              //充电桩
-              item.functionPrice = this.deviceEditForm.chargeMachinePirce;
             }
           });
           if (ifOpenLen === this.deviceEditForm.functionList.length) {

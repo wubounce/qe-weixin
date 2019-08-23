@@ -201,9 +201,9 @@
         </el-form>
       </el-dialog>
       <!-- 编辑设备  -->
-      <edit-device :deviceEditdetailForm="deviceEditdetailForm" v-if="deviceEditDialogVisible" :visible.sync="deviceEditDialogVisible" @getDeviceDataToTable="getDeviceDataToTable"></edit-device>
+      <edit-device v-if="deviceEditDialogVisible&&deviceEditdetailForm" :visible.sync="deviceEditDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" @getDeviceDataToTable="getDeviceDataToTable"></edit-device>
       <!-- 批量编辑设备  -->
-      <batch-edit :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" v-if="batchDEditDeviceDialogVisible" :visible.sync="batchDEditDeviceDialogVisible" @getDeviceDataToTable="getDeviceDataToTable"></batch-edit>
+      <batch-edit v-if="batchDEditDeviceDialogVisible&&deviceEditdetailForm" :visible.sync="batchDEditDeviceDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" @getDeviceDataToTable="getDeviceDataToTable"></batch-edit>
     </div>
   </div>
 </template>
@@ -257,7 +257,7 @@ export default {
 
       //编辑
       deviceEditDialogVisible: false,
-      deviceEditdetailForm: {},
+      deviceEditdetailForm: null,
 
       //批量编辑设备
       batchDEditDeviceDialogVisible: false,
@@ -367,16 +367,9 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
-      this.$set(this.detailData, 'waterAndChargeMachinePirce', res.functionList[0].functionPrice || 0);
-      this.$set(this.detailData, 'waterMachineNeedMinutes', res.functionList[0].needMinutes || {});
-      this.$set(this.detailData, 'extraAttr', res.functionList[0].extraAttr || {});
       this.deviceEditdetailForm = Object.assign({}, res);
-      this.deviceEditdetailForm.isOpenDetergent == 1 ? this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditdetailForm, 'isOpenDetergentStatus', false);
-      this.deviceEditdetailForm.functionList.forEach(item => {
-        item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
-      });
       if (res.subTypeId === '435871915014357627') {
-        let extraAttr = res.functionList.length > 0 ? (res.functionList[0].extraAttr ? res.functionList[0].extraAttr : {}) : {};
+        let extraAttr = _.get(res, 'functionList[0].extraAttr', {});
         this.chargeTimeMax = (1 / extraAttr.step) * extraAttr.max || 0;
         this.chargeTimeMin = extraAttr.min || 0;
         this.chargeTimeStep = extraAttr.step || 0;

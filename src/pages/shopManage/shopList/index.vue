@@ -89,32 +89,20 @@
         <h3 class="detail-base-title">基本信息</h3>
         <ul class="deatil-list">
           <li>
-            <div><span>店铺名称：</span>{{detailData.shopName}}</div>
-            <div><span>店铺类型：</span>{{detailData.shopTypeName}}</div>
+            <span>店铺名称：</span>{{detailData.shopName}}
           </li>
-          <li>
-            <div><span>店铺地址：</span><i>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</i></div>
-            <div><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</div>
-          </li>
-          <li>
-            <div><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</div>
-            <div><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</div>
-          </li>
-          <li>
-            <div><span>营业时间：</span>{{detailData.workTime}}</div>
-            <div> <span>限时优惠：</span>{{detailData.isDiscount | isDiscountType}}</div>
-          </li>
-          <li>
-            <div><span>VIP卡：</span>{{detailData.hasVip | isHasVipType}}</div>
-            <div><span>VIP数量：</span>{{detailData.vipCount}}个</div>
-          </li>
-          <li>
-            <div><span>客服电话：</span>{{detailData.serviceTelephone}}</div>
-            <div><span>创建人：</span>{{detailData.createUser}}</div>
-          </li>
-          <li>
-            <div><span>创建时间：</span>{{detailData.createTime}}</div>
-          </li>
+          <li><span>店铺类型：</span>{{detailData.shopTypeName}}</li>
+          <li><span>店铺地址：</span><i>{{detailData.provinceName}}{{detailData.cityName}}{{detailData.districtName}}{{detailData.organization}}{{detailData.address}}</i></li>
+          <li><span>已有设备：</span>{{detailData.machineTypeNames?detailData.machineTypeNames:'暂无设备'}}</li>
+          <li><span>预约功能：</span>{{detailData.isReserve | isReserveType}}</li>
+          <li><span>预约时间：</span>{{detailData.orderLimitMinutes?detailData.orderLimitMinutes+'分钟':''}}</li>
+          <li><span>营业时间：</span>{{detailData.workTime}}</li>
+          <li><span>限时优惠：</span>{{detailData.isDiscount | isDiscountType}}</li>
+          <li><span>VIP卡：</span>{{detailData.hasVip | isHasVipType}}</li>
+          <li><span>VIP数量：</span>{{detailData.vipCount}}个</li>
+          <li><span>客服电话：</span>{{detailData.serviceTelephone}}</li>
+          <li><span>创建人：</span>{{detailData.createUser}}</li>
+          <li><span>创建时间：</span>{{detailData.createTime}}</li>
         </ul>
         <div v-if="revenueSharingDetail">
           <h3 class="detail-base-title" style="border:none">分账信息</h3>
@@ -344,17 +332,17 @@ export default {
   font-weight: normal;
 }
 .deatil-list {
-  padding-bottom: 15px;
-  :last-child {
+  margin-bottom: 15px;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: flex-start;
+  :nth-last-of-type(-n + 2):not(:nth-child(even)) {
     border: none;
   }
   li {
     padding: 11px 0;
+    width: 50%;
     border-bottom: 1px solid $under_line;
-    display: flex;
-    > div {
-      width: 50%;
-    }
     span {
       float: left;
       color: rgba(23, 26, 46, 0.45);

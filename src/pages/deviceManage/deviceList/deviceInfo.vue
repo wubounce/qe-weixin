@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="设备详情" :visible.sync="visible" :before-close="modalClose" :close="modalClose" @close="detailActiveTab='first'" width="540px" top="50px">
+  <el-dialog title="设备详情" :visible.sync="visible" :before-close="modalClose" :close="modalClose" @close="detailActiveTab='first'" width="640px" top="50px">
     <h3 class="detail-base-title">基本信息</h3>
     <ul class="deatil-list">
       <li><span>设备名称：</span>{{detailData.machineName}}</li>
@@ -17,11 +17,11 @@
     <el-tabs v-model="detailActiveTab">
       <el-tab-pane label="功能设置" name="first">
         <div v-if="detailData.parentTypeName === '饮水机'&&isBoiledWater(detailData.support)">
-          <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce}}元/{{isSupportDosage(detailData.support)?'升':'秒'}}</p>
-          <p class="charge-base" style="margin-bottom: 24px;" v-if="isSupportDosage(detailData.support)"><span>流量单位：</span>{{detailData.waterMachineNeedMinutes}}ml</p>
           <el-table :data="detailData.functionList" style="width: 100%">
-            <el-table-column prop="functionName" label="出水口"></el-table-column>
-            <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
+            <el-table-column prop="functionName" :label="detailData.configVO.name.title"></el-table-column>
+            <el-table-column prop="needMinutes" :label="detailData.configVO.time.title"></el-table-column>
+            <el-table-column prop="functionPrice" :label="detailData.configVO.price.title"></el-table-column>
+            <el-table-column prop="ifOpen" :label="detailData.configVO.open.title" header-align="right" align="right">
               <template slot-scope="scope">
                 <span>{{scope.row.ifOpen | ifOpenType}}</span>
               </template>
@@ -29,8 +29,7 @@
           </el-table>
         </div>
         <div v-if="detailData.subTypeId === '435871915014357627'">
-          <p class="charge-base"><span>价格设置：</span>{{detailData.waterAndChargeMachinePirce || ''}}元</p>
-          <p class="charge-base"><span>选时间范围：</span>{{detailData.extraAttr.min || ''}}-{{detailData.extraAttr.max || ''}}小时</p>
+          <p class="charge-base"><span>可选时间范围：</span>{{detailData.extraAttr.min || ''}}-{{detailData.extraAttr.max || ''}}小时</p>
           <p class="charge-base"><span>单位刻度时间：</span>{{detailData.extraAttr.step || ''}}小时</p>
           <p class="charge-base"><span>推荐充电时间：</span>{{detailData.extraAttr.default || ''}}小时</p>
           <div class="charge-control">
@@ -60,6 +59,7 @@
           </div>
           <el-table :data="detailData.functionList" style="width: 100%">
             <el-table-column prop="functionName" label="充电口"></el-table-column>
+            <el-table-column prop="functionPrice" label="充电单价 元/小时"></el-table-column>
             <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
               <template slot-scope="scope">
                 <span>{{scope.row.ifOpen | ifOpenType}}</span>
@@ -118,7 +118,15 @@ export default {
     detailData: {
       type: Object,
       default: () => {
-        return {};
+        return {
+          configVO: {
+            extra: {},
+            name: {},
+            open: {},
+            price: {},
+            time: {}
+          }
+        };
       }
     },
     visible: {
@@ -159,14 +167,23 @@ export default {
 }
 .deatil-list {
   padding-bottom: 15px;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: flex-start;
   li {
-    height: 40px;
-    line-height: 40px;
+    padding: 11px 0;
+    width: 50%;
+    word-break: break-word;
     border-bottom: 1px solid $under_line;
     span {
+      float: left;
       color: rgba(23, 26, 46, 0.45);
       display: inline-block;
-      width: 75px;
+      width: 70px;
+      height: 100%;
+    }
+    i {
+      font-style: normal;
     }
   }
 }
