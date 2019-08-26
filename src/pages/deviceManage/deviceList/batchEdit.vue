@@ -17,12 +17,12 @@
             <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
               <template slot-scope="scope">
                 <el-form-item v-if="configVO.time.join" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
-                  <el-input v-model.trim="scope.row.needMinutes">
+                  <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
                   </el-input>
                 </el-form-item>
                 <div v-else>
                   <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
-                    <el-input v-model.trim="scope.row.needMinutes">
+                    <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
                     </el-input>
                   </el-form-item>
                   <span v-else>{{getRestNeedMinutes(scope.row)}}</span>
@@ -32,12 +32,12 @@
             <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
               <template slot-scope="scope">
                 <el-form-item v-if="configVO.price.join" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
-                  <el-input v-model.trim="scope.row.functionPrice">
+                  <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
                   </el-input>
                 </el-form-item>
                 <div v-else>
                   <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
-                    <el-input v-model.trim="scope.row.functionPrice">
+                    <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
                     </el-input>
                   </el-form-item>
                   <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
@@ -118,7 +118,7 @@
                   </el-col>
                   <span style="float:right">
                     <el-form-item prop="extraAttr.ratio2">
-                      <el-input v-model.trim="deviceEditForm.extraAttr.ratio2"></el-input>
+                      <el-input v-model.trim="deviceEditForm.extraAttr.ratio2" maxlength="3"></el-input>
                     </el-form-item>
                   </span>
                 </li>
@@ -133,7 +133,7 @@
                   </el-col>
                   <span style="float:right">
                     <el-form-item prop="extraAttr.ratio3">
-                      <el-input v-model.trim="deviceEditForm.extraAttr.ratio3"></el-input>
+                      <el-input v-model.trim="deviceEditForm.extraAttr.ratio3" maxlength="3"></el-input>
                     </el-form-item>
                   </span>
                 </li>
@@ -144,12 +144,12 @@
               <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
                 <template slot-scope="scope">
                   <el-form-item v-if="configVO.price.join" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
-                    <el-input v-model.trim="scope.row.functionPrice">
+                    <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
                     </el-input>
                   </el-form-item>
                   <div v-else>
                     <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
-                      <el-input v-model.trim="scope.row.functionPrice">
+                      <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
                       </el-input>
                     </el-form-item>
                     <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
@@ -170,7 +170,7 @@
             <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
-                  <el-input v-model.trim="scope.row.needMinutes">
+                  <el-input v-model.trim="scope.row.needMinutes" maxlength="4">
                   </el-input>
                 </el-form-item>
               </template>
@@ -178,7 +178,7 @@
             <el-table-column prop="functionPrice" label="原价/元">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
-                  <el-input v-model.trim="scope.row.functionPrice">
+                  <el-input v-model.trim="scope.row.functionPrice" maxlength="5">
                   </el-input>
                 </el-form-item>
               </template>
@@ -186,7 +186,7 @@
             <el-table-column prop="functionCode" label="脉冲数" v-if="deviceEditForm.communicateType == 0">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
-                  <el-input v-model.trim="scope.row.functionCode">
+                  <el-input v-model.trim="scope.row.functionCode" maxlength="2">
                   </el-input>
                 </el-form-item>
               </template>
