@@ -24,6 +24,11 @@
             <span class="rowstyle" @click="lookDetail(scope.row)">{{scope.row.shopName}}</span>
           </template>
         </el-table-column>
+        <el-table-column header-align="left" prop="isForceUse" label="强制金币消费" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span>{{scope.row.isForceUse | isForceUsType}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="discountProportion" label="折扣比例(%)" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="createdAt" label="创建时间 "></el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right">
@@ -52,6 +57,7 @@
 <script type="text/ecmascript-6">
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
+import { isForceUsType } from '@/utils/mapping';
 import { tokenCoinListFun, shoplistInTokenCoinFun, tokenCoinDelFun, tokenCoinCloseFun, tokenCoinOpenFun } from '@/service/tokenCoin';
 import addGold from './addGold';
 import goldInfor from './goldInfor';
@@ -76,7 +82,11 @@ export default {
       detailDialogVisible: false
     };
   },
-  filters: {},
+  filters: {
+    isForceUsType(val) {
+      return isForceUsType[val];
+    }
+  },
   computed: {},
   created() {
     this.getShopList();
