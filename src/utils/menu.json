@@ -158,10 +158,32 @@
           "icon": ""
         },
         {
-          "menuId": 104,
+          "menuId": 105,
           "parentId": 0,
           "name": "优惠券记录",
           "url": "couponrecord",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        },
+        {
+          "menuId": 106,
+          "parentId": 0,
+          "name": "金币管理",
+          "url": "goldmanage",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        },
+        {
+          "menuId": 107,
+          "parentId": 0,
+          "name": "金币会员",
+          "url": "golduser",
           "perms": "mer:index",
           "type": 0,
           "orderNum": 0,
