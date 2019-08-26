@@ -2,7 +2,7 @@
   <div>
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="所属店铺：" prop="shopId">
-        <el-select v-model="searchData.shopId" clearable placeholder="请选择">
+        <el-select v-model="searchData.shopId" filterable clearable placeholder="请选择">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>

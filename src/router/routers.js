@@ -181,6 +181,18 @@ export default [
         component: () => import('@/pages/marketingManage/couponRecord/index'),
         name: 'couponrecord',
         meta: { title: '优惠券记录', noCache: true }
+      },
+      {
+        path: 'goldmanage',
+        component: () => import('@/pages/marketingManage/goldManage/index'),
+        name: 'goldmanage',
+        meta: { title: '金币管理', noCache: true }
+      },
+      {
+        path: 'golduser',
+        component: () => import('@/pages/marketingManage/goldUser/index'),
+        name: 'golduser',
+        meta: { title: '金币会员', noCache: true }
       }
     ]
   },

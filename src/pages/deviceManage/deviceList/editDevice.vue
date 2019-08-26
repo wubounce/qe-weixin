@@ -305,8 +305,8 @@ export default {
       }
     };
     var validatorWterMachinePirce = (rule, value, callback) => {
-      let reg1 = /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/;
-      let reg2 = /^([0-9]|[1-9][0-8])(\.\d{1,3})?$/;
+      let reg1 = /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/;
+      let reg2 = /^(([1-9]|[1-9][0-8])(\.\d{0,3})?|(([1-8][0-9])(\.\d{0,3})?)|0\.[1-9]{0,3}|99|99.0|99.00|99.000)$/;
       if ((this.deviceEditForm.support & 2) === 2) {
         if (!reg2.test(value)) {
           return callback(new Error(`请输入0-99之间的数字,最多保留3位小数`));
@@ -327,19 +327,19 @@ export default {
       deviceEditForm: this.deviceEditdetailForm,
       deviceEditFormRules: {
         machineName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
-        needMinutes: [{ required: true, message: '请输入耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
-        waterMachineNeedMinutes: [{ required: true, message: '请输入单脉冲流量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字，无小数', trigger: 'blur' }],
-        functionPrice: [{ required: true, message: '请输入原价', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
+        needMinutes: [{ required: true, message: '请输入耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,4})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
+        waterMachineNeedMinutes: [{ required: true, message: '请输入单脉冲流量', trigger: 'blur' }, { pattern: /^(([1-9]|([1-9][0-9]{1,2}([0-8])?)|([1-9][0-8]{1,2}([0-9])?))(\.\d{0,3})?|0\.\d{0,3}|9999|9999.0|9999.00|9999.000)$/, message: '请输入0-9999之间的数字,最多保留3位小数', trigger: 'blur' }],
+        functionPrice: [{ required: true, message: '请输入原价', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
         waterMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
         chargeMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { pattern: /^([0-4]{1}([.]{1}[0-9]{1,2})?|5|5.0|5.00)$/, message: '请输入0-5之间数字，最多保留2位小数', trigger: 'blur' }],
         functionCode: [{ required: true, message: '请输入脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentLiquid: [{ required: true, message: '请输入用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentPrice: [{ required: true, message: '请输入洗衣液价格', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
+        detergentPrice: [{ required: true, message: '请输入洗衣液价格', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
         'extraAttr.power1': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
         'extraAttr.power2': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
         'extraAttr.power3': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
-        'extraAttr.ratio2': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^([0-1]\.[1-9])$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
-        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^([0-1]\.[1-9])$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
+        'extraAttr.ratio2': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
+        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
       },
       //充电时间选择
       chargeTimeMax: 0,
@@ -434,9 +434,11 @@ export default {
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
+
 .edit-device-name {
   padding-top: 16px;
 }
+
 .action {
   text-align: right;
   padding: 16px 0 24px 0;
