@@ -29,9 +29,12 @@
           </el-table>
         </div>
         <div v-if="detailData.subTypeId === '435871915014357627'">
-          <p class="charge-base"><span>可选时间范围：</span>{{detailData.extraAttr.min || ''}}-{{detailData.extraAttr.max || ''}}小时</p>
-          <p class="charge-base"><span>单位刻度时间：</span>{{detailData.extraAttr.step || ''}}小时</p>
-          <p class="charge-base"><span>推荐充电时间：</span>{{detailData.extraAttr.default || ''}}小时</p>
+          <ul class="deatil-list charge-base">
+            <li><span class="charge-base">可选时间范围：</span>{{detailData.extraAttr.min || ''}}-{{detailData.extraAttr.max || ''}}小时</li>
+            <li><span class="charge-base">单位刻度时间：</span>{{detailData.extraAttr.step || ''}}小时</li>
+            <li><span class="charge-base">推荐充电时间：</span>{{detailData.extraAttr.default || ''}}小时</li>
+            <li></li>
+          </ul>
           <div class="charge-control">
             <h2>
               <span>充电功率范围 (瓦)</span>
@@ -59,7 +62,7 @@
           </div>
           <el-table :data="detailData.functionList" style="width: 100%">
             <el-table-column prop="functionName" label="充电口"></el-table-column>
-            <el-table-column prop="functionPrice" label="充电单价 元/小时"></el-table-column>
+            <el-table-column prop="functionPrice" label="充电单价 元/小时" align="center"></el-table-column>
             <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
               <template slot-scope="scope">
                 <span>{{scope.row.ifOpen | ifOpenType}}</span>
@@ -182,15 +185,17 @@ export default {
       width: 70px;
       height: 100%;
     }
+    .charge-base {
+      width: 110px;
+    }
     i {
       font-style: normal;
     }
   }
 }
-.charge-base {
-  line-height: 42px;
-  border-bottom: 1px solid $under_line;
-}
+// .charge-base {
+//   width: 120px !important;
+// }
 .charge-control {
   padding-bottom: 24px;
   padding-top: 24px;

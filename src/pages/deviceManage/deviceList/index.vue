@@ -367,9 +367,10 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
+      let extraAttr = _.get(res, 'functionList[0].extraAttr', {});
+      this.$set(this.detailData, 'extraAttr', extraAttr);
       this.deviceEditdetailForm = Object.assign({}, res);
       if (res.subTypeId === '435871915014357627') {
-        let extraAttr = _.get(res, 'functionList[0].extraAttr', {});
         this.chargeTimeMax = (1 / extraAttr.step) * extraAttr.max || 0;
         this.chargeTimeMin = extraAttr.min || 0;
         this.chargeTimeStep = extraAttr.step || 0;

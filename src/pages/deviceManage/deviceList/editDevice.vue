@@ -49,12 +49,6 @@
 
           </div>
           <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
-            <el-form-item label="充电单价：" prop="chargeMachinePirce">
-              <div class="add-discount">
-                <el-input v-model.trim="deviceEditForm.chargeMachinePirce" maxlength="4"></el-input>
-                <span style="position: absolute;left: 235px;color:#bfbfbf;">元/小时</span>
-              </div>
-            </el-form-item>
             <el-form-item label="可选时间范围：">
               <el-col :span="5">
                 <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
@@ -154,7 +148,7 @@
                       <el-input v-model.trim="scope.row.functionPrice">
                       </el-input>
                     </el-form-item>
-                    <span v-else>{{getRestFunctionPrice(row.functionPrice)}}</span>
+                    <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
                   </div>
                 </template>
               </el-table-column>
@@ -165,7 +159,6 @@
                 </template>
               </el-table-column>
             </el-table>
-            <p class="water-tip">关闭充电口开关用户则无法使用对应充电口充电</p>
           </div>
           <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.subTypeId !== '435871915014357627'">
             <el-table-column prop="functionName" label="功能"></el-table-column>
@@ -280,7 +273,7 @@ export default {
       if (value <= 1) {
         return callback(new Error('功率必须大于1'));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
-        return callback(new Error(`请填写正确的功率范围数值`));
+        return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
         callback(new Error('功率必须为数字值,无小数'));
       } else {
@@ -292,7 +285,7 @@ export default {
       if (value <= power) {
         return callback(new Error(`功率必须大于${power}`));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
-        return callback(new Error(`请填写正确的功率范围数值`));
+        return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
         callback(new Error('功率必须为数字值,无小数'));
       } else {
@@ -304,7 +297,7 @@ export default {
       if (value <= power) {
         return callback(new Error(`功率必须大于${power}`));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
-        return callback(new Error(`请填写正确的功率范围数值`));
+        return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
         callback(new Error('功率必须为数字值,无小数'));
       } else {
@@ -333,20 +326,20 @@ export default {
       waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       deviceEditForm: this.deviceEditdetailForm,
       deviceEditFormRules: {
-        machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
-        needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
-        waterMachineNeedMinutes: [{ required: true, message: '请填写单位流量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字，无小数', trigger: 'blur' }],
-        functionPrice: [{ required: true, message: '请填写原价', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
-        waterMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
-        chargeMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { pattern: /^[0-4]{1}([.]{1}[0-9]{1,2})?$/, message: '充电单价不能超过5，支持小数点后两位', trigger: 'blur' }],
-        functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
-        'extraAttr.power1': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
-        'extraAttr.power2': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
-        'extraAttr.power3': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
-        'extraAttr.ratio2': [{ required: true, message: '请填写系数', trigger: 'blur' }, { pattern: /^([0-1]\.[1-9])$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
-        'extraAttr.ratio3': [{ required: true, message: '请填写系数', trigger: 'blur' }, { pattern: /^([0-1]\.[1-9])$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
+        machineName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
+        needMinutes: [{ required: true, message: '请输入耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
+        waterMachineNeedMinutes: [{ required: true, message: '请输入单脉冲流量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字，无小数', trigger: 'blur' }],
+        functionPrice: [{ required: true, message: '请输入原价', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
+        waterMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
+        chargeMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { pattern: /^([0-4]{1}([.]{1}[0-9]{1,2})?|5|5.0|5.00)$/, message: '请输入0-5之间数字，最多保留2位小数', trigger: 'blur' }],
+        functionCode: [{ required: true, message: '请输入脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentLiquid: [{ required: true, message: '请输入用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentPrice: [{ required: true, message: '请输入洗衣液价格', trigger: 'blur' }, { pattern: /^([0-9]|[1-9][0-8])(\.\d{1,2})?$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
+        'extraAttr.power1': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
+        'extraAttr.power2': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
+        'extraAttr.power3': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
+        'extraAttr.ratio2': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^([0-1]\.[1-9])$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
+        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^([0-1]\.[1-9])$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
       },
       //充电时间选择
       chargeTimeMax: 0,
@@ -368,13 +361,13 @@ export default {
     }
   },
   created() {
-    this.configVO = this.deviceEditForm.configVO || {};
+    this.configVO = _.get(this.deviceEditForm, 'configVO', {});
+    let extraAttr = _.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
+    this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
     this.deviceEditForm.functionList.forEach(item => {
       item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
     });
-    let extraAttr = _.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
-    this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     if (this.deviceEditForm.subTypeId === '435871915014357627') {
       let tmpext = Object.assign({}, extraAttr);
       this.chargeTimeMax = tmpext.max || 0;
@@ -421,7 +414,7 @@ export default {
             this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable(); //若组件传递事件confirm则执行
           });
         } else {
-          this.$Message.error('请填写完整信息');
+          this.$Message.error('请输入完整信息');
           return false;
         }
       });

@@ -152,7 +152,7 @@
                       <el-input v-model.trim="scope.row.functionPrice">
                       </el-input>
                     </el-form-item>
-                    <span v-else>{{getRestFunctionPrice(row.functionPrice)}}</span>
+                    <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
                   </div>
                 </template>
               </el-table-column>
