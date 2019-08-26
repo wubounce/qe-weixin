@@ -44,7 +44,7 @@ export const validatPwd = str => {
 
 /* 用户名中文*/
 export const validatName = str => {
-  const reg = /^[\u0391-\uFFE5]{2,5}$/;
+  const reg = /^[\(\)\（\）\u0391-\uFFE5]{2,20}$/;
   return reg.test(str);
 };
 
