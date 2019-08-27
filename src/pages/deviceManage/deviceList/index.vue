@@ -151,11 +151,10 @@
         </el-table-column>
       </el-table>
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
-      <!-- 设备详情 -->
-      <device-info :visible.sync="detailDialogVisible" v-if="detailDialogVisible" :detailData="detailData"></device-info>
+
       <!-- 启动设备 -->
-      <el-dialog title="启动设备" :visible.sync="deviceStartDialogVisible" width="540px" @close="resetQuantifyForm('quantifyStartForm')">
-        <div v-show="detailData.subTypeId === '435871915014357627'" class="start-charge-function">
+      <el-dialog title="启动设备" v-if="detailData" :visible.sync="deviceStartDialogVisible" width="540px" @close="resetQuantifyForm('quantifyStartForm')">
+        <div v-show="detailData.isQuantifyCharge === 1" class="start-charge-function">
           <el-form ref="quantifyStartForm" :model="quantifyStartForm" :rules="quantifyStartFormRules" label-width="140px" class="add-shop-from">
             <el-form-item label="选择启动充电口：" prop="functionId">
               <el-radio-group v-model="quantifyStartForm.functionId">
@@ -172,7 +171,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div v-show="detailData.subTypeId !== '435871915014357627'">
+        <div v-show="detailData.isQuantifyCharge !== 1">
           <h5 class="chose-start-fun">选择设备启动的模式</h5>
           <el-table :data="detailData.functionList" style="width: 100%">
             <el-table-column prop="functionName" label="功能"></el-table-column>
@@ -188,7 +187,7 @@
         </div>
       </el-dialog>
       <!-- 串口充电桩复位  -->
-      <el-dialog title="设备复位" :visible.sync="quantifyResetDialogVisible" width="540px" @close="resetQuantifyForm('quantifyResetForm')">
+      <el-dialog title="设备复位" v-if="detailData" :visible.sync="quantifyResetDialogVisible" width="540px" @close="resetQuantifyForm('quantifyResetForm')">
         <el-form ref="quantifyResetForm" :model="quantifyResetForm" :rules="quantifyResetFormRules" label-width="140px" class="add-shop-from start-charge-function">
           <el-form-item label="选择复位充电口：" prop="functionId">
             <el-radio-group v-model="quantifyResetForm.functionId">
@@ -200,6 +199,8 @@
           </el-form-item>
         </el-form>
       </el-dialog>
+      <!-- 设备详情 -->
+      <device-info v-if="detailDialogVisible&&detailData" :visible.sync="detailDialogVisible" :detailData="detailData"></device-info>
       <!-- 编辑设备  -->
       <edit-device v-if="deviceEditDialogVisible&&deviceEditdetailForm" :visible.sync="deviceEditDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" @getDeviceDataToTable="getDeviceDataToTable"></edit-device>
       <!-- 批量编辑设备  -->
@@ -243,10 +244,10 @@ export default {
       deviceDataToTable: [],
 
       detailDialogVisible: false,
-      detailData: {
-        functionList: []
-      },
-
+      // detailData: {
+      //   functionList: []
+      // },
+      detailData: null,
       machineParentTypeList: [],
       machineSubTypeList: [],
 
@@ -370,7 +371,7 @@ export default {
       let extraAttr = _.get(res, 'functionList[0].extraAttr', {});
       this.$set(this.detailData, 'extraAttr', extraAttr);
       this.deviceEditdetailForm = Object.assign({}, res);
-      if (res.subTypeId === '435871915014357627') {
+      if (res.isQuantifyCharge === 1) {
         this.chargeTimeMax = (1 / extraAttr.step) * extraAttr.max || 0;
         this.chargeTimeMin = extraAttr.min || 0;
         this.chargeTimeStep = extraAttr.step || 0;
@@ -391,7 +392,7 @@ export default {
       });
     },
     handleDeviceReset(row) {
-      if (row.subTypeId === '435871915014357627') {
+      if (row.isQuantifyCharge === 1) {
         //充电桩定量复位
         this.lookShopDetail(row);
         this.quantifyResetDialogVisible = true;

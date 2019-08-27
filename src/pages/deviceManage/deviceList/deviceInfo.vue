@@ -18,17 +18,17 @@
       <el-tab-pane label="功能设置" name="first">
         <div v-if="detailData.parentTypeName === '饮水机'&&isBoiledWater(detailData.support)">
           <el-table :data="detailData.functionList" style="width: 100%">
-            <el-table-column prop="functionName" :label="detailData.configVO.name.title"></el-table-column>
-            <el-table-column prop="needMinutes" :label="detailData.configVO.time.title"></el-table-column>
-            <el-table-column prop="functionPrice" :label="detailData.configVO.price.title"></el-table-column>
-            <el-table-column prop="ifOpen" :label="detailData.configVO.open.title" header-align="right" align="right">
+            <el-table-column prop="functionName" :label="detailData.configVO.name.title" v-if="detailData.configVO.name.available"></el-table-column>
+            <el-table-column prop="needMinutes" :label="detailData.configVO.time.title" v-if="detailData.configVO.time.available"></el-table-column>
+            <el-table-column prop="functionPrice" :label="detailData.configVO.price.title" v-if="detailData.configVO.price.available"></el-table-column>
+            <el-table-column prop="ifOpen" :label="detailData.configVO.open.title" v-if="detailData.configVO.open.available" header-align="right" align="right">
               <template slot-scope="scope">
                 <span>{{scope.row.ifOpen | ifOpenType}}</span>
               </template>
             </el-table-column>
           </el-table>
         </div>
-        <div v-if="detailData.subTypeId === '435871915014357627'">
+        <div v-if="detailData.isQuantifyCharge === 1">
           <ul class="deatil-list charge-base">
             <li><span class="charge-base">可选时间范围：</span>{{detailData.extraAttr.min || ''}}-{{detailData.extraAttr.max || ''}}小时</li>
             <li><span class="charge-base">单位刻度时间：</span>{{detailData.extraAttr.step || ''}}小时</li>
@@ -61,21 +61,21 @@
             </ul>
           </div>
           <el-table :data="detailData.functionList" style="width: 100%">
-            <el-table-column prop="functionName" label="充电口"></el-table-column>
-            <el-table-column prop="functionPrice" label="充电单价 元/小时" align="center"></el-table-column>
-            <el-table-column prop="ifOpen" label="状态" header-align="right" align="right">
+            <el-table-column prop="functionName" :label="detailData.configVO.price.name" v-if="detailData.configVO.name.available"></el-table-column>
+            <el-table-column prop="functionPrice" align="center" :label="detailData.configVO.time.title" v-if="detailData.configVO.time.available"></el-table-column>
+            <el-table-column prop="ifOpen" header-align="right" align="right" :label="detailData.configVO.open.title" v-if="detailData.configVO.price.available">
               <template slot-scope="scope">
                 <span>{{scope.row.ifOpen | ifOpenType}}</span>
               </template>
             </el-table-column>
           </el-table>
         </div>
-        <el-table :data="detailData.functionList" style="width: 100%" v-if="isBoiledWater(detailData.support)===false&&detailData.subTypeId !== '435871915014357627'">
-          <el-table-column prop="functionName" label="功能"></el-table-column>
-          <el-table-column prop="needMinutes" label="耗时/分钟"></el-table-column>
-          <el-table-column prop="functionPrice" label="原价/元"></el-table-column>
-          <el-table-column prop="functionCode" label="脉冲数" v-if="detailData.communicateType == 0"></el-table-column>
-          <el-table-column prop="ifOpen" label="状态">
+        <el-table :data="detailData.functionList" style="width: 100%" v-if="isBoiledWater(detailData.support)===false&&detailData.isQuantifyCharge !== 1">
+          <el-table-column prop="functionName" :label="detailData.configVO.price.name" v-if="detailData.configVO.name.available"></el-table-column>
+          <el-table-column prop="needMinutes" :label="detailData.configVO.time.title" v-if="detailData.configVO.time.available"></el-table-column>
+          <el-table-column prop="functionPrice" :label="detailData.configVO.price.title" v-if="detailData.configVO.price.available"></el-table-column>
+          <el-table-column prop="functionCode" :label="detailData.configVO.pulse.title" v-if="detailData.configVO.pulse.available"></el-table-column>
+          <el-table-column prop="ifOpen" :label="detailData.configVO.open.title" v-if="detailData.configVO.open.available">
             <template slot-scope="scope">
               <span>{{scope.row.ifOpen | ifOpenType}}</span>
             </template>

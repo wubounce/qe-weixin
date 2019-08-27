@@ -52,7 +52,7 @@
             </el-table-column>
           </el-table>
           <!-- 充电桩 -->
-          <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
+          <div v-if="deviceEditForm.isQuantifyCharge === 1">
             <el-form-item label="可选时间范围：">
               <el-col :span="5">
                 <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
@@ -165,7 +165,7 @@
             </el-table>
           </div>
           <!-- 正常 -->
-          <el-table :data="deviceEditForm.functionList" style="width: 100%" key="functionList" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.subTypeId !== '435871915014357627'">
+          <el-table :data="deviceEditForm.functionList" style="width: 100%" key="functionList" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
             <el-table-column prop="functionName" :label="configVO.price.name" v-if="configVO.name.available"></el-table-column>
             <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
               <template slot-scope="scope">
@@ -376,7 +376,7 @@ export default {
     this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     this.getFunctionSetList();
     this.getbatchEditDetergentList();
-    if (this.deviceEditForm.subTypeId === '435871915014357627') {
+    if (this.deviceEditForm.isQuantifyCharge === 1) {
       let tmpext = Object.assign({}, extraAttr);
       this.chargeTimeMax = tmpext.max || 0;
       this.chargeTimeMin = tmpext.min || 0;
