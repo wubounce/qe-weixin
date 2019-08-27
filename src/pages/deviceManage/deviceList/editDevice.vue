@@ -361,8 +361,8 @@ export default {
     }
   },
   created() {
-    this.configVO = _.get(this.deviceEditForm, 'configVO', {});
-    let extraAttr = _.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
+    this.configVO = this._.get(this.deviceEditForm, 'configVO', {});
+    let extraAttr = this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
     this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
     this.deviceEditForm.functionList.forEach(item => {
@@ -380,10 +380,10 @@ export default {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
     getRestNeedMinutes(row) {
-      return (row.needMinutes = _.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
+      return (row.needMinutes = this._.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
     },
     getRestFunctionPrice(row) {
-      return (row.functionPrice = _.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
+      return (row.functionPrice = this._.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
     },
     onEditDecive(formName) {
       this.$refs[formName].validate(valid => {

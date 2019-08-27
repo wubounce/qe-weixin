@@ -372,7 +372,7 @@ export default {
   components: {},
   mounted() {},
   created() {
-    let extraAttr = _.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
+    let extraAttr = this.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
     this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     this.getFunctionSetList();
     this.getbatchEditDetergentList();
@@ -394,7 +394,7 @@ export default {
       this.deviceEditForm.functionList = res.list;
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
-      this.configVO = _.get(res, 'configVO', {});
+      this.configVO = this._.get(res, 'configVO', {});
       this.deviceEditForm.functionList.forEach(item => {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
@@ -407,10 +407,10 @@ export default {
       this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
     },
     getRestNeedMinutes(row) {
-      return (row.needMinutes = _.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
+      return (row.needMinutes = this._.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
     },
     getRestFunctionPrice(row) {
-      return (row.functionPrice = _.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
+      return (row.functionPrice = this._.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
     },
     //批量基本功能设置和其他属性
     batchEditBaseFunction() {

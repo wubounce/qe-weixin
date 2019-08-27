@@ -368,7 +368,7 @@ export default {
       let payload = { machineId: row.machineId };
       let res = await detailDeviceListFun(payload);
       this.detailData = Object.assign({}, res);
-      let extraAttr = _.get(res, 'functionList[0].extraAttr', {});
+      let extraAttr = this._.get(res, 'functionList[0].extraAttr', {});
       this.$set(this.detailData, 'extraAttr', extraAttr);
       this.deviceEditdetailForm = Object.assign({}, res);
       if (res.isQuantifyCharge === 1) {
