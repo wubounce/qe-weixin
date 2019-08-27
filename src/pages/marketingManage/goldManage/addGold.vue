@@ -15,8 +15,8 @@
         <el-tooltip placement="bottom-start" class="gold-tip">
           <div slot="content" class="gold_tooltip">
             <p class="title">方案规则：</p>
-            <p>1.店铺可支持0~8个方案； </p>
-            <p>2.运营商添加的方案，用户均可购买；</p>
+            <p>1.店铺可支持1~8个方案； </p>
+            <p>2.运营商添加了方案，且状态处于开启状态，用户均可购买店铺金币。 </p>
             <p class="title">金币含义：</p>
             <p>1.金币分为金币本金和额外赠送金币；</p>
             <p>2.1金币可抵扣0.01元，以此类推；</p>
@@ -94,14 +94,12 @@ export default {
         discountProportion: [{ required: true, message: '请填写抵扣比例', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,1})?|(([1-8][0-9])(\.\d{0,1})?)|0\.[1-9]{1}|99|99.0)$/, message: '抵扣比例请输入1-99之间的数字,最多一位小数', trigger: 'blur' }],
         cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9]|([1-9][0-9]{1,2}([0-8])?)|([1-9][0-8]{1,2}([0-9])?))(\.\d{0,2})?|0\.\d{0,2}|9999|9999.0|9999.00)$/, message: '输入0~9999之间数字最多两位小数', trigger: 'blur' }],
         reward: [
+          { required: true, message: '请填写赠送金币', trigger: 'blur' },
           {
-            required: true,
             trigger: 'blur',
             validator: (rule, value, callback) => {
               let reg = /^([0-9]|([1-9][0-9]*))$/;
-              if (!value) {
-                callback(new Error('请填写赠送金币'));
-              } else if (!reg.test(value)) {
+              if (!reg.test(value)) {
                 callback(new Error('请填写0~999,900之间整数'));
               } else if (Number(value) > 999900) {
                 callback(new Error('请填写0~999,900之间整数'));
