@@ -14,10 +14,10 @@
         <template slot-scope="scope">{{formatAmount(scope.row.principalAmount,scope.row.subType,1)}}</template>
       </el-table-column>
       <el-table-column prop="amount" label="充值金币">
-        <template slot-scope="scope">{{formatAmount(scope.row.principalAmount,scope.row.subType)}}</template>
+        <template slot-scope="scope">{{formatAmount(scope.row.amount,scope.row.subType)}}</template>
       </el-table-column>
       <el-table-column prop="afterAmount" label="金币本金">
-        <template slot-scope="scope">{{formatAmount(scope.row.amount,scope.row.subType)}}</template>
+        <template slot-scope="scope">{{formatAmount(scope.row.principalAmount,scope.row.subType)}}</template>
       </el-table-column>
       <el-table-column prop="presentAmount" label="赠送金币">
         <template slot-scope="scope">{{formatAmount(scope.row.presentAmount,scope.row.subType)}}</template>
