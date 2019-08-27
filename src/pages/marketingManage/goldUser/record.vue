@@ -14,13 +14,13 @@
         <template slot-scope="scope">{{formatAmount(scope.row.principalAmount,scope.row.subType,1)}}</template>
       </el-table-column>
       <el-table-column prop="amount" label="充值金币">
+        <template slot-scope="scope">{{formatAmount(scope.row.amount,scope.row.subType)}}</template>
+      </el-table-column>
+      <el-table-column prop="afterAmount" label="金币本金">
         <template slot-scope="scope">{{formatAmount(scope.row.principalAmount,scope.row.subType)}}</template>
       </el-table-column>
       <el-table-column prop="presentAmount" label="赠送金币">
         <template slot-scope="scope">{{formatAmount(scope.row.presentAmount,scope.row.subType)}}</template>
-      </el-table-column>
-      <el-table-column prop="afterAmount" label="金币本金">
-        <template slot-scope="scope">{{formatAmount(scope.row.amount,scope.row.subType)}}</template>
       </el-table-column>
       <el-table-column prop="remark" label="充值方式">
         <template slot-scope="scope">{{scope.row.subType|rechargeWay}}</template>
@@ -70,7 +70,7 @@ export default {
   computed: {
     formatAmount() {
       return function(value, subType, flag = 0) {
-        value = flag === 1 ? (Number(value) / 100).toFixed(0) : value;
+        value = flag === 1 ? (Number(value) / 100).toFixed(2) : value;
         let map = {
           101: `+${value}`,
           102: `+${value}`,
