@@ -71,7 +71,7 @@
           </el-table>
         </div>
         <el-table :data="detailData.functionList" style="width: 100%" v-if="isBoiledWater(detailData.support)===false&&detailData.isQuantifyCharge !== 1">
-          <el-table-column prop="functionName" :label="detailData.configVO.price.name" v-if="detailData.configVO.name.available"></el-table-column>
+          <el-table-column prop="functionName" :label="detailData.configVO.name.title" v-if="detailData.configVO.name.available"></el-table-column>
           <el-table-column prop="needMinutes" :label="detailData.configVO.time.title" v-if="detailData.configVO.time.available"></el-table-column>
           <el-table-column prop="functionPrice" :label="detailData.configVO.price.title" v-if="detailData.configVO.price.available"></el-table-column>
           <el-table-column prop="functionCode" :label="detailData.configVO.pulse.title" v-if="detailData.configVO.pulse.available"></el-table-column>

@@ -166,7 +166,7 @@
           </div>
           <!-- 正常 -->
           <el-table :data="deviceEditForm.functionList" style="width: 100%" key="functionList" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
-            <el-table-column prop="functionName" :label="configVO.price.name" v-if="configVO.name.available"></el-table-column>
+            <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
             <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
@@ -175,7 +175,7 @@
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">>
+            <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
                   <el-input v-model.trim="scope.row.functionPrice" maxlength="5">
@@ -191,7 +191,7 @@
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="ifOpenStatus" :label="configVO.open.title" v-if="configVO.open.available">
+            <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
               <template slot-scope="scope">
                 <el-switch v-model="scope.row.ifOpenStatus">
                 </el-switch>
@@ -394,7 +394,7 @@ export default {
       this.deviceEditForm.functionList = res.list;
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
-      this.configVO = res.configVO || {};
+      this.configVO = _.get(res, 'configVO', {});
       this.deviceEditForm.functionList.forEach(item => {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });

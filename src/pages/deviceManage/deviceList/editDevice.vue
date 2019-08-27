@@ -161,7 +161,7 @@
             </el-table>
           </div>
           <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
-            <el-table-column prop="functionName" :label="configVO.price.name" v-if="configVO.name.available"></el-table-column>
+            <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
             <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
