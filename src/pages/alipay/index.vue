@@ -55,7 +55,7 @@ export default {
       if (!value) {
         return callback(new Error('姓名不能为空'));
       } else if (!validatName(value)) {
-        callback(new Error('姓名只能输入中文'));
+        callback(new Error('姓名只能输入2-20位中文'));
       } else {
         callback();
       }
