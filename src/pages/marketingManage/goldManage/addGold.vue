@@ -91,7 +91,7 @@ export default {
       },
       addGoldDynamicFormRules: {
         shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
-        discountProportion: [{ required: true, message: '请填写抵扣比例', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,1})?|(([1-8][0-9])(\.\d{0,1})?)|99|99.0)$/, message: '抵扣比例请输入1-99之间的数字,最多一位小数', trigger: 'blur' }],
+        discountProportion: [{ required: true, message: '请填写抵扣比例', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8]?)(\.\d{0,1})?|(([1-8][0-9]?)(\.\d{0,1})?)|99|99.0)$/, message: '抵扣比例请输入1-99之间的数字,最多一位小数', trigger: 'blur' }],
         cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9]|([1-9][0-9]{1,2}([0-8])?)|([1-9][0-8]{1,2}([0-9])?))(\.\d{0,2})?|0\.\d{0,2}|9999|9999.0|9999.00)$/, message: '输入0~9999之间数字最多两位小数', trigger: 'blur' }],
         reward: [
           { required: true, message: '请填写赠送金币', trigger: 'blur' },
