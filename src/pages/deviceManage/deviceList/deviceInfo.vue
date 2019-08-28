@@ -61,8 +61,8 @@
             </ul>
           </div>
           <el-table :data="detailData.functionList" style="width: 100%">
-            <el-table-column prop="functionName" :label="detailData.configVO.price.name" v-if="detailData.configVO.name.available"></el-table-column>
-            <el-table-column prop="functionPrice" align="center" :label="detailData.configVO.time.title" v-if="detailData.configVO.time.available"></el-table-column>
+            <el-table-column prop="functionName" :label="detailData.configVO.name.title" v-if="detailData.configVO.name.available"></el-table-column>
+            <el-table-column prop="functionPrice" align="center" :label="detailData.configVO.price.title" v-if="detailData.configVO.price.available"></el-table-column>
             <el-table-column prop="ifOpen" header-align="right" align="right" :label="detailData.configVO.open.title" v-if="detailData.configVO.price.available">
               <template slot-scope="scope">
                 <span>{{scope.row.ifOpen | ifOpenType}}</span>

@@ -315,8 +315,8 @@ export default {
       }
     };
     var validatorWterMachinePirce = (rule, value, callback) => {
-      let reg1 = /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/;
-      let reg2 = /^(([1-9]|[1-9][0-8])(\.\d{0,3})?|(([1-8][0-9])(\.\d{0,3})?)|0\.[1-9]{0,3}|99|99.0|99.00|99.000)$/;
+      let reg1 = /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[0-9]{0,2}|99|99.0|99.00)$/;
+      let reg2 = /^(([1-9]|[1-9][0-8])(\.\d{0,3})?|(([1-8][0-9])(\.\d{0,3})?)|0\.[0-9]{0,3}|99|99.0|99.00|99.000)$/;
       if ((this.deviceEditForm.support & 2) === 2) {
         if (!reg2.test(value)) {
           return callback(new Error(`请输入0-99之间的数字,最多保留3位小数`));
@@ -370,9 +370,9 @@ export default {
     }
   },
   components: {},
-  mounted() {},
   created() {
-    let extraAttr = this.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
+    this.configVO = this._.get(this.deviceEditForm, 'configVO', {});
+    let extraAttr = this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
     this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     this.getFunctionSetList();
     this.getbatchEditDetergentList();
@@ -383,6 +383,7 @@ export default {
       this.chargeTimeStep = tmpext.step || 0;
     }
   },
+  mounted() {},
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
@@ -394,7 +395,6 @@ export default {
       this.deviceEditForm.functionList = res.list;
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
-      this.configVO = this._.get(res, 'configVO', {});
       this.deviceEditForm.functionList.forEach(item => {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
@@ -542,5 +542,14 @@ export default {
 .water-machine-pirce {
   padding-top: 24px;
   padding-bottom: 24px;
+}
+/deep/ .el-table {
+  .el-form-item--small.el-form-item {
+    margin-bottom: 25px;
+  }
+  td,
+  th {
+    vertical-align: top;
+  }
 }
 </style>

@@ -305,8 +305,8 @@ export default {
       }
     };
     var validatorWterMachinePirce = (rule, value, callback) => {
-      let reg1 = /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/;
-      let reg2 = /^(([1-9]|[1-9][0-8])(\.\d{0,3})?|(([1-8][0-9])(\.\d{0,3})?)|0\.[1-9]{0,3}|99|99.0|99.00|99.000)$/;
+      let reg1 = /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[0-9]{0,2}|99|99.0|99.00)$/;
+      let reg2 = /^(([1-9]|[1-9][0-8])(\.\d{0,3})?|(([1-8][0-9])(\.\d{0,3})?)|0\.[0-9]{0,3}|99|99.0|99.00|99.000)$/;
       if ((this.deviceEditForm.support & 2) === 2) {
         if (!reg2.test(value)) {
           return callback(new Error(`请输入0-99之间的数字,最多保留3位小数`));
@@ -474,5 +474,14 @@ export default {
 .charge-control /deep/ .el-form-item {
   padding-top: 10px;
   margin-bottom: 0 !important;
+}
+/deep/ .el-table {
+  .el-form-item--small.el-form-item {
+    margin-bottom: 25px;
+  }
+  td,
+  th {
+    vertical-align: top;
+  }
 }
 </style>
