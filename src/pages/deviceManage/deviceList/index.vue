@@ -204,7 +204,7 @@
       <!-- 编辑设备  -->
       <edit-device v-if="deviceEditDialogVisible&&deviceEditdetailForm" :visible.sync="deviceEditDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" @getDeviceDataToTable="getDeviceDataToTable"></edit-device>
       <!-- 批量编辑设备  -->
-      <batch-edit v-if="batchDEditDeviceDialogVisible" :visible.sync="batchDEditDeviceDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" @getDeviceDataToTable="getDeviceDataToTable"></batch-edit>
+      <batch-edit v-if="batchDEditDeviceDialogVisible&&deviceEditdetailForm" :visible.sync="batchDEditDeviceDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" @getDeviceDataToTable="getDeviceDataToTable"></batch-edit>
     </div>
   </div>
 </template>

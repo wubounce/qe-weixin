@@ -10,7 +10,7 @@
             <el-radio :label="3" v-if="deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">其他属性</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div v-if="checkBatchFuntion === 1">
+        <div v-if="checkBatchFuntion === 1&&configVO">
           <!-- 饮水机 -->
           <el-table :data="deviceEditForm.functionList" key="waterfunctionList" v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)" style="width: 100%">
             <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
@@ -355,13 +355,7 @@ export default {
       chargeTimeMax: 0,
       chargeTimeMin: 0,
       chargeTimeStep: 0,
-      configVO: {
-        extra: {},
-        name: {},
-        open: {},
-        price: {},
-        time: {}
-      }
+      configVO: null
     };
   },
   filters: {
