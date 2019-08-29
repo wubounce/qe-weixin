@@ -251,7 +251,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceAddorEditFun } from '@/service/device';
+import { getFunctionSetListFun, deviceAddorEditFun } from '@/service/device';
 import { validatNum } from '@/utils/validate';
 import waterMixin from './waterMixin';
 export default {
@@ -361,23 +361,28 @@ export default {
     }
   },
   created() {
+    this.getFunctionSetList();
     this.configVO = this._.get(this.deviceEditForm, 'configVO', {});
-    let extraAttr = this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
-    this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
+    this.$set(this.deviceEditForm, 'extraAttr', this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {}));
     this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
     this.deviceEditForm.functionList.forEach(item => {
       item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
     });
-    if (this.deviceEditForm.isQuantifyCharge === 1) {
-      let tmpext = Object.assign({}, extraAttr);
-      this.chargeTimeMax = tmpext.max || 0;
-      this.chargeTimeMin = tmpext.min || 0;
-      this.chargeTimeStep = tmpext.step || 0;
-    }
   },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    async getFunctionSetList() {
+      //获取充电范围模板
+      let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
+      let res = await getFunctionSetListFun(payload);
+      if (this.deviceEditForm.isQuantifyCharge === 1) {
+        let extraAttr = this._.get(res, 'extraAttr', {});
+        this.chargeTimeMax = extraAttr.max || 0;
+        this.chargeTimeMin = extraAttr.min || 0;
+        this.chargeTimeStep = extraAttr.step || 0;
+      }
     },
     getRestNeedMinutes(row) {
       return (row.needMinutes = this._.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
@@ -397,18 +402,17 @@ export default {
             } else {
               item.ifOpen = 0;
             }
+            item.extraAttr = this.deviceEditForm.extraAttr || '';
           });
           if (ifOpenLen === this.deviceEditForm.functionList.length) {
             this.$Message.error('请至少开启一项功能');
             return false;
           }
-          let payload = Object.assign({}, this.deviceEditForm);
-          payload.functionJson = JSON.stringify(this.deviceEditForm.functionList);
-          payload.detergentJson = JSON.stringify(this.deviceEditForm.detergentFunctionList);
-          payload.extraAttr = payload.extraAttr ? JSON.stringify(payload.extraAttr) : '';
-          delete payload.functionList;
-          delete payload.detergentFunctionList;
-          delete payload.configVO;
+          let data = Object.assign({}, this.deviceEditForm);
+          data.functionJson = this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null;
+          data.detergentJson = this.deviceEditForm.detergentFunctionList ? JSON.stringify(this.deviceEditForm.detergentFunctionList) : null;
+          /* eslint-disable no-unused-vars */
+          let { functionList, detergentFunctionList, configVO, extraAttr, ...payload } = data;
           deviceAddorEditFun(payload).then(() => {
             this.$Message.success('编辑成功');
             this.modalClose();

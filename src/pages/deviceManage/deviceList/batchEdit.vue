@@ -52,7 +52,7 @@
             </el-table-column>
           </el-table>
           <!-- 充电桩 -->
-          <div v-if="deviceEditForm.isQuantifyCharge === 1">
+          <div v-if="deviceEditForm.isQuantifyCharge === 1&&deviceEditForm.extraAttr">
             <el-form-item label="可选时间范围：">
               <el-col :span="5">
                 <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
@@ -371,17 +371,8 @@ export default {
   },
   components: {},
   created() {
-    this.configVO = this._.get(this.deviceEditForm, 'configVO', {});
-    let extraAttr = this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {});
-    this.$set(this.deviceEditForm, 'extraAttr', extraAttr);
     this.getFunctionSetList();
     this.getbatchEditDetergentList();
-    if (this.deviceEditForm.isQuantifyCharge === 1) {
-      let tmpext = Object.assign({}, extraAttr);
-      this.chargeTimeMax = tmpext.max || 0;
-      this.chargeTimeMin = tmpext.min || 0;
-      this.chargeTimeStep = tmpext.step || 0;
-    }
   },
   mounted() {},
   methods: {
@@ -392,6 +383,14 @@ export default {
       //批量编辑获取功能列表
       let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
       let res = await getFunctionSetListFun(payload);
+      this.configVO = this._.get(res, 'configVO', {});
+      if (this.deviceEditForm.isQuantifyCharge === 1) {
+        let extraAttr = this._.get(res, 'extraAttr', {});
+        this.chargeTimeMax = extraAttr.max || 0;
+        this.chargeTimeMin = extraAttr.min || 0;
+        this.chargeTimeStep = extraAttr.step || 0;
+      }
+      this.$set(this.deviceEditForm, 'extraAttr', this._.get(res, 'list[0].extraAttr', {}));
       this.deviceEditForm.functionList = res.list;
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
@@ -422,6 +421,7 @@ export default {
         } else {
           item.ifOpen = 0;
         }
+        item.extraAttr = this.deviceEditForm.extraAttr || '';
       });
       if (ifOpenLen === this.deviceEditForm.functionList.length) {
         this.$Message.error('请至少开启一项功能');
@@ -434,9 +434,8 @@ export default {
           subTypeId: this.deviceEditForm.subTypeId,
           shopId: this.deviceEditForm.shopId,
           functionTempletType: this.deviceEditForm.functionTempletType,
-          functionJson: JSON.stringify(this.deviceEditForm.functionList),
-          waterLevel: this.deviceEditForm.waterLevel,
-          extraAttr: this.deviceEditForm.extraAttr ? JSON.stringify(this.deviceEditForm.extraAttr) : ''
+          functionJson: this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null,
+          waterLevel: this.deviceEditForm.waterLevel
         }
       );
       batchEditFun(payload).then(() => {
