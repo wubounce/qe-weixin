@@ -408,6 +408,7 @@ export default {
           payload.extraAttr = payload.extraAttr ? JSON.stringify(payload.extraAttr) : '';
           delete payload.functionList;
           delete payload.detergentFunctionList;
+          delete payload.configVO;
           deviceAddorEditFun(payload).then(() => {
             this.$Message.success('编辑成功');
             this.modalClose();
