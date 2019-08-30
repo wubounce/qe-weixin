@@ -3,10 +3,13 @@
     <ul class="deatil-list">
       <li>
         <div><span>适用店铺：</span>{{shopTokenCoinSet.shopName}}</div>
-        <div><span>折扣比例(%)：</span>{{shopTokenCoinSet.discountProportion}}</div>
+        <div><span>强制金币消费：</span>{{shopTokenCoinSet.isForceUse | isForceUsType}}</div>
       </li>
       <li>
+        <div><span>折扣比例(%)：</span>{{shopTokenCoinSet.discountProportion}}</div>
         <div><span>创建人：</span>{{managerOperatorName}}</div>
+      </li>
+      <li>
         <div><span>创建时间：</span>{{shopTokenCoinSet.createdAt}}</div>
       </li>
     </ul>
@@ -38,6 +41,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { isForceUsType } from '@/utils/mapping';
 import { getTokenCoinFun } from '@/service/tokenCoin';
 export default {
   props: {
@@ -58,6 +62,11 @@ export default {
     };
   },
   components: {},
+  filters: {
+    isForceUsType(val) {
+      return isForceUsType[val];
+    }
+  },
   created() {
     this.getDetail();
   },

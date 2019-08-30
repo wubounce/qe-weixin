@@ -7,6 +7,11 @@
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="强制金币消费：" prop="isForceUse" class="input_width">
+        <el-select v-model="addGoldDynamicForm.isForceUse" placeholder="未选择">
+          <el-option v-for="(name, id) in isForceUsType" :key="id" :label="name" :value="(+id)"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="折扣比例(%)：" prop="discountProportion" class="input_width">
         <el-input v-model.trim="addGoldDynamicForm.discountProportion" placeholder="请填写1-99内的数字" :maxlength='4'></el-input>
       </el-form-item>
@@ -25,6 +30,8 @@
             <p>1.每笔消费金币可抵扣部分费用，具体抵扣比例由运营商配置。若抵扣比例为99%，即表示总金额为1元的订单，99金币可抵扣0.99元，须再支付0.01元（如按比例计算不足0.01元按0.01元计算）。</p>
             <p class="title">退还金币：</p>
             <p>1.若用户向运营商申请退还金币，则退还金额仅以金币本金部分计算，运营商可在营销管理--金币会员页面将用户对应的金币做回收处理。</p>
+            <p class="title">强制金币消费：</p>
+            <p>1.若开启此功能，则用户金币余额为0时无法使用店铺中的设备，即用户必须购买店铺金币方案。</p>
           </div>
           <svg-icon icon-class="zhibiaoshuoming" />
         </el-tooltip>
@@ -65,6 +72,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { isForceUsType } from '@/utils/mapping';
 import { tokenCoinAddFun, configTokenCoinFun, shoplistInTokenCoinFun, getTokenCoinFun, tokenCoinUpdateFun } from '@/service/tokenCoin';
 export default {
   props: {
@@ -86,6 +94,7 @@ export default {
       shopTokenCoinSet: {},
       addGoldDynamicForm: {
         shopId: '',
+        isForceUse: 0,
         discountProportion: '',
         rewardsJson: []
       },
@@ -113,6 +122,11 @@ export default {
     };
   },
   components: {},
+  computed: {
+    isForceUsType() {
+      return isForceUsType;
+    }
+  },
   created() {
     this.shoplistInTokenCoin();
     this.getTokenCoinConfig();
@@ -129,8 +143,9 @@ export default {
       let payload = { id: this.shopTokenCoinId };
       let res = await getTokenCoinFun(payload);
       this.addGoldDynamicForm.rewardsJson = res.rewardSets || [];
-      let { shopId, discountProportion } = res.shopTokenCoinSet || {};
+      let { shopId, discountProportion, isForceUse } = res.shopTokenCoinSet || {};
       this.addGoldDynamicForm.shopId = shopId;
+      this.addGoldDynamicForm.isForceUse = isForceUse;
       this.addGoldDynamicForm.discountProportion = discountProportion;
       this.shopTokenCoinSet = res.shopTokenCoinSet || {};
     },
