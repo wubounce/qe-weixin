@@ -3,10 +3,13 @@
     <ul class="deatil-list">
       <li>
         <div><span>适用店铺：</span>{{shopTokenCoinSet.shopName}}</div>
-        <div><span>折扣比例(%)：</span>{{shopTokenCoinSet.discountProportion}}</div>
+        <div><span>强制金币消费：</span>{{shopTokenCoinSet.isForceUse | isForceUsType}}</div>
       </li>
       <li>
+        <div><span>折扣比例(%)：</span>{{shopTokenCoinSet.discountProportion}}</div>
         <div><span>创建人：</span>{{managerOperatorName}}</div>
+      </li>
+      <li>
         <div><span>创建时间：</span>{{shopTokenCoinSet.createdAt}}</div>
       </li>
     </ul>
@@ -25,6 +28,8 @@
           <p>1.每笔消费金币可抵扣部分费用，具体抵扣比例由运营商配置。若抵扣比例为99%，即表示总金额为1元的订单，99金币可抵扣0.99元，须再支付0.01元（如按比例计算不足0.01元按0.01元计算）。</p>
           <p class="title">退还金币：</p>
           <p>1.若用户向运营商申请退还金币，则退还金额仅以金币本金部分计算，运营商可在营销管理--金币会员页面将用户对应的金币做回收处理。</p>
+          <p class="title">强制金币消费：</p>
+          <p>1.若开启此功能，则用户金币余额为0时无法使用店铺中的设备，即用户必须购买店铺金币方案。</p>
         </div>
         <svg-icon icon-class="zhibiaoshuoming" />
       </el-tooltip>
@@ -38,6 +43,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { isForceUsType } from '@/utils/mapping';
 import { getTokenCoinFun } from '@/service/tokenCoin';
 export default {
   props: {
@@ -58,6 +64,11 @@ export default {
     };
   },
   components: {},
+  filters: {
+    isForceUsType(val) {
+      return isForceUsType[val];
+    }
+  },
   created() {
     this.getDetail();
   },
