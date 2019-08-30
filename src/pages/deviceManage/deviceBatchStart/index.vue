@@ -66,7 +66,7 @@
         </el-form>
       </el-dialog>
       <!-- 新增  -->
-      <el-dialog title="新增批量启动" :visible.sync="addDeviceBatchStartDialogVisible" width="540px">
+      <el-dialog title="新增批量启动" :visible.sync="addDeviceBatchStartDialogVisible" width="540px" :close-on-click-modal="false">
         <el-form :model="addDeviceBatchStartForm" ref="addDeviceBatchStartForm" :rules="addDeviceBatchStartFormRules" class="batch-device-edit-wrap" v-if="addDeviceBatchStartDialogVisible" label-position="left">
           <el-form-item label="所属店铺：" prop="shopId">
             <el-select v-model="addDeviceBatchStartForm.shopId" placeholder="请选择" @change="changeBatchMachineype">

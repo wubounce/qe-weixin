@@ -8,7 +8,8 @@ module.exports = {
   globals: {
     echarts: false,
     moment: false,
-    scope: false
+    scope: false,
+    _: false
   },
   // extends: ['plugin:vue/essential', '@vue/prettier'],
   // extends: ['plugin:vue/recommended', 'eslint:recommended'],
