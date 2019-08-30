@@ -166,3 +166,8 @@ export const subAccountType = {
   0: '未配置',
   1: '已配置',
 };
+
+export const isForceUsType = {
+  0: '关闭',
+  1: '开启'
+};
