@@ -430,9 +430,11 @@ export default {
           item.ifOpen = 1;
           ifOpenLen = ifOpenLen + 1;
         }
-        let neextraAttr = this._.cloneDeep(this.deviceEditForm.extraAttr);
-        this.$set(neextraAttr, 'channel', this._.get(item, 'extraAttr.channel', ''));
-        item.extraAttr = neextraAttr;
+        if (this.deviceEditForm.isQuantifyCharge === 1) {
+          let neextraAttr = this._.cloneDeep(this.deviceEditForm.extraAttr);
+          this.$set(neextraAttr, 'channel', this._.get(item, 'extraAttr.channel', ''));
+          item.extraAttr = neextraAttr;
+        }
         return item;
       });
       if (ifOpenLen === this.deviceEditForm.functionList.length) {
