@@ -330,8 +330,23 @@ export default {
         needMinutes: [{ required: true, message: '请输入耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,4})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
         functionPrice: [{ required: true, message: '请输入原价', trigger: 'blur' }, { pattern: /^(([0-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
         waterMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
-        waterMachineNeedMinutes: [{ required: true, message: '请输入单脉冲流量', trigger: 'blur' }, { pattern: /^(([1-9]|([1-9][0-9]{1,2}([0-8])?)|([1-9][0-8]{1,2}([0-9])?))(\.\d{0,3})?|0\.\d{0,3}|9999|9999.0|9999.00|9999.000)$/, message: '请输入0.001-9999之间数字，最多保留3位小数', trigger: 'blur' }],
-        chargeMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { pattern: /^([0-4]{1}([.]{1}[0-9]{1,2})?|5|5.0|5.00)$/, message: '请输入0.01-5之间数字，最多保留2位小数', trigger: 'blur' }],
+        waterMachineNeedMinutes: [
+          { required: true, message: '请输入单脉冲流量', trigger: 'blur' },
+          {
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              let reg = /^([0-9]*)([.]{0,1}\d{0,3})?$/;
+              if (!reg.test(value)) {
+                callback(new Error('请输入0.001-9999之间数字，最多保留3位小数'));
+              } else if (Number(value) === 0 || Number(value) > 9999.0) {
+                callback(new Error('请输入0.001-9999之间数字，最多保留3位小数'));
+              } else {
+                callback();
+              }
+            }
+          }
+        ],
+        chargeMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { pattern: /^([0-4]{1}([.]{1}[0-9]{0,2})?|5|5.0|5.00)$/, message: '请输入0.01-5之间数字，最多保留2位小数', trigger: 'blur' }],
         functionCode: [{ required: true, message: '请输入脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentLiquid: [{ required: true, message: '请输入用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
         detergentPrice: [{ required: true, message: '请输入洗衣液价格', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0.01-99之间的数字,最多保留2位小数', trigger: 'blur' }],
@@ -395,14 +410,17 @@ export default {
         if (valid) {
           let ifOpenLen = 0;
           this.deviceEditForm.isOpenDetergentStatus === true ? (this.deviceEditForm.isOpenDetergent = 1) : (this.deviceEditForm.isOpenDetergent = 0);
-          this.deviceEditForm.functionList.forEach(item => {
-            if (item.ifOpenStatus === false) {
+          this.deviceEditForm.functionList = this.deviceEditForm.functionList.map(item => {
+            if (item.ifOpenStatus) {
+              item.ifOpen = 0;
+            } else {
               item.ifOpen = 1;
               ifOpenLen = ifOpenLen + 1;
-            } else {
-              item.ifOpen = 0;
             }
-            item.extraAttr = this.deviceEditForm.extraAttr || '';
+            let neextraAttr = this._.cloneDeep(this.deviceEditForm.extraAttr);
+            this.$set(neextraAttr, 'channel', this._.get(item, 'extraAttr.channel', ''));
+            item.extraAttr = neextraAttr;
+            return item;
           });
           if (ifOpenLen === this.deviceEditForm.functionList.length) {
             this.$Message.error('请至少开启一项功能');
