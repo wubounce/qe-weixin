@@ -14,6 +14,7 @@ import directive from '@/directive/index'; // global directive
 import common from '@/utils/common'; // global directive
 
 import { Message } from 'element-ui';
+import lodash from 'lodash';
 // 引入vue-amap
 
 window.VueAMap.initAMapApiLoader({
@@ -36,6 +37,7 @@ Vue.config.productionTip = true;
 Vue.prototype.$ELEMENT = { size: Cookies.get('size') || 'small' };
 Vue.prototype.$Message = Message;
 Vue.prototype.STATIC_IMAGE = process.env.VUE_APP_STATICURL;
+Vue.prototype._ = lodash;
 // Vue.use(ElementUI, {
 //   size: Cookies.get('size') || 'small' // set element-ui default size
 // });

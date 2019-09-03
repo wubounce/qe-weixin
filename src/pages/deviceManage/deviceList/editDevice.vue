@@ -7,36 +7,48 @@
       <el-tabs v-model="deviceEditTab">
         <el-tab-pane label="功能设置" name="first">
           <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
-            <el-form-item label="价格设置：" prop="waterMachinePirce">
-              <div class="add-discount">
-                <el-input v-model.trim="deviceEditForm.waterMachinePirce" maxlength="6" placeholder="例：1"></el-input>
-                <span style="position: absolute;left: 220px;color:#bfbfbf;">元/{{isSupportDosage(deviceEditForm.support)?'升':'秒'}}</span>
-              </div>
-            </el-form-item>
-            <el-form-item label="单位流量：" prop="waterMachineNeedMinutes" v-if="isSupportDosage(deviceEditForm.support)">
-              <div class="add-discount">
-                <el-input v-model.trim="deviceEditForm.waterMachineNeedMinutes" maxlength="5" placeholder="例：1"></el-input>
-                <span style="position: absolute;left: 220px;color:#bfbfbf;">ml</span>
-              </div>
-            </el-form-item>
             <el-table :data="deviceEditForm.functionList" style="width: 100%">
-              <el-table-column prop="functionName" label="出水口"></el-table-column>
-              <el-table-column prop="ifOpenStatus" label="状态" header-align="right" align="right">
+              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+              <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
+                <template slot-scope="scope">
+                  <div v-if="configVO.time.join">
+                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
+                      <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
+                      </el-input>
+                    </el-form-item>
+                    <span v-else>{{getRestNeedMinutes(scope.row)}}</span>
+                  </div>
+                  <el-form-item v-else :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
+                    <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                <template slot-scope="scope">
+                  <div v-if="configVO.price.join">
+                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
+                      <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
+                      </el-input>
+                    </el-form-item>
+                    <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
+                  </div>
+                  <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
+                    <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
                 <template slot-scope="scope">
                   <el-switch v-model="scope.row.ifOpenStatus">
                   </el-switch>
                 </template>
               </el-table-column>
             </el-table>
-            <p class="water-tip"><span v-if="isSupportDosage(deviceEditForm.support)">1、</span>关闭出水口开关用户则无法使用对应出水口接水 <br /><span v-if="isSupportDosage(deviceEditForm.support)">2、单位流量为设备流量计每转1圈的流量</span></p>
+
           </div>
-          <div v-if="deviceEditForm.subTypeId === '435871915014357627'">
-            <el-form-item label="充电单价：" prop="chargeMachinePirce">
-              <div class="add-discount">
-                <el-input v-model.trim="deviceEditForm.chargeMachinePirce" maxlength="4"></el-input>
-                <span style="position: absolute;left: 235px;color:#bfbfbf;">元/小时</span>
-              </div>
-            </el-form-item>
+          <div v-if="deviceEditForm.isQuantifyCharge === 1">
             <el-form-item label="可选时间范围：">
               <el-col :span="5">
                 <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
@@ -124,35 +136,49 @@
               </ul>
             </div>
             <el-table :data="deviceEditForm.functionList" style="width: 100%">
-              <el-table-column prop="functionName" label="充电口"></el-table-column>
-              <el-table-column prop="ifOpenStatus" label="状态" header-align="right" align="right">
+              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+              <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                <template slot-scope="scope">
+                  <div v-if="configVO.price.join">
+                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
+                      <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
+                      </el-input>
+                    </el-form-item>
+                    <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
+                  </div>
+                  <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
+                    <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.price.available">
                 <template slot-scope="scope">
                   <el-switch v-model="scope.row.ifOpenStatus">
                   </el-switch>
                 </template>
               </el-table-column>
             </el-table>
-            <p class="water-tip">关闭充电口开关用户则无法使用对应充电口充电</p>
           </div>
-          <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.subTypeId !== '435871915014357627'">
-            <el-table-column prop="functionName" label="功能"></el-table-column>
-            <el-table-column prop="needMinutes" label="耗时/分钟" v-if="deviceEditForm.subTypeName !== '通用脉冲充电桩'">
+          <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
+            <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+            <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
-                  <el-input v-model.trim="scope.row.needMinutes">
+                  <el-input v-model.trim="scope.row.needMinutes" maxlength="4">
                   </el-input>
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="functionPrice" label="原价/元">
+            <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
-                  <el-input v-model.trim="scope.row.functionPrice">
+                  <el-input v-model.trim="scope.row.functionPrice" maxlength="5">
                   </el-input>
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="functionCode" label="脉冲数" v-if="deviceEditForm.communicateType == 0">
+            <el-table-column prop="functionCode" :label="configVO.pulse.title" v-if="configVO.pulse.available">
               <template slot-scope="scope">
                 <el-form-item :prop="'functionList.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
                   <el-input v-model.trim="scope.row.functionCode" maxlength="2">
@@ -160,7 +186,7 @@
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="ifOpenStatus" label="状态">
+            <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
               <template slot-scope="scope">
                 <el-switch v-model="scope.row.ifOpenStatus">
                 </el-switch>
@@ -225,7 +251,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceAddorEditFun } from '@/service/device';
+import { getFunctionSetListFun, deviceAddorEditFun } from '@/service/device';
 import { validatNum } from '@/utils/validate';
 import waterMixin from './waterMixin';
 export default {
@@ -247,7 +273,7 @@ export default {
       if (value <= 1) {
         return callback(new Error('功率必须大于1'));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
-        return callback(new Error(`请填写正确的功率范围数值`));
+        return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
         callback(new Error('功率必须为数字值,无小数'));
       } else {
@@ -259,7 +285,7 @@ export default {
       if (value <= power) {
         return callback(new Error(`功率必须大于${power}`));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
-        return callback(new Error(`请填写正确的功率范围数值`));
+        return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
         callback(new Error('功率必须为数字值,无小数'));
       } else {
@@ -271,7 +297,7 @@ export default {
       if (value <= power) {
         return callback(new Error(`功率必须大于${power}`));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
-        return callback(new Error(`请填写正确的功率范围数值`));
+        return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
         callback(new Error('功率必须为数字值,无小数'));
       } else {
@@ -279,8 +305,8 @@ export default {
       }
     };
     var validatorWterMachinePirce = (rule, value, callback) => {
-      let reg1 = /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[0-9]{0,2}|99|99.0)$/;
-      let reg2 = /^(([1-9]|[1-9][0-8])(\.\d{0,3})?|(([1-8][0-9])(\.\d{0,3})?)|0\.[0-9]{0,3}|99|99.0)$/;
+      let reg1 = /^(([0-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[0-9]{0,2}|99|99.0|99.00)$/;
+      let reg2 = /^(([0-9]|[1-9][0-8])(\.\d{0,3})?|(([1-8][0-9])(\.\d{0,3})?)|0\.[0-9]{0,3}|99|99.0|99.00|99.000)$/;
       if ((this.deviceEditForm.support & 2) === 2) {
         if (!reg2.test(value)) {
           return callback(new Error(`请输入0-99之间的数字,最多保留3位小数`));
@@ -300,25 +326,47 @@ export default {
       waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       deviceEditForm: this.deviceEditdetailForm,
       deviceEditFormRules: {
-        machineName: [{ required: true, message: '请填写设备名称', trigger: 'blur' }],
-        needMinutes: [{ required: true, message: '请填写耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
-        waterMachineNeedMinutes: [{ required: true, message: '请填写单位流量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,3})$/, message: '请输入1-9999之间的数字，无小数', trigger: 'blur' }],
-        functionPrice: [{ required: true, message: '请填写原价', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
-        waterMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
-        chargeMachinePirce: [{ required: true, message: '请填写价格', trigger: 'blur' }, { pattern: /^[0-4]{1}([.]{1}[0-9]{1,2})?$/, message: '充电单价不能超过5，支持小数点后两位', trigger: 'blur' }],
-        functionCode: [{ required: true, message: '请填写脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentLiquid: [{ required: true, message: '请填写用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentPrice: [{ required: true, message: '请填写洗衣液价格', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
-        'extraAttr.power1': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
-        'extraAttr.power2': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
-        'extraAttr.power3': [{ required: true, message: '请填写功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
-        'extraAttr.ratio2': [{ required: true, message: '请填写系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
-        'extraAttr.ratio3': [{ required: true, message: '请填写系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
+        machineName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
+        needMinutes: [{ required: true, message: '请输入耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,4})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
+        functionPrice: [{ required: true, message: '请输入原价', trigger: 'blur' }, { pattern: /^(([0-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
+        waterMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
+        waterMachineNeedMinutes: [
+          { required: true, message: '请输入单脉冲流量', trigger: 'blur' },
+          {
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              let reg = /^([0-9]*)([.]{0,1}\d{0,3})?$/;
+              if (!reg.test(value)) {
+                callback(new Error('请输入0.001-9999之间数字，最多保留3位小数'));
+              } else if (Number(value) === 0 || Number(value) > 9999.0) {
+                callback(new Error('请输入0.001-9999之间数字，最多保留3位小数'));
+              } else {
+                callback();
+              }
+            }
+          }
+        ],
+        chargeMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { pattern: /^([0-4]{1}([.]{1}[0-9]{0,2})?|5|5.0|5.00)$/, message: '请输入0.01-5之间数字，最多保留2位小数', trigger: 'blur' }],
+        functionCode: [{ required: true, message: '请输入脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentLiquid: [{ required: true, message: '请输入用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentPrice: [{ required: true, message: '请输入洗衣液价格', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0.01-99之间的数字,最多保留2位小数', trigger: 'blur' }],
+        'extraAttr.power1': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
+        'extraAttr.power2': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
+        'extraAttr.power3': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
+        'extraAttr.ratio2': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
+        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
       },
       //充电时间选择
       chargeTimeMax: 0,
       chargeTimeMin: 0,
-      chargeTimeStep: 0
+      chargeTimeStep: 0,
+      configVO: {
+        extra: {},
+        name: {},
+        open: {},
+        price: {},
+        time: {}
+      }
     };
   },
   components: {},
@@ -328,61 +376,70 @@ export default {
     }
   },
   created() {
-    this.$set(this.deviceEditForm, 'waterMachinePirce', this.deviceEditForm.functionList[0].functionPrice || 0);
-    this.$set(this.deviceEditForm, 'waterMachineNeedMinutes', this.deviceEditForm.functionList[0].needMinutes || 0);
-    this.$set(this.deviceEditForm, 'chargeMachinePirce', this.deviceEditForm.functionList[0].functionPrice || 0);
-    this.$set(this.deviceEditForm, 'extraAttr', this.deviceEditForm.functionList[0].extraAttr || {});
-    if (this.deviceEditForm.subTypeId === '435871915014357627') {
-      let extraAttr = this.deviceEditForm.functionList.length > 0 ? (this.deviceEditForm.functionList[0].extraAttr ? this.deviceEditForm.functionList[0].extraAttr : {}) : {};
-      let tmpext = Object.assign({}, extraAttr);
-      this.chargeTimeMax = tmpext.max || 0;
-      this.chargeTimeMin = tmpext.min || 0;
-      this.chargeTimeStep = tmpext.step || 0;
-    }
+    this.getFunctionSetList();
+    this.configVO = this._.get(this.deviceEditForm, 'configVO', {});
+    this.$set(this.deviceEditForm, 'extraAttr', this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {}));
+    this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
+    this.deviceEditForm.functionList.forEach(item => {
+      item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
+    });
   },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    async getFunctionSetList() {
+      //获取充电范围模板
+      let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
+      let res = await getFunctionSetListFun(payload);
+      if (this.deviceEditForm.isQuantifyCharge === 1) {
+        let extraAttr = this._.get(res, 'extraAttr', {});
+        this.chargeTimeMax = extraAttr.max || 0;
+        this.chargeTimeMin = extraAttr.min || 0;
+        this.chargeTimeStep = extraAttr.step || 0;
+      }
+    },
+    getRestNeedMinutes(row) {
+      return (row.needMinutes = this._.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
+    },
+    getRestFunctionPrice(row) {
+      return (row.functionPrice = this._.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
     },
     onEditDecive(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let ifOpenLen = 0;
           this.deviceEditForm.isOpenDetergentStatus === true ? (this.deviceEditForm.isOpenDetergent = 1) : (this.deviceEditForm.isOpenDetergent = 0);
-          this.deviceEditForm.functionList.forEach(item => {
-            if (item.ifOpenStatus === false) {
+          this.deviceEditForm.functionList = this.deviceEditForm.functionList.map(item => {
+            if (item.ifOpenStatus) {
+              item.ifOpen = 0;
+            } else {
               item.ifOpen = 1;
               ifOpenLen = ifOpenLen + 1;
-            } else {
-              item.ifOpen = 0;
             }
-            if (this.deviceEditForm.parentTypeName === '饮水机' && this.isBoiledWater(this.deviceEditForm.support)) {
-              //开水机
-              item.functionPrice = this.deviceEditForm.waterMachinePirce;
-              item.needMinutes = this.deviceEditForm.waterMachineNeedMinutes;
+            if (this.deviceEditForm.isQuantifyCharge === 1) {
+              let neextraAttr = this._.cloneDeep(this.deviceEditForm.extraAttr);
+              this.$set(neextraAttr, 'channel', this._.get(item, 'extraAttr.channel', ''));
+              item.extraAttr = neextraAttr;
             }
-            if (this.deviceEditForm.subTypeId === '435871915014357627') {
-              //充电桩
-              item.functionPrice = this.deviceEditForm.chargeMachinePirce;
-            }
+            return item;
           });
           if (ifOpenLen === this.deviceEditForm.functionList.length) {
             this.$Message.error('请至少开启一项功能');
             return false;
           }
-          let payload = Object.assign({}, this.deviceEditForm);
-          payload.functionJson = JSON.stringify(this.deviceEditForm.functionList);
-          payload.detergentJson = JSON.stringify(this.deviceEditForm.detergentFunctionList);
-          payload.extraAttr = payload.extraAttr ? JSON.stringify(payload.extraAttr) : '';
-          delete payload.functionList;
-          delete payload.detergentFunctionList;
+          let data = Object.assign({}, this.deviceEditForm);
+          data.functionJson = this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null;
+          data.detergentJson = this.deviceEditForm.detergentFunctionList ? JSON.stringify(this.deviceEditForm.detergentFunctionList) : null;
+          /* eslint-disable no-unused-vars */
+          let { functionList, detergentFunctionList, configVO, extraAttr, ...payload } = data;
           deviceAddorEditFun(payload).then(() => {
             this.$Message.success('编辑成功');
             this.modalClose();
             this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable(); //若组件传递事件confirm则执行
           });
         } else {
-          this.$Message.error('请填写完整信息');
+          this.$Message.error('请输入完整信息');
           return false;
         }
       });
@@ -402,9 +459,11 @@ export default {
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
+
 .edit-device-name {
   padding-top: 16px;
 }
+
 .action {
   text-align: right;
   padding: 16px 0 24px 0;
@@ -440,5 +499,14 @@ export default {
 .charge-control /deep/ .el-form-item {
   padding-top: 10px;
   margin-bottom: 0 !important;
+}
+/deep/ .el-table {
+  .el-form-item--small.el-form-item {
+    margin-bottom: 25px;
+  }
+  td,
+  th {
+    vertical-align: top;
+  }
 }
 </style>
