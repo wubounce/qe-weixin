@@ -212,5 +212,20 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import '~@/styles/variables.scss';
+.batch-device-edit-wrap {
+  color: #8c8c8c;
+  padding-top: 16px;
+}
+.add-batch-time /deep/ .el-input__inner {
+  width: 220px !important;
+  padding-left: 30px !important;
+}
+.batch-device-edit-action {
+  border-top: 1px solid $under_line;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  text-align: right;
+}
 </style>
  
