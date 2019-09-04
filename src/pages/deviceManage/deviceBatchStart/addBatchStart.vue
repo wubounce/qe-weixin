@@ -132,4 +132,9 @@ export default {
   padding-bottom: 16px;
   text-align: right;
 }
+/deep/ .el-date-editor--datetime .el-icon-time:after {
+  position: absolute;
+  width: 160px !important;
+  cursor: pointer;
+}
 </style>
