@@ -194,4 +194,9 @@ export default {
 .active-date /deep/ .el-radio {
   margin-right: 0;
 }
+/deep/ .el-date-editor--daterange .el-icon-date:after {
+  position: absolute;
+  width: 160px !important;
+  cursor: pointer;
+}
 </style>
