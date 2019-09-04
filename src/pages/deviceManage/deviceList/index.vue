@@ -244,9 +244,6 @@ export default {
       deviceDataToTable: [],
 
       detailDialogVisible: false,
-      // detailData: {
-      //   functionList: []
-      // },
       detailData: null,
       machineParentTypeList: [],
       machineSubTypeList: [],
@@ -370,12 +367,24 @@ export default {
       this.detailData = Object.assign({}, res);
       let extraAttr = this._.get(res, 'functionList[0].extraAttr', {});
       this.$set(this.detailData, 'extraAttr', extraAttr);
-      this.deviceEditdetailForm = Object.assign({}, res);
       if (res.isQuantifyCharge === 1) {
         this.chargeTimeMax = (1 / extraAttr.step) * extraAttr.max || 0;
         this.chargeTimeMin = extraAttr.min || 0;
         this.chargeTimeStep = extraAttr.step || 0;
       }
+      let settingList = [],
+        functionList = [];
+      res.functionList.forEach(item => {
+        item.type !== 3 && functionList.push(item);
+        if (item.type === 3 && item.setting) {
+          item.setting = typeof item.setting == 'string' ? JSON.parse(item.setting) : item.setting;
+          settingList.push(item);
+        }
+      });
+      this.$set(this.detailData, 'settingList', settingList);
+      this.$set(this.detailData, 'functionList', functionList);
+      this.deviceEditdetailForm = Object.assign({}, res);
+
       return Promise.resolve();
     },
     handleDeviceTzj(row) {
