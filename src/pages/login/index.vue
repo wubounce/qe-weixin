@@ -171,7 +171,7 @@ export default {
     display: inline-block;
     height: 40px;
     width: 100%;
-    /deep/ .el-input__inner {
+    .el-input__inner {
       width: 100% !important;
       background: #fff !important;
       -webkit-appearance: none !important;

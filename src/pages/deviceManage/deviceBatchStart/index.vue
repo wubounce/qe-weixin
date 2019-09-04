@@ -66,57 +66,24 @@
         </el-form>
       </el-dialog>
       <!-- 新增  -->
-      <el-dialog title="新增批量启动" :visible.sync="addDeviceBatchStartDialogVisible" width="540px" :close-on-click-modal="false">
-        <el-form :model="addDeviceBatchStartForm" ref="addDeviceBatchStartForm" :rules="addDeviceBatchStartFormRules" class="batch-device-edit-wrap" v-if="addDeviceBatchStartDialogVisible" label-position="left">
-          <el-form-item label="所属店铺：" prop="shopId">
-            <el-select v-model="addDeviceBatchStartForm.shopId" placeholder="请选择" @change="changeBatchMachineype">
-              <el-option v-for="(item,index) in shopBatchStartList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="设备类型：" prop="machineParentTypeId">
-            <el-select v-model="addDeviceBatchStartForm.machineParentTypeId" placeholder="请选择" @change="changeBatchFuncionList">
-              <el-option v-for="(item,index) in addBatchStartMachineParentTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="启动模式：" prop="standardFunctionId">
-            <el-select v-model="addDeviceBatchStartForm.standardFunctionId" placeholder="请选择">
-              <el-option v-for="(item,index) in addBatchStartFunctionList" :key="index" :label="item.functionName" :value="item.functionId"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="启动方式：" prop="standardFunctionAction">
-            <el-radio-group v-model="addDeviceBatchStartForm.standardFunctionAction" @change="nowAndTimingStartAction">
-              <el-radio :label="0">立即启动</el-radio>
-              <el-radio :label="1">定时启动</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="启动时间：" prop="startTime" class="add-batch-time" v-if="isNowAndTimingStartAction">
-            <el-date-picker v-model="addDeviceBatchStartForm.startTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item class="batch-device-edit-action">
-            <el-button type="primary" @click="onSubmitAddDeviceStart('addDeviceBatchStartForm')">保存</el-button>
-            <el-button @click="resetAddDeviceStart('addDeviceBatchStartForm');addDeviceBatchStartDialogVisible=false">取消</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
+      <add-batch-start v-if="addDeviceBatchStartDialogVisible" :visible.sync="addDeviceBatchStartDialogVisible" @getBatchStartDataToTable="getBatchStartDataToTable"></add-batch-start>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import { getlistParentTypeFun } from '@/service/device';
-import { listBatchStartFun, batchStartNowFun, updateBatchStartFun, getFunctionListFun, delBatchStartFun, addBatchStartFun, listBatchStartApi } from '@/service/todoList';
+import { listBatchStartFun, batchStartNowFun, updateBatchStartFun, getFunctionListFun, delBatchStartFun, listBatchStartApi } from '@/service/todoList';
 import { exportExcel } from '@/service/common';
 import { shopListFun } from '@/service/report';
-import { listShopBatchStartFun } from '@/service/device';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
-import ShopFilter from '@/components/Shopfilter';
+import addBatchStart from './addBatchStart';
 export default {
   mixins: [PagerMixin],
   components: {
     Pagination,
-    ShopFilter
+    addBatchStart
   },
   data() {
     return {
@@ -127,7 +94,7 @@ export default {
       shopList: [],
       batchStartDataToTable: [],
       machineParentTypeList: [],
-      deviceStertDialogVisible: false,
+      addDeviceBatchStartDialogVisible: false,
       //编辑
       functionEditList: [],
       deviceBatchStartDialogVisible: false,
@@ -137,27 +104,6 @@ export default {
       },
       deviceBatchStartFormRules: {
         standardFunctionId: [{ required: true, message: '请选择模式', trigger: 'change' }],
-        startTime: [{ required: true, message: '请选择时间', trigger: 'change' }]
-      },
-
-      //批量添加启动
-      shopBatchStartList: [],
-      addDeviceBatchStartForm: {
-        shopId: '',
-        machineParentTypeId: '',
-        standardFunctionId: '',
-        standardFunctionAction: '',
-        startTime: ''
-      },
-      addDeviceBatchStartDialogVisible: false,
-      addBatchStartMachineParentTypeList: [],
-      addBatchStartFunctionList: [],
-      isNowAndTimingStartAction: false,
-      addDeviceBatchStartFormRules: {
-        shopId: [{ required: true, message: '请选择店铺', trigger: 'change' }],
-        machineParentTypeId: [{ required: true, message: '请选择设备类型', trigger: 'change' }],
-        standardFunctionId: [{ required: true, message: '请选择启动模式', trigger: 'change' }],
-        standardFunctionAction: [{ required: true, message: '请选择启动方式', trigger: 'change' }],
         startTime: [{ required: true, message: '请选择时间', trigger: 'change' }]
       }
     };
@@ -169,7 +115,6 @@ export default {
     this.getShopList();
     this.getmachineParentType();
     this.getBatchStartDataToTable();
-    this.getshopBatchStartList();
   },
   methods: {
     async getShopList() {
@@ -198,11 +143,6 @@ export default {
       this.$refs[formName].resetFields();
       this.getBatchStartDataToTable();
     },
-    async getshopBatchStartList() {
-      //获取批量添加店铺列表
-      let res = await listShopBatchStartFun();
-      this.shopBatchStartList = res;
-    },
     async getBatchStartDataToTable() {
       //列表
       let payload = Object.assign({}, this.searchData);
@@ -212,40 +152,6 @@ export default {
         item.createTime = item.createTime ? moment(item.createTime).format('YYYY-MM-DD HH:mm:ss') : '';
       });
       this.total = res.total;
-    },
-    async changeBatchFuncionList(val) {
-      //根据店铺和一级类型获取启动模式
-      let payload = { shopId: this.addDeviceBatchStartForm.shopId, machineParentTypeId: val };
-      let res = await getFunctionListFun(payload);
-      this.addBatchStartFunctionList = res;
-    },
-    async changeBatchMachineype(val) {
-      //根据店铺获取一级类型
-      let payload = { shopId: val, batchStart: true };
-      let res = await getlistParentTypeFun(payload);
-      this.addBatchStartMachineParentTypeList = res;
-    },
-    nowAndTimingStartAction(val) {
-      val === 1 ? (this.isNowAndTimingStartAction = true) : (this.isNowAndTimingStartAction = false);
-    },
-    onSubmitAddDeviceStart(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          let payload = Object.assign({}, this.addDeviceBatchStartForm);
-          addBatchStartFun(payload).then(() => {
-            this.$message.success('添加成功');
-            this.resetAddDeviceStart(formName);
-            this.getBatchStartDataToTable();
-            this.addDeviceBatchStartDialogVisible = false;
-          });
-        } else {
-          return false;
-        }
-      });
-    },
-    resetAddDeviceStart(formName) {
-      this.$refs[formName].clearValidate();
-      this.$refs[formName].resetFields();
     },
     async handleDeviceEdit(row) {
       this.deviceBatchStartForm.startTime = moment(row.beginTime).format('YYYY-MM-DD HH:mm:ss');
