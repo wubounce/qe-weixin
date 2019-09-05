@@ -193,12 +193,8 @@ export default {
     }
   }
 }
-// .charge-base {
-//   width: 120px !important;
-// }
 .charge-control {
-  padding-bottom: 24px;
-  padding-top: 24px;
+  padding-bottom: 10px;
   h2 {
     font-size: 14px;
     font-weight: 600;

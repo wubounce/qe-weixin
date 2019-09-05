@@ -218,25 +218,23 @@
               </template></el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="其他属性设置" name="third" v-if="deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
-          <el-table :data="deviceEditForm.waterLevel" style="width: 100%">
-            <el-table-column prop="functionName" label="属性名称">
+        <el-tab-pane label="其他属性设置" name="third" v-if="deviceEditForm.settingList.length >0">
+          <el-table :data="deviceEditForm.settingList" style="width: 100%">
+            <el-table-column prop="functionName" label="属性名称" width="300"></el-table-column>
+            <el-table-column prop="setting" label="属性值">
               <template slot-scope="scope">
-                <span>水位设置</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="waterLevel" label="属性值">
-              <template slot-scope="scope">
-                <el-form-item prop="waterLevel" class="edit-waterLevel">
-                  <el-select v-model="deviceEditForm.waterLevel" placeholder="请选择">
-                    <el-option v-for="(item,index) in waterLevelList" :key="index" :label="item.name" :value="item.value"></el-option>
-                  </el-select>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column prop="functionPrice" label="属性说明">
-              <template slot-scope="scope">
-                <span>控制洗衣模式最大</span>
+                <span v-for="(item,index) in scope.row.setting" :key="index" class="extraAttr_setting">
+                  <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type==='select'" :label="item.name">
+                    <el-select v-model="item.default" :placeholder="item.desc">
+                      <el-option v-if="deviceEditForm.company==='qiekj'" v-for="(item) in item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                      <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item v-else :label="item.name" :prop="'settingList.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'>
+                    <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="3">
+                    </el-input>
+                  </el-form-item>
+                </span>
               </template>
             </el-table-column>
           </el-table>
@@ -323,7 +321,6 @@ export default {
     };
     return {
       deviceEditTab: 'first',
-      waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       deviceEditForm: this.deviceEditdetailForm,
       deviceEditFormRules: {
         machineName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
@@ -354,7 +351,8 @@ export default {
         'extraAttr.power2': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
         'extraAttr.power3': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
         'extraAttr.ratio2': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
-        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
+        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
+        default: [{ required: true, message: '内容不可为空', trigger: 'blur' }, { pattern: /^([1-9]+\d*)|(0\.[1-9]{0,1}?)$/, message: '请输入整数，最多保留1位小数', trigger: 'blur' }]
       },
       //充电时间选择
       chargeTimeMax: 0,
@@ -376,6 +374,7 @@ export default {
     }
   },
   created() {
+    this.formatExtraAttr();
     this.getFunctionSetList();
     this.configVO = this._.get(this.deviceEditForm, 'configVO', {});
     this.$set(this.deviceEditForm, 'extraAttr', this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {}));
@@ -387,6 +386,17 @@ export default {
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    formatExtraAttr() {
+      //额外参数设置充电桩功率，水位default字段代表options中的第几位
+      if (!this._.isEmpty(this.deviceEditForm.settingList)) {
+        this.deviceEditForm.settingList.forEach(item => {
+          if (this._.includes(item.functionName, '水位')) {
+            let defaultvalue = this._.get(item, 'setting[0].default', '0') - 1;
+            item.setting[0].default = this.deviceEditForm.company === 'qiekj' ? this._.get(item, `setting[0].options[${defaultvalue}].value`, '0') : this._.get(item, `setting[0].youfangOptions[${defaultvalue}].value`, '0');
+          }
+        });
+      }
     },
     async getFunctionSetList() {
       //获取充电范围模板
@@ -432,7 +442,8 @@ export default {
           data.functionJson = this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null;
           data.detergentJson = this.deviceEditForm.detergentFunctionList ? JSON.stringify(this.deviceEditForm.detergentFunctionList) : null;
           /* eslint-disable no-unused-vars */
-          let { functionList, detergentFunctionList, configVO, extraAttr, ...payload } = data;
+          let { functionList, detergentFunctionList, configVO, extraAttr, settingList, ...payload } = data;
+          payload.setting = this.getFormatExtraAttr(settingList);
           deviceAddorEditFun(payload).then(() => {
             this.$Message.success('编辑成功');
             this.modalClose();
@@ -443,6 +454,23 @@ export default {
           return false;
         }
       });
+    },
+    getFormatExtraAttr(list = []) {
+      //setting说明
+      let setting = [];
+      let value = [];
+      list.forEach(item => {
+        if (!this._.isEmpty(item.setting)) {
+          item.setting.forEach(i => {
+            value.push(i.default);
+          });
+          setting.push({
+            functionId: item.functionId,
+            value: value
+          });
+        }
+      });
+      return setting.length > 0 ? JSON.stringify(setting) : null;
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -508,5 +536,8 @@ export default {
   th {
     vertical-align: top;
   }
+}
+.extraAttr_setting /deep/ .el-form-item {
+  display: flex;
 }
 </style>

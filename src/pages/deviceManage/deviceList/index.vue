@@ -377,13 +377,14 @@ export default {
       res.functionList.forEach(item => {
         item.type !== 3 && functionList.push(item);
         if (item.type === 3 && item.setting) {
-          item.setting = typeof item.setting == 'string' ? JSON.parse(item.setting) : item.setting;
+          item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
           settingList.push(item);
         }
       });
-      this.$set(this.detailData, 'settingList', settingList);
       this.$set(this.detailData, 'functionList', functionList);
       this.deviceEditdetailForm = Object.assign({}, res);
+      this.$set(this.deviceEditdetailForm, 'settingList', settingList);
+      this.$set(this.deviceEditdetailForm, 'functionList', functionList);
 
       return Promise.resolve();
     },
@@ -520,7 +521,7 @@ export default {
     },
     handleBatchEdit() {
       //设备批量编辑
-      if (this.multipleSelection.length <= 0) {
+      if (this._.isEmpty(this.multipleSelection)) {
         this.$alert(`请勾选想要批量编辑的设备`, '提示', {
           showClose: false,
           confirmButtonText: '确定',
