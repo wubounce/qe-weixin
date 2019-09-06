@@ -89,25 +89,6 @@
           <el-table-column prop="detergentPrice" label="原价/元"></el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="其他属性设置" name="third" v-if="detailData.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
-        <el-table :data="detailData.waterLevel" style="width: 100%">
-          <el-table-column prop="functionName" label="属性名称">
-            <template slot-scope="scope">
-              <span>水位设置</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="waterLevel" label="属性值">
-            <template slot-scope="scope">
-              <span>{{scope.row | waterStatus}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="functionPrice" label="属性说明">
-            <template slot-scope="scope">
-              <span>控制洗衣模式最大</span>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
     </el-tabs>
   </el-dialog>
 </template>

@@ -234,7 +234,8 @@
                     <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions" :key="item.value" :label="item.name" :value="item.value"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item v-else :label="item.name" :prop="'settingList.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'>
+                <!-- <el-form-item v-else :label="item.name" :prop="'settingList.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
+                <el-form-item v-else :label="item.name">
                   <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="3">
                   </el-input>
                 </el-form-item>
