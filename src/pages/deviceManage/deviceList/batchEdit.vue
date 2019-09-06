@@ -484,15 +484,15 @@ export default {
     getFormatExtraAttr(list = []) {
       //setting说明
       let setting = [];
-      let value = [];
+      let values = [];
       list.forEach(item => {
         if (!this._.isEmpty(item.setting)) {
           item.setting.forEach(i => {
-            value.push(i.default);
+            values.push(i.default);
           });
           setting.push({
             functionId: item.functionId,
-            value: value
+            values: values
           });
         }
       });
