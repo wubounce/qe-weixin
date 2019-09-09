@@ -218,8 +218,8 @@
               </template></el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="其他属性设置" name="third" v-if="deviceEditForm.settingList.length >0">
-          <el-table :data="deviceEditForm.settingList" style="width: 100%">
+        <el-tab-pane label="其他属性设置" name="third" v-if="deviceEditForm.setting.length >0">
+          <el-table :data="deviceEditForm.setting" style="width: 100%">
             <el-table-column prop="functionName" label="属性名称" width="300"></el-table-column>
             <el-table-column prop="setting" label="属性值">
               <template slot-scope="scope">
@@ -230,7 +230,7 @@
                       <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions" :key="item.value" :label="item.name" :value="item.value"></el-option>
                     </el-select>
                   </el-form-item>
-                  <!-- <el-form-item v-else :label="item.name" :prop="'settingList.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
+                  <!-- <el-form-item v-else :label="item.name" :prop="'setting.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
                   <el-form-item v-else :label="item.name">
                     <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="3">
                     </el-input>
@@ -390,11 +390,15 @@ export default {
     },
     formatExtraAttr() {
       //额外参数设置充电桩功率，水位default字段代表options中的第几位
-      if (!this._.isEmpty(this.deviceEditForm.settingList)) {
-        this.deviceEditForm.settingList.forEach(item => {
-          if (this._.includes(item.functionName, '水位')) {
-            let defaultvalue = this._.get(item, 'setting[0].default', '0') - 1;
-            item.setting[0].default = this.deviceEditForm.company === 'qiekj' ? this._.get(item, `setting[0].options[${defaultvalue}].value`, '0') : this._.get(item, `setting[0].youfangOptions[${defaultvalue}].value`, '0');
+      if (!this._.isEmpty(this.deviceEditForm.setting)) {
+        this.deviceEditForm.setting = this.deviceEditForm.setting.filter(item => {
+          if (!this._.isEmpty(item.setting)) {
+            item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
+            if (this._.includes(item.functionName, '水位')) {
+              let defaultvalue = this._.get(item, 'setting[0].default', '0') - 1;
+              item.setting[0].default = this.deviceEditForm.company === 'qiekj' ? this._.get(item, `setting[0].options[${defaultvalue}].value`, '0') : this._.get(item, `setting[0].youfangOptions[${defaultvalue}].value`, '0');
+            }
+            return item;
           }
         });
       }
@@ -443,8 +447,8 @@ export default {
           data.functionJson = this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null;
           data.detergentJson = this.deviceEditForm.detergentFunctionList ? JSON.stringify(this.deviceEditForm.detergentFunctionList) : null;
           /* eslint-disable no-unused-vars */
-          let { functionList, detergentFunctionList, configVO, extraAttr, settingList, ...payload } = data;
-          payload.setting = this.getFormatExtraAttr(settingList);
+          let { functionList, detergentFunctionList, configVO, extraAttr, setting, ...payload } = data;
+          payload.setting = this.getFormatExtraAttr(setting);
           deviceAddorEditFun(payload).then(() => {
             this.$Message.success('编辑成功');
             this.modalClose();

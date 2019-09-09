@@ -372,20 +372,7 @@ export default {
         this.chargeTimeMin = extraAttr.min || 0;
         this.chargeTimeStep = extraAttr.step || 0;
       }
-      let settingList = [],
-        functionList = [];
-      res.functionList.forEach(item => {
-        item.type !== 3 && functionList.push(item);
-        if (item.type === 3 && item.setting) {
-          item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
-          settingList.push(item);
-        }
-      });
-      this.$set(this.detailData, 'functionList', functionList);
       this.deviceEditdetailForm = Object.assign({}, res);
-      this.$set(this.deviceEditdetailForm, 'settingList', settingList);
-      this.$set(this.deviceEditdetailForm, 'functionList', functionList);
-
       return Promise.resolve();
     },
     handleDeviceTzj(row) {

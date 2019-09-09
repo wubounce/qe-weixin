@@ -7,7 +7,7 @@
           <el-radio-group v-model="checkBatchFuntion">
             <el-radio :label="1">功能设置</el-radio>
             <el-radio :label="2" v-if="deviceEditForm.isDetergent === 1">洗衣液属性</el-radio>
-            <el-radio :label="3" v-if="deviceEditForm.settingList.length >0">其他属性</el-radio>
+            <el-radio :label="3" v-if="deviceEditForm.setting.length >0">其他属性</el-radio>
           </el-radio-group>
         </el-form-item>
         <div v-if="checkBatchFuntion === 1&&configVO">
@@ -223,7 +223,7 @@
               </template></el-table-column>
           </el-table>
         </div>
-        <el-table :data="deviceEditForm.settingList" style="width: 100%" key="waterLevel" v-if="checkBatchFuntion === 3">
+        <el-table :data="deviceEditForm.setting" style="width: 100%" key="waterLevel" v-if="checkBatchFuntion === 3">
           <el-table-column prop="functionName" label="属性名称" width="300"></el-table-column>
           <el-table-column prop="setting" label="属性值">
             <template slot-scope="scope">
@@ -234,7 +234,7 @@
                     <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions" :key="item.value" :label="item.name" :value="item.value"></el-option>
                   </el-select>
                 </el-form-item>
-                <!-- <el-form-item v-else :label="item.name" :prop="'settingList.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
+                <!-- <el-form-item v-else :label="item.name" :prop="'setting.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
                 <el-form-item v-else :label="item.name">
                   <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="3">
                   </el-input>
@@ -399,34 +399,26 @@ export default {
         this.chargeTimeStep = extraAttr.step || 0;
       }
       this.$set(this.deviceEditForm, 'extraAttr', this._.get(res, 'list[0].extraAttr', {}));
-      this.formatSeting(res.list);
+      this.deviceEditForm.functionList = res.list || [];
+      this.deviceEditForm.setting = res.setting || [];
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
       this.deviceEditForm.functionList.forEach(item => {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
-    },
-    formatSeting(list = []) {
-      let settingList = [],
-        functionList = [];
-      list.forEach(item => {
-        item.type !== 3 && functionList.push(item);
-        if (item.type === 3 && item.setting) {
-          item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
-          settingList.push(item);
-        }
-      });
-      this.$set(this.deviceEditdetailForm, 'settingList', settingList);
-      this.$set(this.deviceEditdetailForm, 'functionList', functionList);
       this.formatExtraAttr();
     },
     formatExtraAttr() {
       //额外参数设置充电桩功率，水位default字段代表options中的第几位
-      if (!this._.isEmpty(this.deviceEditForm.settingList)) {
-        this.deviceEditForm.settingList.forEach(item => {
-          if (this._.includes(item.functionName, '水位')) {
-            let defaultvalue = this._.get(item, 'setting[0].default', '0') - 1;
-            item.setting[0].default = this.deviceEditForm.company === 'qiekj' ? this._.get(item, `setting[0].options[${defaultvalue}].value`, '0') : this._.get(item, `setting[0].youfangOptions[${defaultvalue}].value`, '0');
+      if (!this._.isEmpty(this.deviceEditForm.setting)) {
+        this.deviceEditForm.setting = this.deviceEditForm.setting.filter(item => {
+          if (!this._.isEmpty(item.setting)) {
+            item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
+            if (this._.includes(item.functionName, '水位')) {
+              let defaultvalue = this._.get(item, 'setting[0].default', '0') - 1;
+              item.setting[0].default = this.deviceEditForm.company === 'qiekj' ? this._.get(item, `setting[0].options[${defaultvalue}].value`, '0') : this._.get(item, `setting[0].youfangOptions[${defaultvalue}].value`, '0');
+            }
+            return item;
           }
         });
       }
@@ -473,7 +465,7 @@ export default {
           shopId: this.deviceEditForm.shopId,
           functionTempletType: this.deviceEditForm.functionTempletType,
           functionJson: this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null,
-          setting: this.getFormatExtraAttr(this.deviceEditForm.settingList)
+          setting: this.getFormatExtraAttr(this.deviceEditForm.setting)
         }
       );
       batchEditFun(payload).then(() => {
