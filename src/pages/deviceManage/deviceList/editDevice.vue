@@ -218,7 +218,7 @@
               </template></el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="其他属性设置" name="third" v-if="deviceEditForm.setting.length >0">
+        <el-tab-pane label="其他属性设置" name="third" v-if="deviceEditForm.setting&&deviceEditForm.setting.length >0">
           <el-table :data="deviceEditForm.setting" style="width: 100%">
             <el-table-column prop="functionName" label="属性名称" width="300"></el-table-column>
             <el-table-column prop="setting" label="属性值">

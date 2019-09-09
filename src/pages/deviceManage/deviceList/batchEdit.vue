@@ -7,7 +7,7 @@
           <el-radio-group v-model="checkBatchFuntion">
             <el-radio :label="1">功能设置</el-radio>
             <el-radio :label="2" v-if="deviceEditForm.isDetergent === 1">洗衣液属性</el-radio>
-            <el-radio :label="3" v-if="deviceEditForm.setting.length >0">其他属性</el-radio>
+            <el-radio :label="3" v-if="deviceEditForm.setting&&deviceEditForm.setting.length >0">其他属性</el-radio>
           </el-radio-group>
         </el-form-item>
         <div v-if="checkBatchFuntion === 1&&configVO">
