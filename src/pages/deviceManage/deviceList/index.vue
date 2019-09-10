@@ -244,9 +244,6 @@ export default {
       deviceDataToTable: [],
 
       detailDialogVisible: false,
-      // detailData: {
-      //   functionList: []
-      // },
       detailData: null,
       machineParentTypeList: [],
       machineSubTypeList: [],
@@ -370,12 +367,12 @@ export default {
       this.detailData = Object.assign({}, res);
       let extraAttr = this._.get(res, 'functionList[0].extraAttr', {});
       this.$set(this.detailData, 'extraAttr', extraAttr);
-      this.deviceEditdetailForm = Object.assign({}, res);
       if (res.isQuantifyCharge === 1) {
         this.chargeTimeMax = (1 / extraAttr.step) * extraAttr.max || 0;
         this.chargeTimeMin = extraAttr.min || 0;
         this.chargeTimeStep = extraAttr.step || 0;
       }
+      this.deviceEditdetailForm = Object.assign({}, res);
       return Promise.resolve();
     },
     handleDeviceTzj(row) {
@@ -511,7 +508,7 @@ export default {
     },
     handleBatchEdit() {
       //设备批量编辑
-      if (this.multipleSelection.length <= 0) {
+      if (this._.isEmpty(this.multipleSelection)) {
         this.$alert(`请勾选想要批量编辑的设备`, '提示', {
           showClose: false,
           confirmButtonText: '确定',

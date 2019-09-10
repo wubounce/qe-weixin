@@ -7,7 +7,7 @@
           <el-radio-group v-model="checkBatchFuntion">
             <el-radio :label="1">功能设置</el-radio>
             <el-radio :label="2" v-if="deviceEditForm.isDetergent === 1">洗衣液属性</el-radio>
-            <el-radio :label="3" v-if="deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">其他属性</el-radio>
+            <el-radio :label="3" v-if="deviceEditForm.setting&&deviceEditForm.setting.length >0">其他属性</el-radio>
           </el-radio-group>
         </el-form-item>
         <div v-if="checkBatchFuntion === 1&&configVO">
@@ -223,24 +223,23 @@
               </template></el-table-column>
           </el-table>
         </div>
-        <el-table :data="deviceEditForm.waterLevel" style="width: 100%" key="waterLevel" v-if="checkBatchFuntion === 3&&deviceEditForm.subTypeName === '海尔5/6/7公斤波轮SXB60-51U7/SXB70-51U7'">
-          <el-table-column prop="functionName" label="属性名称">
+        <el-table :data="deviceEditForm.setting" style="width: 100%" key="waterLevel" v-if="checkBatchFuntion === 3">
+          <el-table-column prop="functionName" label="属性名称" width="300"></el-table-column>
+          <el-table-column prop="setting" label="属性值">
             <template slot-scope="scope">
-              <span>水位设置</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="waterLevel" label="属性值">
-            <template slot-scope="scope">
-              <el-form-item prop="waterLevel" class="edit-waterLevel">
-                <el-select v-model="deviceEditForm.waterLevel" placeholder="请选择">
-                  <el-option v-for="(item,index) in waterLevelList" :key="index" :label="item.name" :value="item.value"></el-option>
-                </el-select>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column prop="functionPrice" label="属性说明">
-            <template slot-scope="scope">
-              <span>控制洗衣模式最大</span>
+              <span v-for="(item,index) in scope.row.setting" :key="index" class="extraAttr_setting">
+                <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type==='select'" :label="item.name">
+                  <el-select v-model="item.default" :placeholder="item.desc">
+                    <el-option v-if="deviceEditForm.company==='qiekj'" v-for="(item) in item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                    <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                  </el-select>
+                </el-form-item>
+                <!-- <el-form-item v-else :label="item.name" :prop="'setting.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
+                <el-form-item v-else :label="item.name">
+                  <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="3">
+                  </el-input>
+                </el-form-item>
+              </span>
             </template>
           </el-table-column>
         </el-table>
@@ -332,7 +331,6 @@ export default {
       }
     };
     return {
-      waterLevelList: [{ value: '1', name: '极低水位' }, { value: '2', name: '低水位' }, { value: '3', name: '中水位' }, { value: '4', name: '高水位' }],
       checkBatchFuntion: 1,
       deviceEditForm: this.deviceEditdetailForm,
       deviceEditFormRules: {
@@ -364,7 +362,8 @@ export default {
         'extraAttr.power2': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
         'extraAttr.power3': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
         'extraAttr.ratio2': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
-        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }]
+        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
+        default: [{ required: true, message: '内容不可为空', trigger: 'blur' }, { pattern: /^([1-9]+\d*)|(0\.[1-9]{0,1}?)$/, message: '请输入整数，最多保留1位小数', trigger: 'blur' }]
       },
       //充电时间选择
       chargeTimeMax: 0,
@@ -400,12 +399,29 @@ export default {
         this.chargeTimeStep = extraAttr.step || 0;
       }
       this.$set(this.deviceEditForm, 'extraAttr', this._.get(res, 'list[0].extraAttr', {}));
-      this.deviceEditForm.functionList = res.list;
+      this.deviceEditForm.functionList = res.list || [];
+      this.deviceEditForm.setting = res.setting || [];
       this.deviceEditForm.communicateType = res.communicateType;
       this.deviceEditForm.functionTempletType = res.functionTempletType;
       this.deviceEditForm.functionList.forEach(item => {
         item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
       });
+      this.formatExtraAttr();
+    },
+    formatExtraAttr() {
+      //额外参数设置充电桩功率，水位default字段代表options中的第几位
+      if (!this._.isEmpty(this.deviceEditForm.setting)) {
+        this.deviceEditForm.setting = this.deviceEditForm.setting.filter(item => {
+          if (!this._.isEmpty(item.setting)) {
+            item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
+            if (this._.includes(item.functionName, '水位')) {
+              let defaultvalue = this._.get(item, 'setting[0].default', '0') - 1;
+              item.setting[0].default = this.deviceEditForm.company === 'qiekj' ? this._.get(item, `setting[0].options[${defaultvalue}].value`, '0') : this._.get(item, `setting[0].youfangOptions[${defaultvalue}].value`, '0');
+            }
+            return item;
+          }
+        });
+      }
     },
     async getbatchEditDetergentList() {
       //批量编辑获取洗衣液功能列表
@@ -449,7 +465,7 @@ export default {
           shopId: this.deviceEditForm.shopId,
           functionTempletType: this.deviceEditForm.functionTempletType,
           functionJson: this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null,
-          waterLevel: this.deviceEditForm.waterLevel
+          setting: this.getFormatExtraAttr(this.deviceEditForm.setting)
         }
       );
       batchEditFun(payload).then(() => {
@@ -457,6 +473,23 @@ export default {
         this.modalClose();
         this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable();
       });
+    },
+    getFormatExtraAttr(list = []) {
+      //setting说明
+      let setting = [];
+      let values = [];
+      list.forEach(item => {
+        if (!this._.isEmpty(item.setting)) {
+          item.setting.forEach(i => {
+            values.push(i.default);
+          });
+          setting.push({
+            functionId: item.functionId,
+            values: values
+          });
+        }
+      });
+      return setting.length > 0 ? JSON.stringify(setting) : null;
     },
     //批量洗衣液
     batchEditDetergent() {
@@ -480,12 +513,7 @@ export default {
     onEditDecive(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.checkBatchFuntion === 1 || this.checkBatchFuntion === 3) {
-            this.batchEditBaseFunction();
-          }
-          if (this.checkBatchFuntion === 2) {
-            this.batchEditDetergent();
-          }
+          this.checkBatchFuntion === 2 ? this.batchEditDetergent() : this.batchEditBaseFunction();
         } else {
           this.$Message.error('请填写完整信息');
           return false;
@@ -564,5 +592,8 @@ export default {
   th {
     vertical-align: top;
   }
+}
+.extraAttr_setting /deep/ .el-form-item {
+  display: flex;
 }
 </style>
