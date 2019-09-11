@@ -27,8 +27,7 @@
       <el-form-item label="预约功能：" prop="isReserve">
         <el-col :span="4">
           <el-radio-group v-model="addShopFrom.isReserve" @change="offAndOnReserve">
-            <el-radio name="type" label="0">开启</el-radio>
-            <el-radio name="type" label="1">关闭</el-radio>
+            <el-radio name="type" v-for="(name, id) in ifOpenType" :key="id" :label="(+id)">{{name}}</el-radio>
           </el-radio-group>
         </el-col>
         <el-col class="line" :span="1">|</el-col>
@@ -44,6 +43,16 @@
       <el-form-item label="客服电话：" class="shop-name" prop="serviceTelephone">
         <el-input v-model.trim="addShopFrom.serviceTelephone" placeholder="请填写店铺客服电话"></el-input>
       </el-form-item>
+      <div class="pay-tip">
+        <el-tooltip placement="bottom-start" class="gold-tip" content="若开启此功能，则用户在使用后付费的设备时，必须开启免密支付。">
+          <svg-icon icon-class="zhibiaoshuoming" class="zhibiaoshuoming" />
+        </el-tooltip>
+        <el-form-item label="强制免密支付：" prop="forceWithHolding">
+          <el-radio-group v-model="addShopFrom.forceWithHolding">
+            <el-radio name="type" v-for="(name, id) in isForceUsType" :key="id" :label="(+id)">{{name}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </div>
       <el-form-item>
         <el-button type="primary" @click="onSubmitShopFrom('addShopFrom')">保存</el-button>
         <el-button @click="modalClose()">取消</el-button>
@@ -55,6 +64,7 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, shopDetailFun, addOrEditShopFun } from '@/service/shop';
 import Area from '@/components/Area';
+import { isForceUsType, ifOpenType } from '@/utils/mapping';
 export default {
   components: {
     Area
@@ -85,7 +95,7 @@ export default {
       addShopFrom: {
         shopId: '',
         areas: [],
-        isReserve: '0',
+        isReserve: 0,
         workTime: ['00:00', '23:59'],
         shopName: '',
         shopType: '',
@@ -97,7 +107,8 @@ export default {
         lng: '',
         orderLimitMinutes: '',
         organization: '',
-        serviceTelephone: ''
+        serviceTelephone: '',
+        forceWithHolding: 0
       },
       isOffAndOnReserve: false,
       isOffAndOnReservePlaceholder: '请填写1-9数字',
@@ -146,6 +157,14 @@ export default {
       }
     };
   },
+  computed: {
+    isForceUsType() {
+      return isForceUsType;
+    },
+    ifOpenType() {
+      return ifOpenType;
+    }
+  },
   mounted() {
     if (this.shopId) {
       this.addOrEditShopTitle = '编辑店铺';
@@ -162,21 +181,11 @@ export default {
     async getShopDetail() {
       let payload = { shopId: this.shopId };
       let res = await shopDetailFun(payload);
-      this.addShopFrom.shopId = res.shopId;
-      this.addShopFrom.isReserve = String(res.isReserve);
+      Object.keys(this.addShopFrom).forEach(key => {
+        this.addShopFrom[key] = res[key];
+      });
       this.addShopFrom.workTime = res.workTime.split('-');
-      this.addShopFrom.shopName = res.shopName;
       this.addShopFrom.shopType = Number(res.shopTypeId);
-      this.addShopFrom.provinceId = res.provinceId;
-      this.addShopFrom.cityId = res.cityId;
-      this.addShopFrom.districtId = res.districtId;
-      this.addShopFrom.address = res.address;
-      this.addShopFrom.lat = res.lat;
-      this.addShopFrom.lng = res.lng;
-      this.addShopFrom.orderLimitMinutes = res.orderLimitMinutes;
-      this.addShopFrom.organization = res.organization;
-      this.addShopFrom.serviceTelephone = res.serviceTelephone;
-      // 地区组件
       this.addShopFrom.areas = [res.provinceId, res.cityId, res.districtId];
       // 地图相关
       this.center = [res.lng, res.lat];
@@ -237,6 +246,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import '~@/styles/variables.scss';
 .el-vue-search-box-container {
   border-radius: 4px !important;
   box-shadow: none !important;
@@ -268,5 +278,14 @@ export default {
   content: '*';
   color: #f56c6c;
   margin-right: 4px;
+}
+.pay-tip {
+  position: relative;
+  .zhibiaoshuoming {
+    position: absolute;
+    left: 30px;
+    top: 9px;
+    color: $menuText;
+  }
 }
 </style>

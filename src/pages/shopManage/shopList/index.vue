@@ -54,7 +54,7 @@
         </el-table-column>
         <el-table-column header-align="left" prop="isReserve" label="预约功能">
           <template slot-scope="scope">
-            <span>{{scope.row.isReserve === 0 ? '已开启':'已关闭'}}</span>
+            <span>{{scope.row.isReserve | isReserveType}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置">
@@ -101,6 +101,7 @@
           <li><span>VIP卡：</span>{{detailData.hasVip | isHasVipType}}</li>
           <li><span>VIP数量：</span>{{detailData.vipCount}}个</li>
           <li><span>客服电话：</span>{{detailData.serviceTelephone}}</li>
+          <li><span style="width:105px">强制免密支付：</span>{{detailData.forceWithHolding | isForceWithHolding}}</li>
           <li><span>创建人：</span>{{detailData.createUser}}</li>
           <li><span>创建时间：</span>{{detailData.createTime}}</li>
         </ul>
@@ -135,7 +136,7 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, manageListFun, shopDetailFun, deleteShopFun, manageListApi, getrevenueSharingFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
-import { isReserveType, isHasVipType, isDiscountType, subAccountType } from '@/utils/mapping';
+import { isReserveType, isHasVipType, isDiscountType, subAccountType, isForceUsType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import machinesInShop from './machinesInShop';
 import subAccountSet from './subAccountSet';
@@ -190,6 +191,9 @@ export default {
     },
     subAccountType: val => {
       return subAccountType[val];
+    },
+    isForceWithHolding: val => {
+      return isForceUsType[val];
     },
     tofixd(val) {
       return val >= 0 ? Number(val).toFixed(2) : val;
@@ -332,13 +336,13 @@ export default {
   font-weight: normal;
 }
 .deatil-list {
-  margin-bottom: 15px;
+  padding-bottom: 40px;
   display: flex;
   flex-flow: row wrap;
   align-content: flex-start;
-  :nth-last-of-type(-n + 2):not(:nth-child(even)) {
-    border: none;
-  }
+  // :nth-last-of-type(-n + 2):not(:nth-child(even)) {
+  //   border: none;
+  // }
   li {
     padding: 11px 0;
     width: 50%;
