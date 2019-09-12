@@ -71,7 +71,7 @@ export const validatShopName = str => {
  *
  */
 export const validatPrice = str => {
-  const reg = /^(([1-9][0-8]|[1-9])(\.\d{1,2})?|0\.[1-9]|0\.[0-9][1-9])$/;
+  const reg = /^(([0-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[0-9]{0,2}|99|99.0|99.00)$/;
   return reg.test(str);
 };
 
