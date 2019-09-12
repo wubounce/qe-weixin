@@ -77,7 +77,7 @@
                 <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
               </div>
             </el-form-item>
-            <el-form-item label="推荐充电时间：" prop="default">
+            <el-form-item label="推荐充电时间：">
               <div class="add-discount">
                 <el-select v-model="deviceEditForm.extraAttr.default" placeholder="请选择">
                   <el-option v-for="item in ((1 / deviceEditForm.extraAttr.step) * deviceEditForm.extraAttr.max)" v-show="(item*deviceEditForm.extraAttr.step)>=deviceEditForm.extraAttr.min" :key="item" :label="(item*deviceEditForm.extraAttr.step)" :value="item*deviceEditForm.extraAttr.step"></el-option>
