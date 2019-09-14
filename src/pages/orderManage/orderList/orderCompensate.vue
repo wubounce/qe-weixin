@@ -133,7 +133,7 @@ export default {
       let res = await getlistParentTypeFun({ shopId: shopId });
       this.machineParentTypeList = res.length > 0 ? [{ id: '全部', name: '全部' }, ...res] : [];
       if (!this._.find(this.machineParentTypeList, { id: this.compensateFrom.parentTypeId })) {
-        this.machineParentTypeList.push({ id: this.compensateFrom.parentTypeId, name: this.initCompensateForm.machineName });
+        this.machineParentTypeList.push({ id: this.compensateFrom.parentTypeId, name: this.initCompensateForm.parentTypeName });
       }
     },
     onSubmitCompensateFrom(formName) {
