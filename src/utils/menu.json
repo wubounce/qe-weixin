@@ -114,6 +114,29 @@
       ]
     },
     {
+      "menuId": 109,
+      "parentId": 0,
+      "name": "浴室管理",
+      "url": "bathroommanagement",
+      "type": 0,
+      "orderNum": 0,
+      "kind": null,
+      "icon": "shebeiguanli",
+      "children": [
+        {
+          "menuId": 109,
+          "parentId": 0,
+          "name": "浴室列表",
+          "url": "list",
+          "perms": "mer:index",
+          "type": 0,
+          "orderNum": 0,
+          "kind": null,
+          "icon": ""
+        }
+      ]
+    },
+    {
       "menuId": 3,
       "parentId": 0,
       "name": "订单管理",

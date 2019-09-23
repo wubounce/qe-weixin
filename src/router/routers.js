@@ -152,6 +152,21 @@ export default [
     ]
   },
   {
+    path: '/bathroommanagement',
+    component: Layout,
+    redirect: '/bathroommanagement/list',
+    name: 'bathroommanagement',
+    meta: { title: '浴室管理', icon: 'renyuanguanli', noCache: true },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/pages/bathroomManage/bathroomList/index'),
+        name: 'bathroomlist',
+        meta: { title: '浴室列表', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/marketingmanagement',
     component: Layout,
     redirect: '/marketingmanagement/discount',
@@ -193,7 +208,8 @@ export default [
         component: () => import('@/pages/marketingManage/goldUser/index'),
         name: 'golduser',
         meta: { title: '金币会员', noCache: true }
-      }
+      },
+
     ]
   },
   { path: '/404', component: () => import('@/pages/404'), hidden: true },
