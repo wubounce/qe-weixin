@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import routes from './routers';
+import { constantRoutes } from './routers';
 import store from '@/store';
 import NProgress from 'nprogress'; // Progress 进度条
 import 'nprogress/nprogress.css'; // Progress 进度条样式
@@ -8,11 +8,20 @@ import { Message } from 'element-ui';
 import { getToken } from '@/utils/auth'; // 验权
 
 Vue.use(Router);
-const router = new Router({
-  mode: 'history', // 后端支持可开
+
+const createRouter = () => new Router({
+  mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
-  routes
-});
+  routes: constantRoutes
+})
+
+const router = createRouter()
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+export function resetRouter () {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router
+}
 
 const whiteList = ['/login', '/register', '/forgotpwd', '/userAgreement']; // 不重定向白名单
 router.beforeEach((to, from, next) => {
@@ -23,18 +32,17 @@ router.beforeEach((to, from, next) => {
       NProgress.done(); // if current page is dashboard will not trigger	afterEach hook, so manually handle it
     } else {
       if (store.getters.access.length === 0) {
-        store
-          .dispatch('getPermsInfo')
-          .then(res => {
-            // 拉取用户信息
-            next();
+        store.dispatch('getPermsInfo').then(res => {
+          store.dispatch('generateRoutes', res).then(accessRoutes => {
+            router.addRoutes(accessRoutes)
+            next({ ...to, replace: true })
           })
-          .catch(err => {
-            store.dispatch('FedLogOut').then(() => {
-              Message.error(err || 'Verification failed, please login again');
-              next({ path: '/' });
-            });
+        }).catch(err => {
+          store.dispatch('FedLogOut').then(() => {
+            Message.error(err || 'Verification failed, please login again');
+            next({ path: '/' });
           });
+        });
       } else {
         next();
       }

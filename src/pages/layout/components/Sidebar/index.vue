@@ -1,10 +1,11 @@
 <template>
   <div>
     <div class="el-logo">
-      <svg-icon icon-class="logo" /><span class="erp-title">企鹅商家管理平台</span></div>
+      <svg-icon icon-class="logo" /><span class="erp-title">企鹅商家管理平台</span>
+    </div>
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu :show-timeout="200" :default-active="onRoutes" :collapse="isCollapse" mode="vertical" :unique-opened="true" :active-text-color="variables.$menuText">
-        <sidebar-item v-for="route in routes" :key="route.menuId" :item="route" />
+        <sidebar-item v-for="route in permission_routes" :key="route.menuId" :item="route" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -17,18 +18,9 @@ import variables from '@/styles/variables.scss';
 export default {
   components: { SidebarItem },
   computed: {
-    ...mapGetters(['sidebar']),
-    routes() {
-      return this.$store.state.user.access;
-    },
+    ...mapGetters(['sidebar', 'permission_routes']),
     onRoutes() {
-      return this.$route.path;
-      // if (this.$route.matched.length === 3) {
-      //   //子路由
-      //   return this.$route.matched[1].path.replace("/", "");
-      // } else {
-      //   return this.$route.path.replace("/", "");
-      // }
+      return this.$route.path === '/index' ? '/' : this.$route.path;
     },
     variables() {
       return variables;
