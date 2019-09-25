@@ -164,18 +164,7 @@ export const asyncRoutes = [
         name: 'discount',
         meta: { title: '限时优惠', noCache: true }
       },
-      // {
-      //   path: 'couponsent',
-      //   component: () => import('@/pages/marketingManage/couponSent/index'),
-      //   name: 'couponsent',
-      //   meta: { title: '优惠券发放', noCache: true }
-      // },
-      // {
-      //   path: 'couponactive',
-      //   component: () => import('@/pages/marketingManage/couponActive/index'),
-      //   name: 'couponactive',
-      //   meta: { title: '优惠券活动', noCache: true }
-      // },
+
       {
         path: 'couponrecord',
         component: () => import('@/pages/marketingManage/couponRecord/index'),
@@ -194,6 +183,18 @@ export const asyncRoutes = [
         name: 'golduser',
         meta: { title: '金币会员', noCache: true }
       }
+      // {
+      //   path: 'couponsent',
+      //   component: () => import('@/pages/marketingManage/couponSent/index'),
+      //   name: 'couponsent',
+      //   meta: { title: '优惠券发放', noCache: true }
+      // },
+      // {
+      //   path: 'couponactive',
+      //   component: () => import('@/pages/marketingManage/couponActive/index'),
+      //   name: 'couponactive',
+      //   meta: { title: '优惠券活动', noCache: true }
+      // },
     ]
   },
   {

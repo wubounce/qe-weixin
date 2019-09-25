@@ -1,5 +1,4 @@
 import { asyncRoutes, constantRoutes } from '@/router/routers'
-
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -8,10 +7,10 @@ import { asyncRoutes, constantRoutes } from '@/router/routers'
 function hasPermission (roles, route) {
     let goldManage = roles.includes('金币管理');
     let goldUser = roles.includes('金币会员');
-    if ((route.meta && route.meta.title === '金币管理' && goldManage === false) || (route.meta && route.meta.title === '金币会员' && goldUser === false)) {
-        return true;
-    } else {
+    if ((route.meta && route.meta.title == '金币管理' && !goldManage) || (route.meta && route.meta.title == '金币会员' && !goldUser)) {
         return false;
+    } else {
+        return true;
     }
 }
 
@@ -21,17 +20,17 @@ function hasPermission (roles, route) {
  * @param roles
  */
 export function filterAsyncRoutes (routes, roles) {
-    for (let i = routes.length - 1; i >= 0; i--) {
-        const tmp = { ...routes[i] }
+    const res = []
+    routes.forEach(route => {
+        const tmp = { ...route }
         if (hasPermission(roles, tmp)) {
-            routes.splice(i--, 1)
-        } else {
+            res.push(tmp)
             if (tmp.children) {
                 tmp.children = filterAsyncRoutes(tmp.children, roles)
             }
         }
-    }
-    return routes
+    })
+    return res
 }
 
 

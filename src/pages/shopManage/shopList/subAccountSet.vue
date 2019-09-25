@@ -168,8 +168,6 @@ export default {
           let payload = Object.assign({}, this.dynamicValidateForm);
           payload.detailJson = JSON.stringify(payload.detailJson);
           payload.shopIdsJson = JSON.stringify(this.shopIds);
-          console.log(payload);
-
           revenueSharingBatchAddFun(payload).then(() => this.handleParent());
         });
       } else {
