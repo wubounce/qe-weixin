@@ -9,7 +9,6 @@ import { login } from '@/service/login';
 import { getOperatorFun } from '@/service/user';
 import { menuSelectFun } from '@/service/member';
 // import { getTrees } from '@/utils/tools';
-let menusData = require('@/utils/menu.json');
 const user = {
   state: {
     token: getToken(),
@@ -17,25 +16,23 @@ const user = {
     access: [],
     hasGetPermsInfo: false
   },
-
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token;
     },
-    SET_USER_INFO(state, userInfo) {
+    SET_USER_INFO (state, userInfo) {
       state.userInfo = userInfo;
     },
-    SET_ACCESS(state, access) {
+    SET_ACCESS (state, access) {
       state.access = access;
     },
-    SET_HAS_PRES_INFO(state, status) {
+    SET_HAS_PRES_INFO (state, status) {
       state.hasGetPermsInfo = status;
     }
   },
-
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
+    Login ({ commit }, userInfo) {
       const userName = userInfo.userName.trim();
       return new Promise((resolve, reject) => {
         login({ userName: userName, password: userInfo.password })
@@ -50,7 +47,7 @@ const user = {
       });
     },
     // 获取用户信息
-    getUserInfo() {
+    getUserInfo () {
       return new Promise(resolve => {
         getOperatorFun().then(res => {
           res = res ? res : {};
@@ -60,18 +57,18 @@ const user = {
       });
     },
     // 获取权限列表
-    getPermsInfo({ commit }) {
+    getPermsInfo ({ commit }) {
       return new Promise(resolve => {
         menuSelectFun().then(res => {
           // let permsList = getTrees(res, 0);
-          commit('SET_ACCESS', menusData.data);
+          commit('SET_ACCESS', res);
           commit('SET_HAS_PRES_INFO', true);
           resolve(res);
         });
       });
     },
     // 前端 登出
-    LogOut({ commit }) {
+    LogOut ({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '');
         commit('SET_ACCESS', []);

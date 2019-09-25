@@ -13,7 +13,7 @@ const shopListApi = 'shop/listShop';                                            
 const menuSelectApi = 'mer/select';                                                                //获取所有菜单列表
 const permsMenuApi = 'mer/perms';                                                                  //分配权限
 const searchListApi = 'operatorManager/searchOperator';                                            //搜索管理员列表
-      
+
 // 获取管理员列表 
 export const operatorListFun = (payload) => fetch.post(operatorListApi, payload);
 
