@@ -14,20 +14,16 @@ const operatorCompleteAgentSignApi = '/operatorAgentSign/order/complete/detail';
 export const login = payload => fetch.post(loginApi, payload);
 
 // 用户详情
-export const getDEtail = payload =>
-  fetch.post(userDatilApi, { params: payload });
+export const getDEtail = payload => fetch.post(userDatilApi, { params: payload });
 
 //  手机验证码登录
 export const codeLogin = payload => fetch.post(codeLoginApi, payload);
 
 // 手机验证码登录发送验证码
-export const sendLoginCodeFun = payload =>
-  fetch.post(sendLoginCodeApi, payload);
+export const sendLoginCodeFun = payload => fetch.post(sendLoginCodeApi, payload);
 
 // 提交申请代签约
-export const handleOperatorAgentSignFun = payload =>
-  fetch.post(operatorAgentSignApi, payload);
+export const handleOperatorAgentSignFun = payload => fetch.post(operatorAgentSignApi, payload);
 
 // 提交申请代签约
-export const completeAgentSign = payload =>
-  fetch.post(operatorCompleteAgentSignApi, payload);
+export const completeAgentSign = payload => fetch.post(operatorCompleteAgentSignApi, payload);
