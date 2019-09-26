@@ -459,7 +459,7 @@ export default {
           data.detergentJson = this.deviceEditForm.detergentFunctionList ? JSON.stringify(this.deviceEditForm.detergentFunctionList) : null;
           /* eslint-disable no-unused-vars */
           let { functionList, detergentFunctionList, configVO, extraAttr, setting, ...payload } = data;
-          payload.setting = this.getFormatExtraAttr(setting);
+          payload.setting = this.getFormatExtraAttr(setting || []);
           deviceAddorEditFun(payload).then(() => {
             this.$Message.success('编辑成功');
             this.modalClose();
