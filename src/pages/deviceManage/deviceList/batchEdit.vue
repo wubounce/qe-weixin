@@ -231,7 +231,7 @@
                 <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type==='select'" :label="item.name">
                   <el-select v-model="item.default" :placeholder="item.desc">
                     <el-option v-if="deviceEditForm.company==='qiekj'" v-for="(item) in item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
-                    <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                    <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions || item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
                   </el-select>
                 </el-form-item>
                 <!-- <el-form-item v-else :label="item.name" :prop="'setting.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
@@ -414,14 +414,25 @@ export default {
         this.deviceEditForm.setting = this.deviceEditForm.setting.filter(item => {
           if (!this._.isEmpty(item.setting)) {
             item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
-            if (this._.includes(item.functionName, '水位')) {
-              let defaultvalue = this._.get(item, 'setting[0].default', '0') - 1;
-              item.setting[0].default = this.deviceEditForm.company === 'qiekj' ? this._.get(item, `setting[0].options[${defaultvalue}].value`, '0') : this._.get(item, `setting[0].youfangOptions[${defaultvalue}].value`, '0');
+            if (!this._.isEmpty(item.setting)) {
+              item = item.setting.filter(j => {
+                return j.type === 'select' ? this.waterSet(j) : item;
+              });
             }
             return item;
           }
         });
       }
+    },
+    waterSet(j = {}) {
+      let defaultvalue = Number(this._.get(j, 'default', '0')) - 1;
+      if (this.deviceEditForm.company === 'qiekj') {
+        j.default = this._.get(j, `options[${defaultvalue}].value`, '0');
+      }
+      if (this.deviceEditForm.company === 'youfang') {
+        j.default = j.youfangOptions ? this._.get(j, `youfangOptions[${defaultvalue}].value`, '0') : this._.get(j, `options[${defaultvalue}].value`, '0');
+      }
+      return j;
     },
     async getbatchEditDetergentList() {
       //批量编辑获取洗衣液功能列表
