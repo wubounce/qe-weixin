@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="浴室列表" :visible="visible" :before-close="modalClose" :close="modalClose" width="1100px">
+  <el-dialog title="浴位列表" :visible="visible" :before-close="modalClose" :close="modalClose" width="1100px">
     <el-table :data="list" style="width: 100%" max-height="540">
       <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
       <el-table-column prop="machineName" label="浴位编号" show-overflow-tooltip></el-table-column>
