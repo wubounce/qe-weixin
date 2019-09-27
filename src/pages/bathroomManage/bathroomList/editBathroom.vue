@@ -1,25 +1,25 @@
 <template>
   <el-dialog title="编辑浴室" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="520px">
     <el-form ref="bathroomFrom" :model="bathroomFrom" :rules="bathroomFromRules" class="edit-bathroom-from" label-width="120px">
-      <el-form-item label="浴室名称：" prop="bathroomName">
-        <el-input v-model="bathroomFrom.bathroomName" placeholder="请选择"></el-input>
+      <el-form-item label="浴室名称：" prop="orgName">
+        <el-input v-model="bathroomFrom.orgName" placeholder="请选择"></el-input>
       </el-form-item>
-      <el-form-item label="所属店铺：" prop="shopIds">
-        <el-select v-model="bathroomFrom.shopId" filterable clearable placeholder="请选择">
+      <el-form-item label="所属店铺：" prop="parentOrgId">
+        <el-select v-model="bathroomFrom.parentOrgId" filterable clearable placeholder="请选择">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="预约功能：" prop="reserve">
-        <el-radio-group v-model="bathroomFrom.reserve" disabled>
+      <el-form-item label="预约功能：" prop="reserveEnabled">
+        <el-radio-group v-model="bathroomFrom.reserveEnabled" disabled>
           <el-radio :label="0">开启</el-radio>
           <el-radio :label="1">关闭</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="预约时长(分钟)：">
-        <span>10</span>
+        <span>{{'bathroomFrom.reserveMinutes'}}</span>
       </el-form-item>
-      <el-form-item label="适用性别：" prop="gender">
-        <el-radio-group v-model="bathroomFrom.gender">
+      <el-form-item label="适用性别：" prop="sexAllow">
+        <el-radio-group v-model="bathroomFrom.sexAllow">
           <el-radio :label="0">不限</el-radio>
           <el-radio :label="1">男</el-radio>
           <el-radio :label="2">女</el-radio>
@@ -35,30 +35,30 @@
         <el-tooltip placement="bottom-start" class="gold-tip" content="持续放水最长时间">
           <svg-icon icon-class="zhibiaoshuoming" class="zhibiaoshuoming" />
         </el-tooltip>
-        <el-form-item label="违约次数：" prop="breakNum">
-          <el-input v-model.number="bathroomFrom.breakNum" placeholder="请输入"></el-input>
+        <el-form-item label="违约次数：" prop="reserveAllowCount">
+          <el-input v-model.number="bathroomFrom.reserveAllowCount" placeholder="请输入"></el-input>
         </el-form-item>
       </div>
       <div class="pay-tip" v-show="bathroomFrom.punishment===0">
         <el-tooltip placement="bottom-start" class="gold-tip" content="0代表永久禁止预约">
           <svg-icon icon-class="zhibiaoshuoming" class="zhibiaoshuoming reserve" />
         </el-tooltip>
-        <el-form-item label="禁止预约(天)：" prop="breakDay">
-          <el-input v-model.number="bathroomFrom.breakDay" placeholder="请输入"></el-input>
+        <el-form-item label="禁止预约(天)：" prop="reserveBanDays">
+          <el-input v-model.number="bathroomFrom.reserveBanDays" placeholder="请输入"></el-input>
         </el-form-item>
       </div>
-      <el-form-item label="状态：" prop="status">
-        <el-radio-group v-model="bathroomFrom.status">
+      <el-form-item label="状态：" prop="shopState">
+        <el-radio-group v-model="bathroomFrom.shopState">
           <el-radio :label="0">营业中</el-radio>
           <el-radio :label="1">暂停营业</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="浴室数量：">
-        <span>10</span>
+        <span>{{'bathroomFrom.bathCount'}}</span>
       </el-form-item>
 
       <el-form-item class="action">
-        <el-button type="primary" @click="onSubmitAddOrEditMaketFrom('bathroomFrom')">确定</el-button>
+        <el-button type="primary" @click="handleBathroom('bathroomFrom')">确定</el-button>
         <el-button @click="modalClose()">取消</el-button>
       </el-form-item>
     </el-form>
@@ -67,6 +67,7 @@
 
 <script type="text/ecmascript-6">
 import { shopListFun } from '@/service/report';
+import { editBathroomFun } from '@/service/shower';
 export default {
   props: {
     visible: {
@@ -82,24 +83,24 @@ export default {
     return {
       shopList: [],
       bathroomFrom: {
-        bathroomName: '',
-        shopIds: '',
-        reserve: '',
-        gender: 0,
+        orgName: '',
+        parentOrgId: '',
+        reserveEnabled: '',
+        sexAllow: 0,
         punishment: 0,
-        breakNum: '',
-        breakDay: '',
-        status: 0
+        reserveAllowCount: '',
+        reserveBanDays: '',
+        shopState: 0
       },
       bathroomFromRules: {
-        bathroomName: [{ required: true, message: '请输入', trigger: 'blur' }],
-        shopIds: [{ required: true, trigger: 'change', message: '请选择适用店铺' }],
-        reserve: [{ required: true, trigger: 'change', message: '请选择预约功能' }],
-        gender: [{ required: true, trigger: 'change', message: '请选择适用性别' }],
+        orgName: [{ required: true, message: '请输入', trigger: 'blur' }],
+        parentOrgId: [{ required: true, trigger: 'change', message: '请选择适用店铺' }],
+        reserveEnabled: [{ required: true, trigger: 'change', message: '请选择预约功能' }],
+        sexAllow: [{ required: true, trigger: 'change', message: '请选择适用性别' }],
         punishment: [{ required: true, trigger: 'change', message: '请选择违约惩罚' }],
-        status: [{ required: true, trigger: 'change', message: '请选择状态' }],
-        breakNum: [{ required: true, message: '请输入梯度值', trigger: 'blur' }, { type: 'number', max: 9999, message: '请输入大于等于0的整数', trigger: 'blur' }],
-        breakDay: [{ required: true, message: '请输入梯度值', trigger: 'blur' }, { type: 'number', max: 9999, message: '请输入大于等于0的整数', trigger: 'blur' }]
+        shopState: [{ required: true, trigger: 'change', message: '请选择状态' }],
+        reserveAllowCount: [{ required: true, message: '请输入违约次数', trigger: 'blur' }, { type: 'number', max: 9999, message: '请输入大于等于0的整数', trigger: 'blur' }],
+        reserveBanDays: [{ required: true, message: '请输入禁止预约天数', trigger: 'blur' }, { type: 'number', max: 9999, message: '请输入大于等于0的整数', trigger: 'blur' }]
       },
       machineParentType: [],
       hasShop: true
@@ -116,9 +117,15 @@ export default {
       let res = await shopListFun();
       this.shopList = res;
     },
-    onSubmitAddOrEditMaketFrom(formName) {
+    handleBathroom(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let payload = Object.assign({}, this.bathroomFrom);
+          if (payload === 1) {
+            payload.reserveAllowCount = 0;
+            payload.reserveBanDays = 0;
+          }
+          editBathroomFun(payload);
           console.log(12323);
         }
       });

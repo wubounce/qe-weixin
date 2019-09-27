@@ -2,26 +2,24 @@
   <el-dialog title="浴位列表" :visible="visible" :before-close="modalClose" :close="modalClose" width="1100px">
     <el-table :data="list" style="width: 100%" max-height="540">
       <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-      <el-table-column prop="machineName" label="浴位编号" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="machineTypeName" label="终端设备号"></el-table-column>
-      <el-table-column prop="subTypeName" label="网关类型" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="machineState" label="网关名称"></el-table-column>
+      <el-table-column prop="deviceName" label="浴位编号" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="sn" label="终端设备号"></el-table-column>
+      <el-table-column prop="gatewayType" label="网关类型" min-width="160" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="gatewayName" label="网关名称"></el-table-column>
       <el-table-column prop="createTime" label="浴室名称"></el-table-column>
-      <el-table-column prop="createTime" label="单脉冲流量(ml)"></el-table-column>
-      <el-table-column prop="createTime" label="单脉冲流量(ml)"></el-table-column>
+      <el-table-column prop="liquidPerPulse" label="单脉冲流量(ml)"></el-table-column>
+      <el-table-column prop="price" label="单价(元/L)"></el-table-column>
     </el-table>
   </el-dialog>
 </template>
 
 <script type="text/ecmascript-6">
-import modlePageMixin from '@/mixins/modlePageMixin';
-import { manageSimpleListFun } from '@/service/shop';
+import { getShowerListFun } from '@/service/shower';
 export default {
-  mixins: [modlePageMixin],
   props: {
-    shopId: {
+    orgId: {
       type: String,
-      default: '201812221917180000060615'
+      default: '1'
     },
     visible: {
       type: Boolean,
@@ -39,10 +37,9 @@ export default {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
     async _getList(row) {
-      let payload = Object.assign({ shopId: this.shopId }, this.searchData);
-      let res = await manageSimpleListFun(payload);
-      this.list = res.items || [];
-      this.total = res.total;
+      let payload = Object.assign({ orgId: this.orgId }, this.searchData);
+      let res = await getShowerListFun(payload);
+      this.list = res || [];
     }
   }
 };
