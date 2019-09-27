@@ -1,26 +1,27 @@
 <template>
-  <div class="menu-wrapper">
-    <el-submenu v-if="item.children && item.children.length > 0" :index="item.name">
+  <div v-if="!item.hidden" class="menu-wrapper">
+    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)">
+      <router-link :to="resolvePath('',item.path)" :key="item.name" @click.native="flushCom('',item.path)">
+        <el-menu-item :index="resolvePath('',item.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
+          <svg-icon :icon-class="item.meta.icon" />
+          <span slot="title">{{ item.meta.title }}</span>
+        </el-menu-item>
+      </router-link>
+    </template>
+    <el-submenu v-else :index="item.name">
       <template slot="title">
-        <svg-icon :icon-class="item.icon" />
-        <span slot="title">{{ item.name }}</span>
+        <svg-icon :icon-class="item.meta.icon" />
+        <span slot="title">{{ item.meta.title }}</span>
       </template>
       <template v-for="child in item.children">
-        <router-link :to="resolvePath(item.url,child.url)" @click.native="flushCom(item.url,child.url)" :key="child.name">
-          <el-menu-item :index="resolvePath(item.url,child.url)">
-            <span slot="title">{{ child.name }}</span>
+        <router-link :to="resolvePath(item.path,child.path)" @click.native="flushCom(item.path,child.path)" :key="child.name">
+          <el-menu-item :index="resolvePath(item.path,child.path)">
+            <span slot="title">{{ child.meta.title }}</span>
           </el-menu-item>
         </router-link>
       </template>
     </el-submenu>
-    <template v-else>
-      <router-link :to="resolvePath('',item.url)" :key="item.name" @click.native="flushCom('',item.url)">
-        <el-menu-item :index="resolvePath('',item.url)" :class="{ 'submenu-title-noDropdown': !isNest }">
-          <svg-icon :icon-class="item.icon" />
-          <span slot="title">{{ item.name }}</span>
-        </el-menu-item>
-      </router-link>
-    </template>
+
   </div>
 </template>
 
@@ -45,6 +46,23 @@ export default {
     };
   },
   methods: {
+    hasOneShowingChild(children = [], parent) {
+      const showingChildren = children.filter(item => {
+        if (item.meta.title === '首页') {
+          this.onlyOneChild = item;
+          return true;
+        } else {
+          // Temp set(will be used if only has one showing child)
+          return false;
+        }
+      });
+      // When there is only one child router, the child router is displayed by default
+      if (showingChildren.length === 1) {
+        this.onlyOneChild = { ...parent, path: '', noShowingChildren: true };
+        return true;
+      }
+      return false;
+    },
     resolvePath(basePath, routePath) {
       if (isExternal(routePath)) {
         return routePath;
