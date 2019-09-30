@@ -27,17 +27,19 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      list: []
+    };
   },
   created() {
-    this._getList();
+    this.getShowerList();
   },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
-    async _getList(row) {
-      let payload = Object.assign({ orgId: this.orgId }, this.searchData);
+    async getShowerList(row) {
+      let payload = { orgId: this.orgId };
       let res = await getShowerListFun(payload);
       this.list = res || [];
     }
