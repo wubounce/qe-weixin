@@ -12,16 +12,14 @@
       </el-form-item>
       <el-form-item label="适用性别：" prop="sexAllow">
         <el-select v-model="searchData.sexAllow" clearable placeholder="请选择">
-          <el-option label="不限" value=""></el-option>
-          <el-option value="0" label="男"></el-option>
-          <el-option value="1" label="女"></el-option>
+          <el-option v-for="(name, id) in genderType" :key="id" :label="name" :value="(+id)"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="状态：" prop="shopState">
         <el-select v-model="searchData.shopState" clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
-          <el-option value="0" label="营业中"></el-option>
-          <el-option value="1" label="暂停营业"></el-option>
+          <el-option :value="2" label="营业中"></el-option>
+          <el-option :value="3" label="暂停营业"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -41,9 +39,17 @@
             <span class="rowstyle">{{scope.row.bathCount}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="sexAllow" label="适用性别" min-width="140px"></el-table-column>
+        <el-table-column header-align="left" prop="sexAllow" label="适用性别" min-width="140px">
+          <template slot-scope="scope">
+            <span>{{scope.row.sexAllow | genderType}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="reserveMinutes" label="预约时长(分钟)" min-width="140px"></el-table-column>
-        <el-table-column header-align="left" prop="shopState" label="营业状态" min-width="140px"></el-table-column>
+        <el-table-column header-align="left" prop="shopState" label="营业状态" min-width="140px">
+          <template slot-scope="scope">
+            <span>{{scope.row.shopState===2?'营业中':'暂停营业'}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="workTime" label="开放时段" min-width="140px"></el-table-column>
         <el-table-column header-align="left" label="操作" min-width="100px">
           <template slot-scope="scope">
@@ -70,7 +76,7 @@ import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
 import { getBathroomListFun, editBathroomFun } from '@/service/shower';
 import { shopListFun } from '@/service/report';
-import { CouponAcctiveStatusType } from '@/utils/mapping';
+import { genderType } from '@/utils/mapping';
 import positonList from './positonList';
 import editBathroom from './editBathroom';
 
@@ -87,28 +93,28 @@ export default {
         orgName: '',
         parentOrgId: '',
         shopState: '',
-        sexAllow: ''
+        sexAllow: 0
       },
       shopList: [],
       bathroomList: [],
-      positionVisible: true,
+      positionVisible: false,
       editShowerVisible: false,
       showerId: ''
     };
   },
   filters: {
-    discountToFIexd: val => {
-      return Number(val).toFixed(1);
+    genderType(val) {
+      return genderType[val];
     }
   },
   computed: {
-    CouponAcctiveStatusType() {
-      return CouponAcctiveStatusType;
+    genderType() {
+      return genderType;
     }
   },
   created() {
     this.getShopList();
-    //this.getbathroomList();
+    this.getbathroomList();
   },
   methods: {
     async getShopList() {

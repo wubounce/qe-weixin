@@ -171,3 +171,8 @@ export const isForceUsType = {
   0: '关闭',
   1: '开启'
 };
+export const genderType = {
+  0: '不限',
+  1: '男',
+  2: '女',
+};

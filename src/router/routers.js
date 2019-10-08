@@ -156,7 +156,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/bathroommanagement/list',
     name: 'bathroommanagement',
-    meta: { title: '浴室管理', icon: 'renyuanguanli', noCache: true },
+    meta: { title: '浴室管理', icon: 'shower', noCache: true },
     children: [
       {
         path: 'list',

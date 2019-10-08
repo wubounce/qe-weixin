@@ -11,8 +11,7 @@
       </el-form-item>
       <el-form-item label="预约功能：" prop="reserveEnabled">
         <el-radio-group v-model="bathroomFrom.reserveEnabled" disabled>
-          <el-radio :label="0">开启</el-radio>
-          <el-radio :label="1">关闭</el-radio>
+          <el-radio name="type" v-for="(name, id) in ifOpenType" :key="id" :label="(+id)">{{name}}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="预约时长(分钟)：">
@@ -20,18 +19,16 @@
       </el-form-item>
       <el-form-item label="适用性别：" prop="sexAllow">
         <el-radio-group v-model="bathroomFrom.sexAllow">
-          <el-radio :label="0">不限</el-radio>
-          <el-radio :label="1">男</el-radio>
-          <el-radio :label="2">女</el-radio>
+          <el-radio v-for="(name, id) in genderType" :key="id" :label="(+id)">{{name}}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="违约惩罚：" prop="punishment">
-        <el-radio-group v-model="bathroomFrom.punishment">
-          <el-radio :label="0">开启</el-radio>
-          <el-radio :label="1">关闭</el-radio>
+      <el-form-item label="违约惩罚：" prop="reservePunishEnabled">
+        <el-radio-group v-model="bathroomFrom.reservePunishEnabled">
+          <el-radio :label="1">开启</el-radio>
+          <el-radio :label="0">关闭</el-radio>
         </el-radio-group>
       </el-form-item>
-      <div class="pay-tip" v-show="bathroomFrom.punishment===0">
+      <div class="pay-tip" v-show="bathroomFrom.reservePunishEnabled === 1">
         <el-tooltip placement="bottom-start" class="gold-tip" content="持续放水最长时间">
           <svg-icon icon-class="zhibiaoshuoming" class="zhibiaoshuoming" />
         </el-tooltip>
@@ -39,7 +36,7 @@
           <el-input v-model.number="bathroomFrom.reserveAllowCount" placeholder="请输入"></el-input>
         </el-form-item>
       </div>
-      <div class="pay-tip" v-show="bathroomFrom.punishment===0">
+      <div class="pay-tip" v-show="bathroomFrom.reservePunishEnabled === 1">
         <el-tooltip placement="bottom-start" class="gold-tip" content="0代表永久禁止预约">
           <svg-icon icon-class="zhibiaoshuoming" class="zhibiaoshuoming reserve" />
         </el-tooltip>
@@ -49,8 +46,8 @@
       </div>
       <el-form-item label="状态：" prop="shopState">
         <el-radio-group v-model="bathroomFrom.shopState">
-          <el-radio :label="0">营业中</el-radio>
-          <el-radio :label="1">暂停营业</el-radio>
+          <el-radio :label="2">营业中</el-radio>
+          <el-radio :label="3">暂停营业</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="浴室数量：">
@@ -68,6 +65,8 @@
 <script type="text/ecmascript-6">
 import { shopListFun } from '@/service/report';
 import { editBathroomFun } from '@/service/shower';
+import { genderType, ifOpenType } from '@/utils/mapping';
+
 export default {
   props: {
     visible: {
@@ -87,7 +86,7 @@ export default {
         parentOrgId: '',
         reserveEnabled: '',
         sexAllow: 0,
-        punishment: 0,
+        reservePunishEnabled: 0,
         reserveAllowCount: '',
         reserveBanDays: '',
         shopState: 0
@@ -97,7 +96,7 @@ export default {
         parentOrgId: [{ required: true, trigger: 'change', message: '请选择适用店铺' }],
         reserveEnabled: [{ required: true, trigger: 'change', message: '请选择预约功能' }],
         sexAllow: [{ required: true, trigger: 'change', message: '请选择适用性别' }],
-        punishment: [{ required: true, trigger: 'change', message: '请选择违约惩罚' }],
+        reservePunishEnabled: [{ required: true, trigger: 'change', message: '请选择违约惩罚' }],
         shopState: [{ required: true, trigger: 'change', message: '请选择状态' }],
         reserveAllowCount: [{ required: true, message: '请输入违约次数', trigger: 'blur' }, { type: 'number', max: 9999, message: '请输入大于等于0的整数', trigger: 'blur' }],
         reserveBanDays: [{ required: true, message: '请输入禁止预约天数', trigger: 'blur' }, { type: 'number', max: 9999, message: '请输入大于等于0的整数', trigger: 'blur' }]
@@ -105,6 +104,14 @@ export default {
       machineParentType: [],
       hasShop: true
     };
+  },
+  computed: {
+    ifOpenType() {
+      return ifOpenType;
+    },
+    genderType() {
+      return genderType;
+    }
   },
   mounted() {
     this.getShopList();
@@ -121,12 +128,11 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let payload = Object.assign({}, this.bathroomFrom);
-          if (payload === 1) {
+          if (payload === 0) {
             payload.reserveAllowCount = 0;
             payload.reserveBanDays = 0;
           }
           editBathroomFun(payload);
-          console.log(12323);
         }
       });
     }
