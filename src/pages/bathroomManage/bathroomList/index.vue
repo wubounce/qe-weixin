@@ -1,13 +1,13 @@
 <template>
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
-      <el-form-item label="浴室名称：" prop="orgName">
-        <el-input v-model="searchData.orgName" clearable placeholder="请输入"></el-input>
+      <el-form-item label="浴室名称：" prop="positionName">
+        <el-input v-model.trim="searchData.positionName" clearable placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="所属店铺：" prop="parentOrgId">
-        <el-select v-model="searchData.parentOrgId" filterable clearable placeholder="请选择">
+      <el-form-item label="所属店铺：" prop="orgId">
+        <el-select v-model="searchData.orgId" filterable clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
-          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="适用性别：" prop="sexAllow">
@@ -30,13 +30,13 @@
     <div class="table-content">
       <el-table :data="bathroomList" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>
-        <el-table-column header-align="left" prop="orgName" label="浴室名称" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="parentOrgName" label="所属店铺" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="positionName" label="浴室名称" min-width="160px" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="orgName" label="所属店铺" min-width="160px" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="reserveAllowCount" label="违约次数"></el-table-column>
         <el-table-column header-align="left" prop="reserveBanDays" label="禁止预约(天)" min-width="140px"></el-table-column>
         <el-table-column header-align="left" prop="bathCount" label="浴位数量" min-width="140px">
           <template slot-scope="scope">
-            <span class="rowstyle">{{scope.row.bathCount}}</span>
+            <span class="rowstyle" @click="lookPositionlist(scope.row)">{{scope.row.bathCount}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="sexAllow" label="适用性别" min-width="140px">
@@ -65,9 +65,9 @@
       <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
     <!-- 浴室列表 -->
-    <positon-list v-if="positionVisible" :visible.sync="positionVisible"></positon-list>
+    <positon-list v-if="positionVisible" :visible.sync="positionVisible" :positionRow="positionRow"></positon-list>
     <!-- 编辑浴室 -->
-    <edit-bathroom v-if="editShowerVisible" :visible.sync="editShowerVisible"></edit-bathroom>
+    <edit-bathroom v-if="editShowerVisible" :visible.sync="editShowerVisible" :positionRow="positionRow" @getbathroomList="getbathroomList"></edit-bathroom>
   </div>
 </template>
 
@@ -90,8 +90,8 @@ export default {
   data() {
     return {
       searchData: {
-        orgName: '',
-        parentOrgId: '',
+        positionName: '',
+        orgId: '',
         shopState: '',
         sexAllow: 0
       },
@@ -99,7 +99,7 @@ export default {
       bathroomList: [],
       positionVisible: false,
       editShowerVisible: false,
-      showerId: ''
+      positionRow: {}
     };
   },
   filters: {
@@ -145,13 +145,19 @@ export default {
       this.total = res.total || 0;
     },
     async openEditShowerDialog(row = {}) {
-      if (row.id) {
-        this.showerId = row.id;
+      if (row.positionId) {
+        this.positionRow = row;
         this.editShowerVisible = true;
       }
     },
+    lookPositionlist(row = {}) {
+      if (row.bathCount > 0) {
+        this.positionRow = row;
+        this.positionVisible = true;
+      }
+    },
     handleDelete(row) {
-      let payload = { orgId: row.id, shopState: 4 };
+      let payload = { id: row.positionId, shopState: 4 };
       this.$confirm('确认删除该浴室？', '提示', {
         showClose: false,
         center: true

@@ -1,12 +1,12 @@
 <template>
   <el-dialog title="编辑浴室" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="520px">
     <el-form ref="bathroomFrom" :model="bathroomFrom" :rules="bathroomFromRules" class="edit-bathroom-from" label-width="120px">
-      <el-form-item label="浴室名称：" prop="orgName">
-        <el-input v-model="bathroomFrom.orgName" placeholder="请选择"></el-input>
+      <el-form-item label="浴室名称：" prop="positionName">
+        <el-input v-model.trim="bathroomFrom.positionName" placeholder="请选择"></el-input>
       </el-form-item>
-      <el-form-item label="所属店铺：" prop="parentOrgId">
-        <el-select v-model="bathroomFrom.parentOrgId" filterable clearable placeholder="请选择">
-          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+      <el-form-item label="所属店铺：" prop="orgId">
+        <el-select v-model="bathroomFrom.orgId" filterable clearable placeholder="请选择">
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="预约功能：" prop="reserveEnabled">
@@ -15,7 +15,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="预约时长(分钟)：">
-        <span>{{'bathroomFrom.reserveMinutes'}}</span>
+        <span>{{bathroomFrom.reserveMinutes}}</span>
       </el-form-item>
       <el-form-item label="适用性别：" prop="sexAllow">
         <el-radio-group v-model="bathroomFrom.sexAllow">
@@ -51,9 +51,8 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="浴室数量：">
-        <span>{{'bathroomFrom.bathCount'}}</span>
+        <span>{{bathroomFrom.bathCount}}</span>
       </el-form-item>
-
       <el-form-item class="action">
         <el-button type="primary" @click="handleBathroom('bathroomFrom')">确定</el-button>
         <el-button @click="modalClose()">取消</el-button>
@@ -64,7 +63,7 @@
 
 <script type="text/ecmascript-6">
 import { shopListFun } from '@/service/report';
-import { editBathroomFun } from '@/service/shower';
+import { getBathroomDetailFun, editBathroomFun } from '@/service/shower';
 import { genderType, ifOpenType } from '@/utils/mapping';
 
 export default {
@@ -73,27 +72,31 @@ export default {
       type: Boolean,
       default: true
     },
-    limitedDiscountId: {
-      type: String,
-      default: ''
+    positionRow: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     }
   },
   data() {
     return {
       shopList: [],
       bathroomFrom: {
-        orgName: '',
-        parentOrgId: '',
+        positionName: '',
+        orgId: '',
         reserveEnabled: '',
         sexAllow: 0,
         reservePunishEnabled: 0,
         reserveAllowCount: '',
         reserveBanDays: '',
-        shopState: 0
+        shopState: 0,
+        bathCount: 0,
+        reserveMinutes: 0
       },
       bathroomFromRules: {
-        orgName: [{ required: true, message: '请输入', trigger: 'blur' }],
-        parentOrgId: [{ required: true, trigger: 'change', message: '请选择适用店铺' }],
+        positionName: [{ required: true, message: '请输入', trigger: 'blur' }],
+        orgId: [{ required: true, trigger: 'change', message: '请选择适用店铺' }],
         reserveEnabled: [{ required: true, trigger: 'change', message: '请选择预约功能' }],
         sexAllow: [{ required: true, trigger: 'change', message: '请选择适用性别' }],
         reservePunishEnabled: [{ required: true, trigger: 'change', message: '请选择违约惩罚' }],
@@ -115,6 +118,7 @@ export default {
   },
   mounted() {
     this.getShopList();
+    this.getBathroomDetail();
   },
   methods: {
     modalClose() {
@@ -124,15 +128,22 @@ export default {
       let res = await shopListFun();
       this.shopList = res;
     },
+    async getBathroomDetail() {
+      let payload = { positionId: this.positionRow.positionId };
+      let res = await getBathroomDetailFun(payload);
+      Object.keys(this.bathroomFrom).forEach(key => {
+        this.bathroomFrom[key] = res[key];
+      });
+    },
     handleBathroom(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let payload = Object.assign({}, this.bathroomFrom);
-          if (payload === 0) {
-            payload.reserveAllowCount = 0;
-            payload.reserveBanDays = 0;
-          }
-          editBathroomFun(payload);
+          let payload = Object.assign({ id: this.positionRow.positionId }, this.bathroomFrom);
+          editBathroomFun(payload).then(() => {
+            this.$Message.success('操作成功');
+            this.$listeners.getbathroomList && this.$listeners.getbathroomList(); //若组件传递事件confirm则执行
+            this.modalClose();
+          });
         }
       });
     }

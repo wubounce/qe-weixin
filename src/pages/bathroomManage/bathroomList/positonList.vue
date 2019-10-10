@@ -6,7 +6,9 @@
       <el-table-column prop="sn" label="终端设备号"></el-table-column>
       <el-table-column prop="gatewayType" label="网关类型" min-width="160" show-overflow-tooltip></el-table-column>
       <el-table-column prop="gatewayName" label="网关名称"></el-table-column>
-      <el-table-column prop="createTime" label="浴室名称"></el-table-column>
+      <el-table-column prop="createTime" label="浴室名称">
+        <template slot-scope="scope">{{positionRow.positionName}}</template>
+      </el-table-column>
       <el-table-column prop="liquidPerPulse" label="单脉冲流量(ml)"></el-table-column>
       <el-table-column prop="price" label="单价(元/L)"></el-table-column>
     </el-table>
@@ -17,9 +19,11 @@
 import { getShowerListFun } from '@/service/shower';
 export default {
   props: {
-    orgId: {
-      type: String,
-      default: '1'
+    positionRow: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     },
     visible: {
       type: Boolean,
@@ -38,8 +42,8 @@ export default {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
-    async getShowerList(row) {
-      let payload = { orgId: this.orgId };
+    async getShowerList() {
+      let payload = { orgId: this.positionRow.positionId };
       let res = await getShowerListFun(payload);
       this.list = res || [];
     }
