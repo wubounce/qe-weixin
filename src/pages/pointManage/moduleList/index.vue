@@ -2,8 +2,7 @@
   <div class="time-discount-page">
     <el-form :inline="true" ref="searchForm" :model="searchData" class="header-search">
       <el-form-item label="所属店铺：" prop="shopId">
-        <el-select v-model="searchData.shopId" filterable clearable placeholder="请选择">
-          <el-option label="不限" value=""></el-option>
+        <el-select v-model="searchData.shopId" filterable placeholder="请选择">
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
@@ -17,17 +16,18 @@
         <el-button type="primary" icon="el-icon-plus" @click="addModuleVisible = true">新增点位模型</el-button>
       </div>
       <div class="point-tree-content">
-        <el-tree :load="getpointList" :props="pzProps" lazy ref="tree" show-checkbox node-key="id" :key="treeKey" element-loading-text="加载中..." :expand-on-click-node="false">
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+        </el-input>
+        <el-tree :data="treeData" :props="pzProps" ref="tree" show-checkbox node-key="id" default-expand-all :expand-on-click-node="false" :filter-node-method="filterNode">
           <span class="custom-tree-node" slot-scope="{ node, data }">
             <span>{{ node.label }}</span>
             <span v-show="node.level>1">
-              <svg-icon icon-class="bianji" class="icon-bianji" @click="() => append(data)" />
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="() => editPoint(data)" />
               <svg-icon icon-class="shanchu" class="icon-shanchu" @click="() => handleDeletePoint(node, data)" />
             </span>
           </span>
         </el-tree>
       </div>
-      <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
     </div>
     <!-- 新增 -->
     <add-module :visible.sync="addModuleVisible" v-if="addModuleVisible" @getpointList="getpointList" />
@@ -38,8 +38,8 @@
           <el-input v-model.trim="editModuleForm.name" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item class="action" style="text-align:right">
-          <el-button type="primary" @click="goNext()">保存</el-button>
-          <el-button @click="modalClose()">取消</el-button>
+          <el-button type="primary" @click="onSubmitEdit('editModuleForm')">保存</el-button>
+          <el-button @click="resetEdit('editModuleForm')">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -47,102 +47,95 @@
 </template>
 
 <script type="text/ecmascript-6">
-import Pagination from '@/components/Pager';
-import PagerMixin from '@/mixins/PagerMixin';
-import { poitionListFun, poitionDeleteFun } from '@/service/point';
+import { poitionListFun, poitionDeleteFun, poitionEditFun } from '@/service/point';
 import { shopListFun } from '@/service/report';
-import { manageListFun } from '@/service/shop';
 import addModule from './addModule';
 export default {
-  mixins: [PagerMixin],
   components: {
-    Pagination,
     addModule
   },
   data() {
     return {
       searchData: {
-        shopId: '',
-        status: '',
-        expired: ''
+        shopId: ''
       },
       pzProps: {
         label: 'name',
-        children: 'children',
-        isLeaf: 'leaf'
+        children: 'children'
       },
       shopList: [],
-      treeKey: '', // 控制tree渲染的key
+      treeData: [],
+      filterText: '',
       addModuleVisible: false,
       editModuleVisible: false,
       editModuleForm: {
         id: 0,
         name: '',
         orgId: ''
+      },
+      editModuleFormRules: {
+        name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
       }
     };
   },
   created() {
     this.getShopList();
   },
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val);
+    }
+  },
   methods: {
     async getShopList() {
       let res = await shopListFun();
+      this.searchData.shopId = res.length > 0 ? res[0].shopId : '';
       this.shopList = res;
-    },
-    handlePagination(data) {
-      this.searchData = Object.assign(this.searchData, data);
-      this.getpointList();
+      this.searchData.shopId && this.getpointList();
     },
     searchForm() {
-      this.searchData.page = 1;
-      this.total = 0;
       this.getpointList();
     },
     resetSearchForm(formName) {
-      this.searchData.page = 1;
-      this.total = 0;
       this.$refs[formName].resetFields();
-      this.getpointList();
+      this.searchData.shopId = this.shopList.length > 0 ? this.shopList[0].shopId : '';
+      this.searchData.shopId && this.getpointList();
     },
     async getpointList(node, resolve) {
-      console.log(node);
-
-      if (node.level === 0) {
-        this.getTopShopList(resolve);
-      } else {
-        this.getTreeChild(node, node.data, resolve);
-      }
-    },
-    async getTopShopList(resolve) {
       //获取列表
-      this.pointLitDataToTable = [];
-      let payload = Object.assign({}, this.searchData);
-      let res = await manageListFun(payload);
-      this.pointLitDataToTable = res.items || [];
-      this.pointLitDataToTable.forEach(i => {
-        i.name = i.shopName;
-      });
-      this.total = res.total;
-      resolve(res.items);
-    },
-    async getTreeChild(node, data, resolve) {
-      let payload = node.level === 1 ? { orgId: data.id, parentId: 0 } : { orgId: data.orgId, parentId: data.id };
+      let pic = this.shopList.find(i => i.shopId == this.searchData.shopId);
+      let payload = { orgId: pic ? pic.id : '', parentId: 0 };
       let res = await poitionListFun(payload);
-      res.forEach(i => {
-        if (!i.children) {
-          this.$set(i, 'leaf', true);
+      pic.name = pic.shopName;
+      pic.children = res;
+      this.treeData = [pic];
+    },
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
+    },
+    editPoint(data) {
+      this.editModuleVisible = true;
+      this.editModuleForm.id = data.id;
+      this.editModuleForm.name = data.name;
+      this.editModuleForm.orgId = data.orgId;
+    },
+    onSubmitEdit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          let payload = Object.assign({}, this.editModuleForm);
+          poitionEditFun(payload).then(() => {
+            this.$message.success('编辑成功');
+            this.resetEdit(formName);
+            this.getpointList();
+          });
         }
       });
-      resolve(res);
     },
-    append(data) {
-      console.log(data);
-      // const newChild = { id: id++, label: 'testtest', children: [] };
-      // if (!data.children) {
-      //   this.$set(data, 'children', []);
-      // }
-      // data.children.push(newChild);
+    resetEdit(formName) {
+      this.$refs[formName].resetFields();
+      this.editModuleVisible = false;
+      this.editModuleForm = {};
     },
     handleDeletePoint(node, data) {
       let payload = { id: data.id, orgId: data.orgId };
@@ -152,13 +145,9 @@ export default {
       }).then(() => {
         poitionDeleteFun(payload).then(() => {
           this.$message.success('删除成功');
-          this.renderTree();
+          this.getpointList();
         });
       });
-    },
-    // 刷新key值，重新渲染tree
-    renderTree() {
-      this.treeKey = +new Date();
     }
   }
 };

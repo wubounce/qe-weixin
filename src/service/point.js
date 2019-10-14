@@ -10,7 +10,11 @@ export const deleteApi = 'position/model/delete'; // 删除 method 'post'
 export const addApi = 'position/model/batchAdd'; // 添加 method 'post'
 
 // 点位模型列表
-export const poitionListFun = payload => fetch.post(listChildrenApi, payload);
+export const poitionListFun = payload => fetch.post(listApi, payload);
+
+
+// 点位模型列表
+export const poitionListChildrenFun = payload => fetch.post(listChildrenApi, payload);
 
 
 //编辑
