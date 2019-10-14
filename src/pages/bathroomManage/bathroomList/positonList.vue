@@ -43,7 +43,7 @@ export default {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
     async getShowerList() {
-      let payload = { orgId: this.positionRow.positionId };
+      let payload = { positionId: this.positionRow.positionId };
       let res = await getShowerListFun(payload);
       this.list = res || [];
     }
