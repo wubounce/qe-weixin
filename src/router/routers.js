@@ -128,12 +128,6 @@ export const asyncRoutes = [
         name: 'modulelist',
         meta: { title: '点位模型列表', noCache: true }
       },
-      {
-        path: 'point',
-        component: () => import('@/pages/pointManage/pointList/index.vue'),
-        name: 'pointlist',
-        meta: { title: '点位列表', noCache: true }
-      }
     ]
   },
   {
