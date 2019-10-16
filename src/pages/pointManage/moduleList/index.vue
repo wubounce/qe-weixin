@@ -155,7 +155,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .point-tree-content {
-  max-width: 46%;
+  max-width: 360px;
   .custom-tree-node {
     flex: 1;
     display: flex;
