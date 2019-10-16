@@ -92,7 +92,7 @@
           <h2>生成的{{addModuleFrom.type | pointType}}</h2>
           <div class="room-num">
             <el-form-item v-for="(item,index) in addGenerateFrom.names" :key="index" :prop="'names.'+ index" :rules='addGenerateFromRules.name'>
-              <el-input v-model.trim="addGenerateFrom.names[index]"></el-input>
+              <el-input v-model.trim="addGenerateFrom.names[index]" :maxlength='16'></el-input>
             </el-form-item>
           </div>
         </div>
@@ -200,7 +200,7 @@ export default {
             }
           }
         ],
-        roomNum: [{ required: true, message: '数量不能为空', trigger: 'blur' }, { type: 'number', message: '数量必须为数字值', trigger: 'blur' }]
+        roomNum: [{ required: true, message: '数量不能为空', trigger: 'blur' }, { type: 'number', min: 1, max: 9999, message: '请输入大于0的整数', trigger: 'blur' }]
       },
       addGenerateFrom: {
         names: []
