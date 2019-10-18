@@ -116,9 +116,7 @@ export default {
     },
     editPoint(data) {
       this.editModuleVisible = true;
-      this.editModuleForm.id = data.id;
-      this.editModuleForm.name = data.name;
-      this.editModuleForm.orgId = data.orgId;
+      this.editModuleForm = Object.assign({}, data);
     },
     onSubmitEdit(formName) {
       this.$refs[formName].validate(valid => {
