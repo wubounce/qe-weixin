@@ -35,7 +35,7 @@
     <el-dialog title="编辑" :visible.sync="editModuleVisible" width="540px">
       <el-form ref="editModuleForm" :model="editModuleForm" :rules="editModuleFormRules" class="edit-point-name-from" label-width="100px">
         <el-form-item prop="name">
-          <el-input v-model.trim="editModuleForm.name" placeholder="请输入"></el-input>
+          <el-input v-model.trim="editModuleForm.name" placeholder="请输入" :maxlength='16'></el-input>
         </el-form-item>
         <el-form-item class="action" style="text-align:right">
           <el-button type="primary" @click="onSubmitEdit('editModuleForm')">保存</el-button>
