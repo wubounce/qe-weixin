@@ -116,6 +116,21 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/pointmanagement',
+    component: Layout,
+    redirect: '/pointmanagement/module',
+    name: 'pointmanagement',
+    meta: { title: '点位管理', icon: 'dianpuguanli', noCache: true },
+    children: [
+      {
+        path: 'module',
+        component: () => import('@/pages/pointManage/moduleList/index.vue'),
+        name: 'modulelist',
+        meta: { title: '点位模型列表', noCache: true }
+      },
+    ]
+  },
+  {
     path: '/devicemanagement',
     component: Layout,
     redirect: '/devicemanagement/list',
