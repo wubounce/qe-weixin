@@ -93,7 +93,7 @@ export default {
         positionName: '',
         orgId: '',
         shopState: '',
-        sexAllow: 0
+        sexAllow: 2
       },
       shopList: [],
       bathroomList: [],
