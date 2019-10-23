@@ -171,3 +171,12 @@ export const isForceUsType = {
   0: '关闭',
   1: '开启'
 };
+
+
+export const pointType = {
+  1: '区域',
+  2: '楼号',
+  3: '单元',
+  4: '楼层',
+  5: '房间',
+};
