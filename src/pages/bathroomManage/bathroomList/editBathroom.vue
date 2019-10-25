@@ -139,6 +139,8 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let payload = Object.assign({ id: this.positionRow.positionId }, this.bathroomFrom);
+          payload.orgName = this.bathroomFrom.positionName;
+          delete payload.positionName;
           editBathroomFun(payload).then(() => {
             this.$Message.success('操作成功');
             this.$listeners.getbathroomList && this.$listeners.getbathroomList(); //若组件传递事件confirm则执行

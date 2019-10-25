@@ -12,6 +12,7 @@
       </el-form-item>
       <el-form-item label="适用性别：" prop="sexAllow">
         <el-select v-model="searchData.sexAllow" clearable placeholder="请选择">
+          <el-option label="全部" value=""></el-option>
           <el-option v-for="(name, id) in genderType" :key="id" :label="name" :value="(+id)"></el-option>
         </el-select>
       </el-form-item>
@@ -93,7 +94,7 @@ export default {
         positionName: '',
         orgId: '',
         shopState: '',
-        sexAllow: 2
+        sexAllow: ''
       },
       shopList: [],
       bathroomList: [],
