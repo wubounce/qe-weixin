@@ -120,7 +120,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/pointmanagement/module',
     name: 'pointmanagement',
-    meta: { title: '点位管理', icon: 'dianpuguanli', noCache: true },
+    meta: { title: '点位管理', icon: 'point', noCache: true },
     children: [
       {
         path: 'module',
