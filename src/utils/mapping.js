@@ -176,3 +176,11 @@ export const genderType = {
   1: '女',
   2: '不限',
 };
+
+export const pointType = {
+  1: '区域',
+  2: '楼号',
+  3: '单元',
+  4: '楼层',
+  5: '房间',
+};
