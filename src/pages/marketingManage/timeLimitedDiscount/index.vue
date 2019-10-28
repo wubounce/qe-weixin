@@ -28,7 +28,8 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="openAddBDDialog()">新增优惠</el-button>
-        <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
+        <el-button @click="exportTable()">
+          <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
       </div>
       <el-table :data="timeMaketingDataToTable" style="width: 100%">
         <el-table-column header-align="left" label="序号" width="60" type="index" :index="pagerIndex"></el-table-column>

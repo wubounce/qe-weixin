@@ -120,7 +120,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/pointmanagement/module',
     name: 'pointmanagement',
-    meta: { title: '点位管理', icon: 'dianpuguanli', noCache: true },
+    meta: { title: '点位管理', icon: 'point', noCache: true },
     children: [
       {
         path: 'module',
@@ -163,6 +163,21 @@ export const asyncRoutes = [
         component: () => import('@/pages/orderManage/orderList/index'),
         name: 'orderlist',
         meta: { title: '订单列表', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/bathroommanagement',
+    component: Layout,
+    redirect: '/bathroommanagement/list',
+    name: 'bathroommanagement',
+    meta: { title: '浴室管理', icon: 'shower', noCache: true },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/pages/bathroomManage/bathroomList/index'),
+        name: 'bathroomlist',
+        meta: { title: '浴室列表', noCache: true }
       }
     ]
   },
