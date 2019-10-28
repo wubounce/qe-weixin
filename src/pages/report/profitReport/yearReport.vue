@@ -18,7 +18,7 @@
       </div>
       <div class="line" id="datelinechart" style="height:220px;width:100%"></div>
       <p class="legend">
-        <span class="legend-earing"></span><span style="margin-right: 20px;">总收益</span>
+        <span class="legend-earing"></span><span style="margin-right: 20px;">营收</span>
         <span class="legend-earing legend-order"></span><span style="color: #1890ff;">订单数</span>
       </p>
     </div>
@@ -30,14 +30,15 @@
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
-        <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)(元)"></el-table-column>
-        <el-table-column header-align="left" prop="detergentMoney" label="洗衣液收益(元)"></el-table-column>
-        <!-- <el-table-column header-align="left" prop="vipMoney" label="VIP收益"></el-table-column> -->
-        <el-table-column header-align="left" prop="refundMoney" label="退款金额(元)"></el-table-column>
-        <el-table-column header-align="left" prop="alipayMoney" label="支付宝收益(元)"></el-table-column>
-        <!-- <el-table-column header-align="left" prop="totalMoney" label="总收益"></el-table-column> -->
-        <el-table-column header-align="left" prop="money" label="总收益(元)"></el-table-column>
+        <el-table-column header-align="left" prop="count" label="设备订单数"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="设备订单支付金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="detergentMoney" label="设备订单退款金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="detergentMoney" label="设备订单营收(元)"></el-table-column>
+        <el-table-column header-align="left" prop="vipMoney" label="VIP结算数"></el-table-column>
+        <el-table-column header-align="left" prop="vipMoney" label="VIP结算营收(元)"></el-table-column>
+        <el-table-column header-align="left" prop="vipMoney" label="金币订单数"></el-table-column>
+        <el-table-column header-align="left" prop="vipMoney" label="金币营收(元)"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
   </div>
@@ -61,13 +62,6 @@ export default {
       orderMin: null,
       moneyMin: null,
       tableDataList: [],
-      totalAlipayMoney: '',
-      totalAllMoney: '',
-      totalCount: '',
-      totalDetergentMoney: '',
-      totalMoney: '',
-      totalRefundMoney: '',
-      totalVipMoney: '',
       oderDataList: [],
       moneyDataList: [],
       reportDate: [],
@@ -121,13 +115,6 @@ export default {
       this.orderMin = calMin(this.oderDataList); //订单Y轴最小值
       this.moneyMin = calMin(this.moneyDataList); //金额Y轴最小值
       this.tableDataList = res.list;
-      this.totalAlipayMoney = res.totalAlipayMoney;
-      this.totalAllMoney = res.totalAllMoney;
-      this.totalCount = res.totalCount;
-      this.totalDetergentMoney = res.totalDetergentMoney;
-      this.totalMoney = res.totalMoney;
-      this.totalRefundMoney = res.totalRefundMoney;
-      this.totalVipMoney = res.totalVipMoney;
       this.tableDataList.sort(this.ortId); //表格时间倒序
       this.linechart.setOption(this.lineChartOption);
     },
@@ -138,41 +125,26 @@ export default {
       return h - k;
     },
     getSummaries(param) {
-      const { columns } = param;
+      const { columns, data } = param;
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
           sums[index] = '合计';
           return;
         }
-        if (index === 1) {
-          sums[index] = this.totalCount;
-          return;
-        }
-        if (index === 2) {
-          sums[index] = this.totalMoney;
-          return;
-        }
-        if (index === 3) {
-          sums[index] = this.totalDetergentMoney;
-          return;
-        }
-        // if (index === 4) {
-        //   sums[index] = this.totalVipMoney;
-        //   return;
-        // }
-        if (index === 4) {
-          sums[index] = this.totalRefundMoney;
-          return;
-        }
-        if (index === 5) {
-          sums[index] = this.totalAlipayMoney;
-          return;
-        }
-        if (index === 6) {
-          // sums[index] = this.totalAllMoney;
-          sums[index] = this.totalMoney;
-          return;
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          sums[index] = sums[index].toFixed(2);
+        } else {
+          sums[index] = 'N/A';
         }
       });
       return sums;
@@ -234,7 +206,7 @@ export default {
         ],
         yAxis: [
           {
-            name: '收益金额',
+            name: '营收',
             type: 'value',
             min: this.moneyMin,
             max: this.moneyMax,
@@ -293,7 +265,7 @@ export default {
         ],
         series: [
           {
-            name: '收益金额',
+            name: '营收',
             type: 'line',
             yAxisIndex: 0,
             symbol: 'circle',

@@ -28,8 +28,8 @@
       </div>
       <div class="line" id="datelinechart" style="height:220px;width:100%"></div>
       <p class="legend">
-        <span class="legend-earing"></span><span style="margin-right: 20px;">订单收益</span>
-        <span class="legend-earing legend-order"></span><span style="color: #1890ff;">订单数</span>
+        <span class="legend-earing"></span><span style="margin-right: 20px;">日均设备营收</span>
+        <span class="legend-earing legend-order"></span><span style="color: #1890ff;">日均设备订单数</span>
       </p>
     </div>
     <div class="report-detail">
@@ -40,9 +40,10 @@
       </div>
       <el-table :data="tableDataList" show-summary style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
-        <el-table-column header-align="left" prop="count" label="订单数量"></el-table-column>
-        <el-table-column header-align="left" prop="refundMoney" label="退款金额(元)"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="订单收益(含洗衣液)(元)"></el-table-column>
+        <el-table-column header-align="left" prop="count" label="日均设备订单数"></el-table-column>
+        <el-table-column header-align="left" prop="count" label="日均设备订单支付金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="refundMoney" label="日均设备订单退款金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="日均设备订单营收(元)"></el-table-column>
       </el-table>
     </div>
   </div>
@@ -206,7 +207,7 @@ export default {
         ],
         yAxis: [
           {
-            name: '收益金额',
+            name: '日均设备营收',
             type: 'value',
             min: this.moneyMin,
             max: this.moneyMax,
@@ -236,7 +237,7 @@ export default {
             }
           },
           {
-            name: '订单数量',
+            name: '日均设备订单数',
             type: 'value',
             min: this.orderMin,
             max: this.orderMax,
@@ -265,7 +266,7 @@ export default {
         ],
         series: [
           {
-            name: '收益金额',
+            name: '日均设备营收',
             type: 'line',
             yAxisIndex: 0,
             symbol: 'circle',
@@ -286,7 +287,7 @@ export default {
             }
           },
           {
-            name: '订单数量',
+            name: '日均设备订单数',
             type: 'line',
             yAxisIndex: 1,
             symbol: 'circle',
