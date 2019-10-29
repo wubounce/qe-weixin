@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   runtimeCompiler: true, //是否使用包含运行时编译器的 Vue 构建版本
-  baseUrl: '/',
+  publicPath: '/',
   outputDir: 'dist',
   productionSourceMap: false, //不在production环境使用SourceMap
   css: {
