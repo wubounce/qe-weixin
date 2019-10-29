@@ -25,7 +25,8 @@
     <div>
       <div class="chart-title detail-table">
         <span>详细数据</span>
-        <el-button icon="el-icon-download" style="float: right;" @click="exportTable()">导出</el-button>
+        <el-button style="float: right;" @click="exportTable()">
+          <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>

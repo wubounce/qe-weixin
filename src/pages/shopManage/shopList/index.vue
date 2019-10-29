@@ -30,7 +30,8 @@
     <div class="table-content">
       <div class="table-header-action">
         <el-button type="primary" icon="el-icon-plus" @click="handleAddOrEditShop">新增店铺</el-button>
-        <el-button icon="el-icon-download" @click="exportTable()">导出</el-button>
+        <el-button @click="exportTable()">
+          <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
       </div>
       <el-table :data="shopDataToTable" ref="shopDataToTable" style="width: 100%" @selection-change="handleSelectionChange" :header-cell-class-name="celClass">
         <el-table-column type="selection" width="55" :selectable="checkboxInit"></el-table-column>
