@@ -36,7 +36,13 @@ export const deviceSearchStatus = {
   1: '空闲',
   2: '运行',
   4: '故障',
-  8: '离线'
+};
+// 网络状态类型
+export const networkSearchStatus = {
+  2: '在线',
+  8: '离线',
+  4: '频繁离线',
+  5: '未注册',
 };
 
 // 设备状态类型

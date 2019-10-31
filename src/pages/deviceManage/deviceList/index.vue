@@ -13,10 +13,19 @@
           <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="点位：" prop="tag">
+        <el-cascader v-model="searchData.tag" :disabled="hasShop" placeholder="请先选择店铺" :options="options" :props="{ checkStrictly: true }" clearable @change="handlePointChange"></el-cascader>
+      </el-form-item>
       <el-form-item label="设备状态：" prop="machineState">
         <el-select v-model="searchData.machineState" clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in deviceSearchStatus" :key="id" :label="name" :value="id"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="网络状态：" prop="networkState">
+        <el-select v-model="searchData.networkState" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
+          <el-option v-for="(name, id) in networkSearchStatus" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="设备类型：" prop="parentTypeId">
@@ -46,6 +55,8 @@
       <div class="table-header-action">
         <el-button type="primary" @click="handleBatchEdit">
           <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' /> 批量编辑 </el-button>
+        <el-button type="primary" @click="handleBatchEditPoint">
+          <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' />更改点位</el-button>
         <el-button @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" /> 导出</el-button>
       </div>
@@ -66,6 +77,11 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="imei" label="IMEI" min-width="130"></el-table-column>
+        <el-table-column header-align="left" prop="network" label="网络状态" min-width="130">
+          <template slot-scope="scope">
+            {{scope.row.network | networkSearchStatus}}
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="signal" label="信号值">
           <template slot-scope="scope">
             <el-tooltip content="设备离线" placement="top" effect="dark">
@@ -205,6 +221,8 @@
       <edit-device v-if="deviceEditDialogVisible&&deviceEditdetailForm" :visible.sync="deviceEditDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" @getDeviceDataToTable="getDeviceDataToTable"></edit-device>
       <!-- 批量编辑设备  -->
       <batch-edit v-if="batchDEditDeviceDialogVisible&&deviceEditdetailForm" :visible.sync="batchDEditDeviceDialogVisible" :deviceEditdetailForm="deviceEditdetailForm" :multipleSelectionMachineIds="multipleSelectionMachineIds" @getDeviceDataToTable="getDeviceDataToTable"></batch-edit>
+      <!-- 批量编辑点位  -->
+      <add-module v-if="batchDEditPointVisible" :visible.sync="batchDEditPointVisible" :batchPoint="batchPoint" @getDeviceDataToTable="getDeviceDataToTable"></add-module>
     </div>
   </div>
 </template>
@@ -213,13 +231,14 @@
 import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, getlistSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList, quantifyResetFun, quantifyStartFun } from '@/service/device';
 import { exportExcel } from '@/service/common';
 import { shopListFun } from '@/service/report';
-import { deviceStatus, deviceColorStatus, deviceSearchStatus, communicateType } from '@/utils/mapping';
+import { deviceStatus, deviceColorStatus, deviceSearchStatus, networkSearchStatus, communicateType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
 import ShopFilter from '@/components/Shopfilter';
 import editDevice from './editDevice';
 import batchEdit from './batchEdit';
 import deviceInfo from './deviceInfo';
+import addModule from './addModule';
 export default {
   mixins: [PagerMixin],
   components: {
@@ -227,15 +246,20 @@ export default {
     ShopFilter,
     editDevice,
     batchEdit,
-    deviceInfo
+    deviceInfo,
+    addModule
   },
   data() {
     return {
+      options: [],
+      hasShop: true,
       searchData: {
         machineName: '',
         imei: '',
         shopId: '',
+        tag: '',
         machineState: '',
+        networkState: '',
         parentTypeId: '',
         subTypeId: '',
         communicateType: ''
@@ -281,10 +305,21 @@ export default {
       //充电时间选择
       chargeTimeMax: 0,
       chargeTimeMin: 0,
-      chargeTimeStep: 0
+      chargeTimeStep: 0,
+
+      //批量编辑点位
+      batchDEditPointVisible: false,
+      batchPoint: {
+        shopId: '',
+        shopName: '',
+        machineIdList: []
+      }
     };
   },
   filters: {
+    networkSearchStatus: val => {
+      return networkSearchStatus[val];
+    },
     deviceStatus: val => {
       return deviceStatus[val];
     },
@@ -303,6 +338,9 @@ export default {
       return function(value) {
         return `background:${deviceColorStatus[value]}`;
       };
+    },
+    networkSearchStatus: function() {
+      return networkSearchStatus;
     }
   },
   mounted() {},
@@ -531,6 +569,33 @@ export default {
       this.lookShopDetail(this.multipleSelection[0]).then(data => {
         this.batchDEditDeviceDialogVisible = true;
       });
+    },
+    handleBatchEditPoint() {
+      //批量编辑点位
+      if (this._.isEmpty(this.multipleSelection)) {
+        this.$alert(`请勾选想要更改点位的店铺`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+          center: true
+        });
+        return false;
+      }
+      let allSame = this.multipleSelection.every((item, index, arr) => {
+        return item.shopName === arr[0].shopName;
+      });
+      if (allSame === false) {
+        this.$alert(`请勾选同一店铺下的设备进行更改点位`, '提示', {
+          showClose: false,
+          confirmButtonText: '确定',
+          center: true
+        });
+        return false;
+      }
+      this.batchDEditPointVisible = true;
+      this.batchPoint.machineIdList = this.multipleSelection.map(item => item.id);
+      this.batchPoint.shopId = this._.get(this.multipleSelection, '[0].shopId', '');
+      this.batchPoint.shopName = this._.get(this.multipleSelection, '[0].shopName', '');
+      console.log(this.batchPoint);
     },
     exportTable() {
       let payload = Object.assign({}, this.searchData);

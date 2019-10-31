@@ -21,6 +21,7 @@ const machineStart = 'machine/machineStart'; //设备详情 - 启动
 const batchEditDetergent = 'machine/batchEditDetergent'; //批量编辑设备洗衣液功能 - 启动
 const quantifyStartApi = 'machine/quantify/start'; //充电桩定量启动
 const quantifyResetApi = 'machine/quantify/reset'; //充电桩定量复位
+const batchEditTagApi = 'machine/batchEditTag'; //充电桩定量复位
 
 
 //获取设备列表
@@ -75,4 +76,8 @@ export const batchEditDetergentListFun = payload => fetch.post(batchEditDetergen
 export const quantifyStartFun = payload => fetch.post(quantifyStartApi, payload);
 
 //充电桩定量复位
-export const quantifyResetFun = payload => fetch.post(quantifyResetApi, payload); 
+export const quantifyResetFun = payload => fetch.post(quantifyResetApi, payload);
+
+
+//更改点位
+export const batchEditTagFun = payload => fetch.post(batchEditTagApi, payload); 
