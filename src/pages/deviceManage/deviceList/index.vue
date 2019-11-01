@@ -56,7 +56,8 @@
         <el-button type="primary" @click="handleBatchEdit">
           <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' /> 批量编辑 </el-button>
         <el-button type="primary" @click="handleBatchEditPoint">
-          <svg-icon icon-class="bianji" class="batch-bianji" fill='#fff' />更改点位</el-button>
+          <svg-icon icon-class="point" class="batch-bianji" fill='#fff' />更改点位
+        </el-button>
         <el-button @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" /> 导出</el-button>
       </div>
