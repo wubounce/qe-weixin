@@ -7,14 +7,14 @@
       <el-form-item label="IMEI：" prop="imei">
         <el-input v-model.trim="searchData.imei" clearable placeholder="请输入"></el-input>
       </el-form-item>
-      <el-form-item label="所属店铺：" prop="shopId">
-        <el-select v-model="searchData.shopId" filterable clearable placeholder="请选择">
+      <el-form-item label="所属店铺：" prop="orgId">
+        <el-select v-model="searchData.orgId" filterable clearable @change="getPointList" placeholder="请选择">
           <el-option label="不限" value=""></el-option>
-          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="点位：" prop="tag">
-        <el-cascader v-model="searchData.tag" :disabled="hasShop" placeholder="请先选择店铺" :options="options" :props="{ checkStrictly: true }" clearable @change="handlePointChange"></el-cascader>
+        <el-cascader v-model="searchData.tag" :disabled="hasShop" placeholder="请先选择店铺" :options="pointList" :props="{ checkStrictly: true,label:'name',value:'id' }" clearable @change="handlePointChange"></el-cascader>
       </el-form-item>
       <el-form-item label="设备状态：" prop="machineState">
         <el-select v-model="searchData.machineState" clearable placeholder="请选择">
@@ -69,6 +69,7 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="shopName" label="所属店铺" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="tags" label="点位" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
         <el-table-column header-align="left" prop="subTypeName" label="设备型号" min-width="180" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineState" label="状态">
@@ -77,9 +78,9 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="imei" label="IMEI" min-width="130"></el-table-column>
-        <el-table-column header-align="left" prop="network" label="网络状态" min-width="130">
+        <el-table-column header-align="left" prop="computeStatus" label="网络状态" min-width="130">
           <template slot-scope="scope">
-            {{scope.row.network | networkSearchStatus}}
+            {{scope.row.computeStatus | networkSearchStatus}}
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="signal" label="信号值">
@@ -151,7 +152,7 @@
         <el-table-column header-align="left" label="操作" fixed="right" width="200px">
           <template slot-scope="scope">
             <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState ===4">
-              <span v-if="scope.row.machineTypeName==='洗鞋机'&&scope.row.subTypeName.includes('脉冲')===false||scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName.includes('脉冲')===false">
+              <span v-if="scope.row.machineTypeName==='洗鞋机'&&scope.row.subTypeName&&scope.row.subTypeName.includes('脉冲')===false||scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName&&scope.row.subTypeName.includes('脉冲')===false">
                 <svg-icon icon-class="tongzijie" class="icon-tongzijie" @click="handleDeviceTzj(scope.row)" /></span>
             </el-tooltip>
             <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.machineState !==8 && scope.row.subTypeName !== '通用脉冲充电桩'&& scope.row.notQuantitative===false">
@@ -231,6 +232,7 @@
 import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, getlistSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList, quantifyResetFun, quantifyStartFun } from '@/service/device';
 import { exportExcel } from '@/service/common';
 import { shopListFun } from '@/service/report';
+import { poitionListFun } from '@/service/point';
 import { deviceStatus, deviceColorStatus, deviceSearchStatus, networkSearchStatus, communicateType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
@@ -251,12 +253,12 @@ export default {
   },
   data() {
     return {
-      options: [],
+      pointList: [],
       hasShop: true,
       searchData: {
         machineName: '',
         imei: '',
-        shopId: '',
+        orgId: '',
         tag: '',
         machineState: '',
         networkState: '',
@@ -355,6 +357,11 @@ export default {
       let res = await shopListFun();
       this.shopList = res;
     },
+    async getPointList(val) {
+      let payload = { orgId: this.searchData.orgId, parentId: 0 };
+      let res = await poitionListFun(payload);
+      this.pointList = res;
+    },
     async getmachineParentType() {
       //获取设备类型
       let res = await getlistParentTypeFun({ onlyMine: true });
@@ -380,6 +387,7 @@ export default {
       this.searchData.page = 1;
       this.total = 0;
       let payload = Object.assign({}, this.searchData);
+      payload.tag = this._.last(this.searchData.tag);
       this.getDeviceDataToTable(payload);
     },
     resetSearchForm(formName) {
@@ -394,6 +402,7 @@ export default {
       //列表
       this.deviceDataToTable = [];
       let payload = Object.assign({}, this.searchData);
+      payload.tag = this._.last(this.searchData.tag);
       let res = await deviceListFun(payload);
       this.deviceDataToTable = res.page.items;
       this.total = res.page.total;
@@ -593,7 +602,7 @@ export default {
       }
       this.batchDEditPointVisible = true;
       this.batchPoint.machineIdList = this.multipleSelection.map(item => item.id);
-      this.batchPoint.shopId = this._.get(this.multipleSelection, '[0].shopId', '');
+      this.batchPoint.shopId = this._.get(this.multipleSelection, '[0].orgId', '');
       this.batchPoint.shopName = this._.get(this.multipleSelection, '[0].shopName', '');
       console.log(this.batchPoint);
     },
@@ -601,6 +610,14 @@ export default {
       let payload = Object.assign({}, this.searchData);
       payload.excel = true;
       exportExcel(deviceList, '设备列表.xlsx', payload);
+    }
+  },
+  watch: {
+    'searchData.orgId': {
+      deep: true,
+      handler: function(val) {
+        val ? (this.hasShop = false) : (this.hasShop = true);
+      }
     }
   }
 };

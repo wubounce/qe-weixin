@@ -31,7 +31,7 @@
           </el-select>
         </el-form-item>
         <el-form-item class="action">
-          <el-button type="primary" @click="goNext('addModuleFrom')">保存</el-button>
+          <el-button type="primary" @click="onSubmitPointForm('addModuleFrom')">保存</el-button>
           <el-button @click="modalClose()">取消</el-button>
         </el-form-item>
       </el-form>
@@ -40,7 +40,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { batchEditTagFun, poitionListChildrenFun } from '@/service/point';
+import { poitionListChildrenFun } from '@/service/point';
+import { batchEditTagFun } from '@/service/device';
 export default {
   components: {},
   props: {
@@ -69,11 +70,19 @@ export default {
         room: {}
       },
       addModuleFormRules: {
-        // region: [{ required: true, trigger: 'change', message: '请选择区域' }],
-        // building: [{ required: true, trigger: 'change', message: '请选择楼号' }],
-        // unit: [{ required: true, trigger: 'change', message: '请选择单元' }],
-        // floor: [{ required: true, trigger: 'change', message: '请选择楼层' }],
-        // room: [{ required: true, trigger: 'change', message: '房间号' }]
+        region: [
+          {
+            required: true,
+            trigger: 'change',
+            validator: (rule, value, callback) => {
+              if (!value.id) {
+                callback(new Error('请选择区域'));
+              } else {
+                callback();
+              }
+            }
+          }
+        ]
       },
       childrenList: {
         regionList: [],
@@ -102,14 +111,14 @@ export default {
       this.childrenList[childName + 'List'] = res || [];
       this.positionModelName = optionName;
       option.forEach(i => {
-        this.addModuleFrom[i] = '';
+        this.addModuleFrom[i] = {};
       });
     },
     onSubmitPointForm(formName) {
       this.$refs[formName].validate(valid => {
-        if (valid && this.validateNames()) {
+        if (valid) {
           let payload = Object.assign({}, this.batchPoint);
-          payload.positionModelId = this.this.addModuleFrom[this.positionModelName].id || '';
+          payload.positionModelId = this.addModuleFrom[this.positionModelName].id || '';
           console.log(payload);
           batchEditTagFun(payload).then(() => {
             this.$Message.success('修改成功');

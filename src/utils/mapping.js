@@ -39,10 +39,10 @@ export const deviceSearchStatus = {
 };
 // 网络状态类型
 export const networkSearchStatus = {
-  2: '在线',
-  8: '离线',
-  4: '频繁离线',
-  5: '未注册',
+  1: '在线',
+  3: '离线',
+  2: '频繁离线',
+  0: '未注册',
 };
 
 // 设备状态类型

@@ -300,6 +300,7 @@ export default {
       }
     };
     return {
+      nativeFunctionList: [],
       nativeBaseEditBatchFuntion: ['needMinutes', 'functionPrice', 'functionCode', 'ifOpen', 'extraAttr'], //正常原始选项
       baseEditBatchFuntion: ['needMinutes', 'functionPrice', 'functionCode', 'ifOpen', 'extraAttr'], //正常编辑内容
       checkBatchFuntion: 1,
@@ -370,6 +371,7 @@ export default {
         this.chargeTimeStep = extraAttr.step || 0;
       }
       this.deviceEditForm.functionList = res.list || [];
+      this.nativeFunctionList = this._.cloneDeep(res.list || []);
       this.deviceEditForm.setting = res.setting || [];
       this.deviceEditForm.functionTempletType = res.functionTempletType;
       this.$set(this.deviceEditForm, 'extraAttr', this._.get(res, 'list[0].extraAttr', {}));
@@ -419,13 +421,10 @@ export default {
       return (row.functionPrice = this._.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
     },
     //去掉uncitonlist中不批量修改的项,取数组差集
-    editBatchFuntionXor() {
-      return this._.xor(this.baseEditBatchFuntion, this.nativeBaseEditBatchFuntion);
-    },
-    //批量基本功能设置和其他属性
-    batchEditBaseFunction() {
+    formatBathEditData() {
+      let xorList = this._.xor(this.baseEditBatchFuntion, this.nativeBaseEditBatchFuntion);
       let ifOpenLen = 0;
-      this.deviceEditForm.functionList = this.deviceEditForm.functionList.map(item => {
+      this.deviceEditForm.functionList = this.deviceEditForm.functionList.map((item, index) => {
         if (item.ifOpenStatus) {
           item.ifOpen = 0;
         } else {
@@ -438,11 +437,18 @@ export default {
           item.extraAttr = neextraAttr;
           item.functionPrice = this.deviceEditForm.chargeMachinePirce;
         }
-        //使用 omit 方法移除不要的属性
-        return this._.omit(item, this.editBatchFuntionXor());
+        //使用 omit 方法移除不要的属性或者 pick 方法只留下需要的属性
+        const pickNativeProperty = this._.pick(this.nativeFunctionList[index], xorList);
+        return (item = { ...item, ...pickNativeProperty });
       });
+      return ifOpenLen;
+    },
+    //批量基本功能设置和其他属性
+    batchEditBaseFunction() {
+      console.log(this.formatBathEditData());
+      console.log(this.deviceEditForm.functionList);
       //编辑内容是否开启状态栏，开启状态栏至少要开启一项功能
-      if (this._.includes(this.baseEditBatchFuntion, 'ifOpen') && ifOpenLen === this.deviceEditForm.functionList.length) {
+      if (this._.includes(this.baseEditBatchFuntion, 'ifOpen') && this.formatBathEditData() === this.deviceEditForm.functionList.length) {
         this.$Message.error('请至少开启一项功能');
         return false;
       }

@@ -3,7 +3,7 @@
  */
 import fetch from '@/service/http';
 
-export const deviceList = 'machine/manageList'; //获取设备列表 method 'post'
+export const deviceList = 'machine/manageListNew'; //获取设备列表 method 'post'
 const detailDevice = 'machine/detail'; //设配管理详情
 const deleteDevice = 'machine/delete'; //删除设备
 const manageResetDevice = 'machine/manageReset'; //设备复位
