@@ -101,7 +101,7 @@ export default {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
     async getRegion() {
-      let payload = { orgId: this.batchPoint.shopId, parentId: 0 };
+      let payload = { orgId: this.batchPoint.orgId, parentId: 0 };
       let res = await poitionListChildrenFun(payload);
       this.childrenList.regionList = res || [];
     },

@@ -312,6 +312,7 @@ export default {
       //批量编辑点位
       batchDEditPointVisible: false,
       batchPoint: {
+        orgId: 0,
         shopId: '',
         shopName: '',
         machineIdList: []
@@ -602,7 +603,8 @@ export default {
       }
       this.batchDEditPointVisible = true;
       this.batchPoint.machineIdList = this.multipleSelection.map(item => item.id);
-      this.batchPoint.shopId = this._.get(this.multipleSelection, '[0].orgId', '');
+      this.batchPoint.orgId = this._.get(this.multipleSelection, '[0].orgId', '');
+      this.batchPoint.shopId = this._.get(this.multipleSelection, '[0].shopId', '');
       this.batchPoint.shopName = this._.get(this.multipleSelection, '[0].shopName', '');
       console.log(this.batchPoint);
     },

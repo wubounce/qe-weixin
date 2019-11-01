@@ -2,7 +2,8 @@
   <el-dialog title="批量编辑设备" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
     <el-form :model="deviceEditForm" :rules="deviceEditFormRules" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
       <div class="base">
-        <p class="device-type">设备类型：{{deviceEditForm.parentTypeName}}<span>|</span>设备型号：{{deviceEditForm.subTypeName}}</p>
+        <p class="device-type">设备类型：{{deviceEditForm.parentTypeName}}</p>
+        <p class="device-type">设备型号：{{deviceEditForm.subTypeName}}</p>
         <el-form-item label="类别：" class="check-batch-funtion">
           <el-radio-group v-model="checkBatchFuntion">
             <el-radio :label="1">功能设置</el-radio>
@@ -14,7 +15,7 @@
         <div v-if="checkBatchFuntion === 1&&configVO">
           <!-- 饮水机 -->
           <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
-            <el-form-item label="编辑内容：" class="check-batch-funtion">
+            <el-form-item label="编辑内容：">
               <el-checkbox-group v-model="baseEditBatchFuntion">
                 <el-checkbox label="needMinutes" v-if="configVO.time.available">单脉冲流量</el-checkbox>
                 <el-checkbox label="functionPrice" v-if="configVO.price.available">价格</el-checkbox>
@@ -63,7 +64,7 @@
           </div>
           <!-- 充电桩 -->
           <div v-if="deviceEditForm.isQuantifyCharge === 1&&deviceEditForm.extraAttr">
-            <el-form-item label="编辑内容：" class="check-batch-funtion">
+            <el-form-item label="编辑内容：">
               <el-checkbox-group v-model="baseEditBatchFuntion">
                 <el-checkbox label="extraAttr">时间</el-checkbox>
                 <el-checkbox label="functionPrice" v-if="configVO.price.available">价格</el-checkbox>
@@ -104,10 +105,10 @@
                 </div>
               </el-form-item>
             </div>
-            <el-form-item label="充电单价：" v-if="configVO.price.available&&isShowOptions('functionPrice')" prop='chargeMachinePirce'>
+            <el-form-item label="价格：" v-if="configVO.price.available&&isShowOptions('functionPrice')" prop='chargeMachinePirce'>
               <div class="add-discount">
                 <el-input v-model.trim="deviceEditForm.chargeMachinePirce" maxlength="4"></el-input>
-                <span style="position: absolute;left: 220px;color:#bfbfbf;">元/小时</span>
+                <span style="position: absolute;left: 190px;color:#bfbfbf;">元/小时</span>
               </div>
             </el-form-item>
             <el-table :data="deviceEditForm.functionList" style="width: 100%">
@@ -122,7 +123,7 @@
           </div>
           <!-- 正常 -->
           <div v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
-            <el-form-item label="编辑内容：" class="check-batch-funtion">
+            <el-form-item label="编辑内容：">
               <el-checkbox-group v-model="baseEditBatchFuntion">
                 <el-checkbox label="needMinutes" v-if="configVO.time.available">耗时</el-checkbox>
                 <el-checkbox label="functionPrice" v-if="configVO.price.available">价格</el-checkbox>
@@ -535,18 +536,11 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import '~@/styles/variables.scss';
 .device-type {
-  color: #8c8c8c;
-  padding-top: 16px;
-  span {
-    padding: 0 25px;
-  }
+  margin-top: 20px;
 }
-.waterAndChargeMachinePirce-type {
-  padding-top: 24px;
-}
-
 .check-batch-funtion {
-  margin-top: 18px;
+  margin-top: 14px;
+  margin-bottom: 4px !important;
 }
 .action {
   text-align: right;

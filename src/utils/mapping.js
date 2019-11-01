@@ -35,6 +35,7 @@ export const ifOpenType = {
 export const deviceSearchStatus = {
   1: '空闲',
   2: '运行',
+  3: '预约',
   4: '故障',
 };
 // 网络状态类型
