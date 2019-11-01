@@ -38,11 +38,11 @@
         <el-button style="float: right;" @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
       </div>
-      <el-table :data="tableDataList" show-summary style="width: 100%">
+      <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
-        <el-table-column header-align="left" prop="count" label="日均设备订单数"></el-table-column>
-        <el-table-column header-align="left" prop="count" label="日均设备订单支付金额(元)"></el-table-column>
-        <el-table-column header-align="left" prop="refundMoney" label="日均设备订单退款金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="machineCount" label="日均设备订单数"></el-table-column>
+        <el-table-column header-align="left" prop="machineMoney" label="日均设备订单支付金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="machineRefundMoney" label="日均设备订单退款金额(元)"></el-table-column>
         <el-table-column header-align="left" prop="money" label="日均设备订单营收(元)"></el-table-column>
       </el-table>
     </div>
@@ -132,7 +132,7 @@ export default {
       this.moneyDataList = [];
       this.reportDate = [];
       res.list.forEach(item => {
-        this.oderDataList.push(item.count);
+        this.oderDataList.push(item.machineCount);
         this.moneyDataList.push(item.money);
         this.reportDate.push(item.date);
       });
@@ -149,6 +149,31 @@ export default {
       let k = a.date.replace(/\-/g, '');
       let h = b.date.replace(/\-/g, '');
       return h - k;
+    },
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          sums[index] = index === 1 ? sums[index].toFixed(0) : sums[index].toFixed(2);
+        } else {
+          sums[index] = 'N/A';
+        }
+      });
+      return sums;
     },
     exportTable() {
       let payload = Object.assign({}, { startDate: this.searchData.time[0], endDate: this.searchData.time[1], shopIds: this.searchData.shopIds, machineTypeIds: this.searchData.machineTypeIds, dateLevel: 4, excel: true });

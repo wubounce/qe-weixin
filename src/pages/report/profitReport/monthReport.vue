@@ -31,14 +31,18 @@
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
-        <el-table-column header-align="left" prop="count" label="设备订单数"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="设备订单支付金额(元)"></el-table-column>
-        <el-table-column header-align="left" prop="detergentMoney" label="设备订单退款金额(元)"></el-table-column>
-        <el-table-column header-align="left" prop="detergentMoney" label="设备订单营收(元)"></el-table-column>
-        <el-table-column header-align="left" prop="vipMoney" label="VIP结算数"></el-table-column>
+        <el-table-column header-align="left" prop="machineCount" label="设备订单数"></el-table-column>
+        <el-table-column header-align="left" prop="machineMoney" label="设备订单支付金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="machineRefundMoney" label="设备订单退款金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="money" label="设备订单营收(元)">
+          <template slot-scope="scope">
+            {{scope.row.machineMoney-scope.row.machineRefundMoney}}
+          </template>
+        </el-table-column>
+        <el-table-column header-align="left" prop="vipCount" label="VIP结算数"></el-table-column>
         <el-table-column header-align="left" prop="vipMoney" label="VIP结算营收(元)"></el-table-column>
-        <el-table-column header-align="left" prop="vipMoney" label="金币订单数"></el-table-column>
-        <el-table-column header-align="left" prop="vipMoney" label="金币营收(元)"></el-table-column>
+        <el-table-column header-align="left" prop="coinCount" label="金币订单数" v-if="checkPerms('mer:tokencoin:vip')"></el-table-column>
+        <el-table-column header-align="left" prop="coinMoney" label="金币营收(元)" v-if="checkPerms('mer:tokencoin:vip')"></el-table-column>
         <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
@@ -48,7 +52,7 @@
 <script type="text/ecmascript-6">
 import { dayReportFun, dayReportApi } from '@/service/report';
 import { exportExcel } from '@/service/common';
-import { calMax, calMin } from '@/utils/tools';
+import { calMax, calMin, checkPerms } from '@/utils/tools';
 import ShopFilter from '@/components/Shopfilter';
 import PagerMixin from '@/mixins/PagerMixin';
 
@@ -94,6 +98,7 @@ export default {
     this.getProfitDate();
   },
   methods: {
+    checkPerms,
     initChart() {
       this.linechart = echarts.init(document.getElementById('datelinechart'));
     },
@@ -161,7 +166,7 @@ export default {
               return prev;
             }
           }, 0);
-          sums[index] = sums[index].toFixed(2);
+          sums[index] = index === 1 || index === 5 || index === 7 ? sums[index].toFixed(0) : sums[index].toFixed(2);
         } else {
           sums[index] = 'N/A';
         }
