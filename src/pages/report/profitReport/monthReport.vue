@@ -36,7 +36,7 @@
         <el-table-column header-align="left" prop="machineRefundMoney" label="设备订单退款金额(元)"></el-table-column>
         <el-table-column header-align="left" prop="money" label="设备订单营收(元)">
           <template slot-scope="scope">
-            {{scope.row.machineMoney-scope.row.machineRefundMoney}}
+            {{(scope.row.machineMoney-scope.row.machineRefundMoney) | toFixed}}
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="vipCount" label="VIP结算数"></el-table-column>
@@ -88,6 +88,11 @@ export default {
   },
   components: {
     ShopFilter
+  },
+  filters: {
+    toFixed(val) {
+      return Number(val).toFixed(2);
+    }
   },
   mounted() {
     this.$nextTick(() => {
