@@ -70,7 +70,7 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="shopName" label="所属店铺" show-overflow-tooltip></el-table-column>
-        <el-table-column header-align="left" prop="tags" label="点位" show-overflow-tooltip></el-table-column>
+        <el-table-column header-align="left" prop="tagNames" label="点位" min-width="130" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineTypeName" label="设备类型"></el-table-column>
         <el-table-column header-align="left" prop="subTypeName" label="设备型号" min-width="180" show-overflow-tooltip></el-table-column>
         <el-table-column header-align="left" prop="machineState" label="状态">
@@ -79,7 +79,7 @@
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="imei" label="IMEI" min-width="130"></el-table-column>
-        <el-table-column header-align="left" prop="computeStatus" label="网络状态" min-width="130">
+        <el-table-column header-align="left" prop="computeStatus" label="网络状态">
           <template slot-scope="scope">
             {{scope.row.computeStatus | networkSearchStatus}}
           </template>
@@ -260,7 +260,7 @@ export default {
         machineName: '',
         imei: '',
         orgId: '',
-        tag: '',
+        tag: [],
         machineState: '',
         networkState: '',
         parentTypeId: '',
@@ -360,9 +360,13 @@ export default {
       this.shopList = res;
     },
     async getPointList(val) {
-      let payload = { orgId: this.searchData.orgId, parentId: 0 };
-      let res = await poitionListFun(payload);
-      this.pointList = res;
+      if (this.searchData.orgId) {
+        let payload = { orgId: this.searchData.orgId, parentId: 0 };
+        let res = await poitionListFun(payload);
+        this.pointList = res;
+      } else {
+        this.searchData.tag = [];
+      }
     },
     async getmachineParentType() {
       //获取设备类型
