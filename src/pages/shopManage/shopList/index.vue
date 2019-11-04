@@ -58,6 +58,11 @@
             <span>{{scope.row.isReserve | isReserveType}}</span>
           </template>
         </el-table-column>
+        <el-table-column header-align="left" prop="machineCount" label="预约模板数">
+          <template slot-scope="scope">
+            <span class="rowstyle" @click="getReserveModlue(scope.row)">{{scope.row.machineCount}}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置">
           <template slot-scope="scope">
             {{scope.row.isRevenueSharing | subAccountType}}
@@ -69,7 +74,10 @@
               <svg-icon icon-class="bianji" class="icon-bianji" @click="handleAddOrEditShop(scope.row)" />
             </el-tooltip>
             <el-tooltip content="分账配置" placement="top" effect="dark" v-if="scope.row.attribute === 1">
-              <svg-icon icon-class="zhangmu" class="icon-zhangmu" @click="subAccountSet(scope.row)" />
+              <svg-icon icon-class="zhangdan" class="icon-zhangmu" @click="subAccountSet(scope.row)" />
+            </el-tooltip>
+            <el-tooltip content="预约配置" placement="top" effect="dark">
+              <svg-icon icon-class="yuyue" class="icon-zhangmu" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
               <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
@@ -127,9 +135,12 @@
       <machines-in-shop :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></machines-in-shop>
       <!-- 分账设置 -->
       <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" :isAllChecked.sync="isAllChecked" :shopIds="shopIds" @getShopDataToTable="getShopDataToTable"></sub-account-set>
-      <!-- </el-dialog> -->
       <!-- 新增编辑店铺 -->
       <add-or-edit-shop :visible.sync="addShopDialogVisible" v-if="addShopDialogVisible" :shopId="shopIds" @getShopDataToTable="getShopDataToTable" />
+      <!-- 预约模块 -->
+      <reserve-module :visible.sync="reserveModlueVisible" v-if="reserveModlueVisible" :shopId="shopIds" @getShopDataToTable="getShopDataToTable" />
+      <!-- 预约模板 -->
+      <reserve-template :visible.sync="reserveTemplateVisible" v-if="reserveTemplateVisible" :shopId="shopIds" @getShopDataToTable="getShopDataToTable" />
     </div>
   </div>
 </template>
@@ -142,6 +153,8 @@ import Pagination from '@/components/Pager';
 import machinesInShop from './machinesInShop';
 import subAccountSet from './subAccountSet';
 import addOrEditShop from './addOrEditShop';
+import reserveModule from './reserveModule';
+import reserveTemplate from './reserveTemplate';
 import PagerMixin from '@/mixins/PagerMixin';
 import Area from '@/components/Area';
 export default {
@@ -151,7 +164,9 @@ export default {
     Pagination,
     machinesInShop,
     subAccountSet,
-    addOrEditShop
+    addOrEditShop,
+    reserveModule,
+    reserveTemplate
   },
   data() {
     return {
@@ -172,7 +187,9 @@ export default {
       multipleSelection: [],
       subAccountSetDialogVisible: false,
       subAccountSetTitle: '分账批量配置',
-      isAllChecked: false
+      isAllChecked: false,
+      reserveModlueVisible: false,
+      reserveTemplateVisible: true
     };
   },
   computed: {
@@ -296,6 +313,13 @@ export default {
       this.deviceDialogTitle = row.shopName;
       this.shopIds = row.shopId;
       this.deviceDialogVisible = true;
+    },
+    async getReserveModlue(row) {
+      if (row.machineCount === 0) {
+        return false;
+      }
+      this.shopIds = row.shopId;
+      this.reserveModlueVisible = true;
     },
     async handleAddOrEditShop(row = {}) {
       this.shopIds = '';
