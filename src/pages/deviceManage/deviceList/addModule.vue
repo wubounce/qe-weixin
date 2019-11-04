@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="新增点位模型" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="540px" height="768px">
+  <el-dialog title="更改点位" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="540px" height="768px">
     <div class="pre-form" v-show="basicVisible">
       <el-form ref="addModuleFrom" :model="addModuleFrom" :rules="addModuleFormRules" class="add-shop-from" label-width="100px">
         <el-form-item label="所属店铺：" prop="orgId">
@@ -26,7 +26,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="房间号：" prop="room">
-          <el-select v-model="addModuleFrom.room" value-key="id" placeholder="请选择">
+          <el-select v-model="addModuleFrom.room" value-key="id" placeholder="请选择" @change="((val)=>{getChildren(val,  'room')})">
             <el-option v-for="(item,index) in childrenList.roomList" :key="index" :label="item.name" :value="item"></el-option>
           </el-select>
         </el-form-item>
@@ -105,14 +105,16 @@ export default {
       let res = await poitionListChildrenFun(payload);
       this.childrenList.regionList = res || [];
     },
-    async getChildren(item, optionName, childName, option) {
-      let payload = { orgId: item.orgId, parentId: item.id };
-      let res = await poitionListChildrenFun(payload);
-      this.childrenList[childName + 'List'] = res || [];
-      this.positionModelName = optionName;
+    async getChildren(item, optionName, childName = '', option = []) {
+      if (childName) {
+        let payload = { orgId: item.orgId, parentId: item.id };
+        let res = await poitionListChildrenFun(payload);
+        this.childrenList[childName + 'List'] = res || [];
+      }
       option.forEach(i => {
         this.addModuleFrom[i] = {};
       });
+      this.positionModelName = optionName;
     },
     onSubmitPointForm(formName) {
       this.$refs[formName].validate(valid => {
@@ -121,11 +123,9 @@ export default {
           payload.positionModelId = this.addModuleFrom[this.positionModelName].id || '';
           console.log(payload);
           batchEditTagFun(payload).then(() => {
-            setTimeout(() => {
-              this.$Message.success('修改成功');
-              this.modalClose();
-              this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable();
-            }, 1000);
+            this.$Message.success('修改成功');
+            this.modalClose();
+            this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable();
           });
         }
       });

@@ -35,15 +35,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备型号：" prop="subTypeId">
-        <el-select v-model="searchData.subTypeId" clearable placeholder="请选择">
+        <el-select v-model="searchData.subTypeId" @change="changeSearchSubTypeId" clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
           <el-option v-for="(item, index) in machineSubTypeList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="通信类型：" prop="communicateType">
-        <el-select v-model="searchData.communicateType" clearable placeholder="请选择">
+        <el-select v-model="searchData.communicateType" @change="changeSearchcCommunicateType" clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
-          <el-option v-for="(name, id) in communicateType" :key="id" :label="name" :value="id"></el-option>
+          <el-option v-for="(name, id) in communicateType" :key="id" :label="name" :value="(+id)"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -230,7 +230,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, listSubTypeAllFun, getlistSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList, quantifyResetFun, quantifyStartFun } from '@/service/device';
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, newListSubTypeAllFun, getNewListSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList, quantifyResetFun, quantifyStartFun } from '@/service/device';
 import { exportExcel } from '@/service/common';
 import { shopListFun } from '@/service/report';
 import { poitionListFun } from '@/service/point';
@@ -378,11 +378,17 @@ export default {
       this.searchData.subTypeId = '';
       if (val) {
         let payload = { parentTypeId: val, shopId: this.searchData.shopId, onlyMine: true };
-        res = await getlistSubTypeFun(payload); //获取某个设备下二级类型
+        res = await getNewListSubTypeFun(payload); //获取某个设备下二级类型
       } else {
-        res = await listSubTypeAllFun(); //获取全部设备二级类型
+        res = await newListSubTypeAllFun(); //获取全部设备二级类型
       }
       this.machineSubTypeList = res;
+    },
+    changeSearchSubTypeId(val) {
+      this.searchData.communicateType = val !== '' ? 1 : this.searchData.communicateType;
+    },
+    changeSearchcCommunicateType(val) {
+      this.searchData.subTypeId = val === 1 ? this.searchData.subTypeId : val === 0 ? '' : this.searchData.subTypeId;
     },
     handlePagination(data) {
       //分页
