@@ -123,9 +123,11 @@ export default {
           payload.positionModelId = this.addModuleFrom[this.positionModelName].id || '';
           console.log(payload);
           batchEditTagFun(payload).then(() => {
-            this.$Message.success('修改成功');
             this.modalClose();
-            this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable();
+            setTimeout(() => {
+              this.$Message.success('修改成功');
+              this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable();
+            }, 2000);
           });
         }
       });
