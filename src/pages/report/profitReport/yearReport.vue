@@ -33,11 +33,7 @@
         <el-table-column header-align="left" prop="machineCount" label="设备订单数"></el-table-column>
         <el-table-column header-align="left" prop="machineMoney" label="设备订单支付金额(元)"></el-table-column>
         <el-table-column header-align="left" prop="machineRefundMoney" label="设备订单退款金额(元)"></el-table-column>
-        <el-table-column header-align="left" prop="money" label="设备订单营收(元)">
-          <template slot-scope="scope">
-            {{(scope.row.machineMoney-scope.row.machineRefundMoney) | toFixed}}
-          </template>
-        </el-table-column>
+        <el-table-column header-align="left" prop="machineafterMoney" label="设备订单营收(元)"></el-table-column>
         <el-table-column header-align="left" prop="vipCount" label="VIP结算数"></el-table-column>
         <el-table-column header-align="left" prop="vipMoney" label="VIP结算营收(元)"></el-table-column>
         <el-table-column header-align="left" prop="coinCount" label="金币订单数" v-if="checkPerms('mer:tokencoin:vip')"></el-table-column>
@@ -83,11 +79,6 @@ export default {
   components: {
     ShopFilter
   },
-  filters: {
-    toFixed(val) {
-      return Number(val).toFixed(2);
-    }
-  },
   mounted() {
     this.$nextTick(() => {
       this.initChart();
@@ -125,6 +116,9 @@ export default {
       this.orderMin = calMin(this.oderDataList); //订单Y轴最小值
       this.moneyMin = calMin(this.moneyDataList); //金额Y轴最小值
       this.tableDataList = res.list;
+      this.tableDataList.forEach(i => {
+        i['machineafterMoney'] = (i.machineMoney - i.machineRefundMoney).toFixed(2);
+      });
       this.tableDataList.sort(this.ortId); //表格时间倒序
       this.linechart.setOption(this.lineChartOption);
     },

@@ -27,7 +27,9 @@
       <el-form-item label="营收类型：" prop="origin">
         <el-select v-model="searchData.origin" clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
-          <el-option v-for="(name, id) in sourceType" :key="id" :label="name" :value="id"></el-option>
+          <el-option label="订单" :value="1"></el-option>
+          <el-option label="vip" :value="2"></el-option>
+          <el-option label="金币" :value="3" v-if="checkPerms('mer:tokencoin:vip')"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -59,7 +61,8 @@
         </el-table-column>
         <el-table-column header-align="left" prop="origin" label="营收类型">
           <template slot-scope="scope">
-            <span>{{scope.row.origin | sourceType}}</span>
+            <span v-if="checkPerms('mer:tokencoin:vip')">{{scope.row.origin | sourceType}}</span>
+            <span v-else>{{scope.row.origin===3?'':scope.row.origin | sourceType}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -83,6 +86,7 @@ import { balanceLogFlowListFun, balanceLogFlowListApi, shopListFun } from '@/ser
 import { exportExcel } from '@/service/common';
 import { manageSimpleListFun } from '@/service/shop';
 import { sourceType, earningType } from '@/utils/mapping';
+import { checkPerms } from '@/utils/tools';
 
 export default {
   mixins: [PagerMixin],
@@ -128,6 +132,7 @@ export default {
     this.getProfitDate();
   },
   methods: {
+    checkPerms,
     async getShopList() {
       let res = await shopListFun();
       this.shopList = res;

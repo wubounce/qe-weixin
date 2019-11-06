@@ -21,8 +21,6 @@ export const sourceType = {
 export const earningType = {
   1: '收入',
   3: '退款',
-  4: '分账收入',
-  5: '分账支出'
 };
 
 // 通信类型
