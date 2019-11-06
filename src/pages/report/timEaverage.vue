@@ -40,8 +40,8 @@
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
-        <el-table-column header-align="left" prop="machineCount" label="日均设备订单数"></el-table-column>
-        <el-table-column header-align="left" prop="machineMoney" label="日均设备订单支付金额(元)"></el-table-column>
+        <el-table-column header-align="left" prop="count" label="日均设备订单数"></el-table-column>
+        <el-table-column header-align="left" prop="machineafterMoney" label="日均设备订单支付金额(元)"></el-table-column>
         <el-table-column header-align="left" prop="machineRefundMoney" label="日均设备订单退款金额(元)"></el-table-column>
         <el-table-column header-align="left" prop="money" label="日均设备订单营收(元)"></el-table-column>
       </el-table>
@@ -132,8 +132,8 @@ export default {
       this.moneyDataList = [];
       this.reportDate = [];
       res.list.forEach(item => {
-        this.oderDataList.push(item.machineCount);
-        this.moneyDataList.push(item.money);
+        this.oderDataList.push(item.count);
+        this.moneyDataList.push((Number(item.machineRefundMoney) + Number(item.money)).toFixed(2));
         this.reportDate.push(item.date);
       });
       this.orderMax = calMax(this.oderDataList) > 0 ? calMax(this.oderDataList) : 1; //订单Y轴最大值
@@ -141,6 +141,9 @@ export default {
       this.orderMin = calMin(this.oderDataList); //订单Y轴最大值
       this.moneyMin = calMin(this.moneyDataList); //金额Y轴最大值
       this.tableDataList = res.list;
+      this.tableDataList.forEach(i => {
+        i['machineafterMoney'] = (Number(i.machineRefundMoney) + Number(i.money)).toFixed(2);
+      });
       this.tableDataList.sort(this.ortId); //表格时间倒序
       this.linechart.setOption(this.lineChartOption);
     },
