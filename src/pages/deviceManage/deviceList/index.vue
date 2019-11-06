@@ -622,6 +622,7 @@ export default {
     exportTable() {
       let payload = Object.assign({}, this.searchData);
       payload.excel = true;
+      payload.tag = this._.last(this.searchData.tag);
       exportExcel(deviceList, '设备列表.xlsx', payload);
     }
   },
