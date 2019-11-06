@@ -133,7 +133,7 @@ export default {
       this.reportDate = [];
       res.list.forEach(item => {
         this.oderDataList.push(item.count);
-        this.moneyDataList.push((Number(item.machineRefundMoney) + Number(item.money)).toFixed(2));
+        this.moneyDataList.push(item.money);
         this.reportDate.push(item.date);
       });
       this.orderMax = calMax(this.oderDataList) > 0 ? calMax(this.oderDataList) : 1; //订单Y轴最大值
