@@ -15,19 +15,21 @@
         <el-select v-model="searchData.machineId" clearable placeholder="请选择">
           <span v-if="machineList === null" slot="empty" style="font-size: 12px;min-height: 36px;display: block;line-height: 36px;text-align: center;color: rgba(0,0,0,0.65);">请先选择店铺</span>
           <span v-else slot="empty" style="font-size: 12px;min-height: 36px;display: block;line-height: 36px;text-align: center;color: rgba(0,0,0,0.65);">无数据</span>
-          <!-- <el-option label="全部" value=""></el-option> -->
           <el-option v-for="(item,index) in machineList" :key="index" :label="item.machineName" :value="item.machineId"></el-option>
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="来源类型：" prop="origin">
-        <el-select v-model="searchData.origin" clearable placeholder="请选择">
-          <el-option v-for="(name, id) in sourceType" :key="id" :label="name" :value="id"></el-option>
-        </el-select>
-      </el-form-item> -->
       <el-form-item label="收支类型：" prop="type">
         <el-select v-model="searchData.type " clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in earningType" :key="id" :label="name" :value="id"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="营收类型：" prop="origin">
+        <el-select v-model="searchData.origin" clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
+          <el-option label="订单" :value="1"></el-option>
+          <el-option label="vip" :value="2"></el-option>
+          <el-option label="金币" :value="3" v-if="checkPerms('mer:tokencoin:vip')"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -45,6 +47,8 @@
         <el-table-column header-align="left" prop="time" label="时间"></el-table-column>
         <el-table-column header-align="left" prop="orderNo" label="订单编号"></el-table-column>
         <el-table-column header-align="left" prop="userName" label="用户账号"></el-table-column>
+        <el-table-column header-align="left" prop="shopName" label="店铺"></el-table-column>
+        <el-table-column header-align="left" prop="machineName" label="设备"></el-table-column>
         <el-table-column header-align="left" prop="money" label="金额(元)">
           <template slot-scope="scope">
             <span>{{ scope.row.money | toFixed}}</span>
@@ -55,16 +59,17 @@
             <span>{{scope.row.type | earningType}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" prop="origin" label="来源类型">
+        <el-table-column header-align="left" prop="origin" label="营收类型">
           <template slot-scope="scope">
-            <span>{{scope.row.origin | sourceType}}</span>
+            <span v-if="checkPerms('mer:tokencoin:vip')">{{scope.row.origin | sourceType}}</span>
+            <span v-else>{{scope.row.origin===3?'':scope.row.origin | sourceType}}</span>
           </template>
         </el-table-column>
       </el-table>
       <div class="total-summary" v-if="tableDataList.length > 0">
         <span>合计</span>
         <span class="total">
-          <span>收益(元)<span class="num"> {{totalMoney}}</span></span>
+          <span>营收(元)<span class="num"> {{totalMoney}}</span></span>
           <span>收入金额(元)<span class="num">{{profitMoney}}</span></span>
           <span>退款金额(元)<span class="num">{{refundMoney}}</span></span>
         </span>
@@ -81,6 +86,7 @@ import { balanceLogFlowListFun, balanceLogFlowListApi, shopListFun } from '@/ser
 import { exportExcel } from '@/service/common';
 import { manageSimpleListFun } from '@/service/shop';
 import { sourceType, earningType } from '@/utils/mapping';
+import { checkPerms } from '@/utils/tools';
 
 export default {
   mixins: [PagerMixin],
@@ -95,7 +101,7 @@ export default {
         time: [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         shopId: '',
         machineId: '',
-        origin: 0,
+        origin: '',
         type: ''
       },
       machineList: null
@@ -126,6 +132,7 @@ export default {
     this.getProfitDate();
   },
   methods: {
+    checkPerms,
     async getShopList() {
       let res = await shopListFun();
       this.shopList = res;

@@ -3,7 +3,7 @@
  */
 import fetch from '@/service/http';
 
-export const dayReportApi = 'operatorBalanceLog/revenueReport'; // 报表-按天统计 method 'post'
+export const dayReportApi = 'operatorBalanceLog/revenueReportGroup'; // 报表-按天统计 method 'post'
 const shopListApi = 'shop/listShop'; // 店铺列表 method 'post'
 export const balanceLogFlowListApi = 'operatorBalanceLog/balanceLogFlowList'; // 店铺列表 method 'post'
 
