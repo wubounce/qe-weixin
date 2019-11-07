@@ -61,6 +61,7 @@ export default {
       localStorage.clear();
       this.$router.push({ name: 'login' });
       this.$store.dispatch('LogOut');
+      location.reload();
     }
   }
 };
