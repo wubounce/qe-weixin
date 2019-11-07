@@ -1,4 +1,4 @@
-// import store from '@/store';
+import store from '@/store';
 import qs from 'qs';
 /**
  * 导出excel
@@ -367,4 +367,20 @@ export const get_sign = (data, time) => {
     let _sign = sha1(str);
     return _sign; //返回	请求参数_sign
   }
-};
+}
+
+
+export const checkPerms = (value) => {
+  let isExistPerms = false;
+  let permsStr = store.getters.access || [];
+  if (permsStr == undefined || permsStr == null) {
+    return false;
+  }
+  for (let i = 0; i < permsStr.length; i++) {
+    if (permsStr[i].perms.includes(String(value))) {
+      isExistPerms = true;
+      break;
+    }
+  }
+  return isExistPerms;
+}

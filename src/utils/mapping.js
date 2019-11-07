@@ -13,13 +13,14 @@ export const MachineStatus = {
 };
 
 export const sourceType = {
-  0: '订单',
-  1: 'vip卡'
+  1: '订单',
+  2: 'vip',
+  3: '金币',
 };
 
 export const earningType = {
   1: '收入',
-  3: '退款'
+  3: '退款',
 };
 
 // 通信类型
