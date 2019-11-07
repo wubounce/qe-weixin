@@ -28,7 +28,7 @@
         <el-select v-model="searchData.origin" clearable placeholder="请选择">
           <el-option label="不限" value=""></el-option>
           <el-option label="订单" :value="1"></el-option>
-          <el-option label="vip" :value="2"></el-option>
+          <el-option label="VIP" :value="2"></el-option>
           <el-option label="金币" :value="3" v-if="checkPerms('mer:tokencoin:vip')"></el-option>
         </el-select>
       </el-form-item>

@@ -14,8 +14,8 @@ export const MachineStatus = {
 
 export const sourceType = {
   1: '订单',
-  2: 'vip',
-  3: '金币',
+  2: 'VIP',
+  3: '金币'
 };
 
 export const earningType = {
