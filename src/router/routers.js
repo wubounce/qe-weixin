@@ -90,7 +90,7 @@ export const asyncRoutes = [
         path: 'timeaverage',
         component: () => import('@/pages/report/timEaverage'),
         name: 'timeaverage',
-        meta: { title: '时段平均报表', noCache: true }
+        meta: { title: '设备时段报表', noCache: true }
       },
       {
         path: 'balanceLog',

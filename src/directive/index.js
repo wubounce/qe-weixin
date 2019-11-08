@@ -2,41 +2,41 @@
  *  描述：Global directive js
  */
 
-// import { getMenu } from '@/utils/tools';
+import store from '@/store';
 
 const install = Vue => {
   /**
    * @description 权限检查方法
    */
-  // Vue.prototype.$_has = function(value) {
-  //   let isExist = false;
-  //   let buttonpermsStr = getMenu();
-  //   if (buttonpermsStr == undefined || buttonpermsStr == null) {
-  //     return false;
-  //   }
-  //   for (let i = 0; i < buttonpermsStr.length; i++) {
-  //     if (buttonpermsStr[i].perms.includes(String(value))) {
-  //       isExist = true;
-  //       break;
-  //     }
-  //   }
-  //   return isExist;
-  // };
+  Vue.prototype._has = function (value) {
+    let isExistPerms = false;
+    let permsStr = store.getters.access || [];
+    if (permsStr == undefined || permsStr == null) {
+      return false;
+    }
+    for (let i = 0; i < permsStr.length; i++) {
+      if (permsStr[i].perms.includes(String(value))) {
+        isExistPerms = true;
+        break;
+      }
+    }
+    return isExistPerms;
+  };
 
   /**
    * @description 按钮权限指令
    */
   Vue.directive('has', {
-    bind: function(el, binding) {
-      if (!Vue.prototype.$_has(binding.value)) {
-        // el.parentNode.removeChild(el);
-        var childs = el.childNodes;
-        if (childs) {
-          for (var i = childs.length - 1; i >= 0; i--) {
-            el.removeChild(childs[i]);
-          }
-        }
-        el.style.display = 'none';
+    bind: function (el, binding) {
+      if (!Vue.prototype._has(binding.value)) {
+        el.parentNode && el.parentNode.removeChild(el);
+        // var childs = el.childNodes;
+        // if (childs) {
+        //   for (var i = childs.length - 1; i >= 0; i--) {
+        //     el.removeChild(childs[i]);
+        //   }
+        // }
+        // el.style.display = 'none';
       }
     }
   });
@@ -45,14 +45,14 @@ const install = Vue => {
    * @description 自动获取焦点
    */
   Vue.directive('focus', {
-    inserted: function(el) {
+    inserted: function (el) {
       el.focus();
     }
   });
   Vue.directive('clickoutside', {
     // 初始化指令
-    bind(el, binding, vnode) {
-      function documentHandler(e) {
+    bind (el, binding, vnode) {
+      function documentHandler (e) {
         // 这里判断点击的元素是否是本身，是本身，则返回
         if (el.contains(e.target)) {
           return false;
@@ -67,8 +67,8 @@ const install = Vue => {
       el.__vueClickOutside__ = documentHandler;
       document.addEventListener('click', documentHandler);
     },
-    update() {},
-    unbind(el, binding) {
+    update () { },
+    unbind (el, binding) {
       // 解除事件监听
       document.removeEventListener('click', el.__vueClickOutside__);
       delete el.__vueClickOutside__;
