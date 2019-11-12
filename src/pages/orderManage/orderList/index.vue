@@ -57,6 +57,11 @@
             <span>{{ scope.row.detergentPrice||'-' }}</span>
           </template>
         </el-table-column>
+        <el-table-column header-align="left" prop="disinfectantPayPrice" label="除菌液(元)" width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.disinfectantPayPrice||'-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column header-align="left" prop="" label="优惠金额(元)" width="120">
           <template slot-scope="scope">
             <el-popover ref="popover" trigger="hover" placement="bottom" v-if="scope.row.discountTotalPirce&&scope.row.discountTotalPirce>0">
