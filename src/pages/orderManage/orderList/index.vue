@@ -131,6 +131,7 @@
             <div><span>洗衣液价格(元)：</span>{{detailData.detergentPayPrice||'-'}}</div>
           </li>
           <li>
+            <div><span>除菌液(元)：</span>{{detailData.disinfectantPayPrice||'-'}}</div>
             <div><span>优惠金额(元)：</span>
               <el-popover ref="popover" trigger="hover" placement="bottom" v-if="detailData.discountTotalPirce&&detailData.discountTotalPirce>0">
                 <p v-if="detailData.discountType==1 && detailData.discountPrice>0">VIP会员卡：{{ detailData.discountPrice }}</p>
@@ -148,14 +149,16 @@
               </el-popover>
               <span v-else>{{ detailData.discountTotalPirce | tofixd}}</span>
             </div>
+          </li>
+          <li>
             <div><span>实付金额(元)：</span>{{detailData.profitPrice}}</div>
-          </li>
-          <li>
             <div><span>收益金额(元)：</span>{{detailData.payPrice}}</div>
-            <div><span>支付方式 ：</span>{{detailData.payType | PayType}}</div>
           </li>
           <li>
+            <div><span>支付方式 ：</span>{{detailData.payType | PayType}}</div>
             <div><span>下单时间：</span>{{detailData.createTime}}</div>
+          </li>
+          <li>
             <div><span>支付时间：</span>{{detailData.payTime}}</div>
           </li>
         </ul>
