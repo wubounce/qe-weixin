@@ -77,7 +77,7 @@
               <svg-icon icon-class="zhangdan" class="icon-zhangmu" @click="subAccountSet(scope.row)" />
             </el-tooltip>
             <el-tooltip content="预约配置" placement="top" effect="dark">
-              <svg-icon icon-class="yuyue" class="icon-zhangmu" />
+              <svg-icon icon-class="yuyue" class="icon-zhangmu" @click="handleReserveTemplate(scope.row)" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
               <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
@@ -189,7 +189,7 @@ export default {
       subAccountSetTitle: '分账批量配置',
       isAllChecked: false,
       reserveModlueVisible: false,
-      reserveTemplateVisible: true
+      reserveTemplateVisible: false
     };
   },
   computed: {
@@ -327,6 +327,13 @@ export default {
         this.shopIds = row.shopId;
       }
       this.addShopDialogVisible = true;
+    },
+    async handleReserveTemplate(row = {}) {
+      this.shopIds = '';
+      if (row.shopId) {
+        this.shopIds = row.shopId;
+      }
+      this.reserveTemplateVisible = true;
     },
     // 删除店铺
     handleDelete(shopId) {
