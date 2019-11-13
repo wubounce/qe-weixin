@@ -111,7 +111,7 @@
 .el-table th {
   background: #fafafa !important;
 }
-.el-table /deep/ [class^='icon-'] {
+.el-table /deep/ .svg-icon {
   width: 20px;
   height: 20px;
   margin-right: 20px;

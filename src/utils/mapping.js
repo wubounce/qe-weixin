@@ -13,13 +13,14 @@ export const MachineStatus = {
 };
 
 export const sourceType = {
-  0: '订单',
-  1: 'vip卡'
+  1: '订单',
+  2: 'VIP',
+  3: '金币'
 };
 
 export const earningType = {
   1: '收入',
-  3: '退款'
+  3: '退款',
 };
 
 // 通信类型
@@ -35,8 +36,15 @@ export const ifOpenType = {
 export const deviceSearchStatus = {
   1: '空闲',
   2: '运行',
+  3: '预约',
   4: '故障',
-  8: '离线'
+};
+// 网络状态类型
+export const networkSearchStatus = {
+  1: '在线',
+  3: '离线',
+  2: '频繁离线',
+  0: '未注册',
 };
 
 // 设备状态类型
