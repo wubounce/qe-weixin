@@ -16,6 +16,12 @@
       <el-form-item label="地址：" prop="address">
         <el-input v-model.trim="searchData.address" clearable placeholder="请输入"></el-input>
       </el-form-item>
+      <el-form-item label="预约：" prop="isReserveType">
+        <el-select v-model="searchData.isReserveType " clearable placeholder="请选择">
+          <el-option label="不限" value=""></el-option>
+          <el-option v-for="(name, id) in isReserveType" :key="id" :label="name" :value="(+id)"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="分账配置：" prop="type">
         <el-select v-model="searchData.isRevenueSharing " clearable placeholder="请选择">
           <el-option label="全部" value=""></el-option>
@@ -29,7 +35,7 @@
     </el-form>
     <div class="table-content">
       <div class="table-header-action">
-        <el-button type="primary" icon="el-icon-plus" @click="handleAddOrEditShop">新增店铺</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="openDialog({});addShopDialogVisible = true">新增店铺</el-button>
         <el-button @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
       </div>
@@ -45,7 +51,7 @@
         <el-table-column header-align="left" prop="shopType" label="店铺类型"></el-table-column>
         <el-table-column header-align="left" prop="machineCount" label="设备数量">
           <template slot-scope="scope">
-            <span class="rowstyle" @click="getDeciveFromShop(scope.row)">{{scope.row.machineCount}}</span>
+            <span class="rowstyle" @click="openDialog(scope.row);deviceDialogVisible = true;">{{scope.row.machineCount}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="profit" label="累计收益(元)" min-width="100">
@@ -60,7 +66,7 @@
         </el-table-column>
         <el-table-column header-align="left" prop="machineCount" label="预约模板数">
           <template slot-scope="scope">
-            <span class="rowstyle" @click="getReserveModlue(scope.row)">{{scope.row.machineCount}}</span>
+            <span class="rowstyle" @click="openDialog(scope.row);reserveModlueVisible = true;">{{scope.row.machineCount}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置">
@@ -71,13 +77,13 @@
         <el-table-column header-align="left" fixed="right" label="操作" min-width="160">
           <template slot-scope="scope">
             <el-tooltip content="编辑" placement="top" effect="dark">
-              <svg-icon icon-class="bianji" class="icon-bianji" @click="handleAddOrEditShop(scope.row)" />
+              <svg-icon icon-class="bianji" class="icon-bianji" @click="openDialog(scope.row);addShopDialogVisible = true" />
             </el-tooltip>
             <el-tooltip content="分账配置" placement="top" effect="dark" v-if="scope.row.attribute === 1">
               <svg-icon icon-class="zhangdan" class="icon-zhangmu" @click="subAccountSet(scope.row)" />
             </el-tooltip>
             <el-tooltip content="预约配置" placement="top" effect="dark">
-              <svg-icon icon-class="yuyue" class="icon-zhangmu" @click="handleReserveTemplate(scope.row)" />
+              <svg-icon icon-class="yuyue" class="icon-zhangmu" @click="openDialog(scope.row);reserveTemplateVisible = true;" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
               <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row.shopId)" />
@@ -88,7 +94,7 @@
       <div>
         <div style="float:left;padding-left:14px;">
           <el-checkbox v-model="isAllChecked" @change="handleCheckAllChange">全选</el-checkbox>
-          <el-button type="primary" :disabled="multipleSelection.length<=0" @click="subAccountSet">
+          <el-button type="primary" :disabled="multipleSelection.length<=0" @click="subAccountSet" style="margin-left: 24px;">
             <svg-icon icon-class="rmb" style="margin-right: 5px;" />分账配置</el-button>
         </div>
         <Pagination @pagination="handlePagination" :currentPage="searchData.page" :total="total" />
@@ -132,15 +138,15 @@
         </div>
       </el-dialog>
       <!-- 店铺设备数量 -->
-      <machines-in-shop :title="deviceDialogTitle" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></machines-in-shop>
+      <machines-in-shop :title="shopName" v-if="deviceDialogVisible" :visible.sync="deviceDialogVisible" :shopId="shopIds"></machines-in-shop>
       <!-- 分账设置 -->
       <sub-account-set :title="subAccountSetTitle" v-if="subAccountSetDialogVisible" :visible.sync="subAccountSetDialogVisible" :isAllChecked.sync="isAllChecked" :shopIds="shopIds" @getShopDataToTable="getShopDataToTable"></sub-account-set>
       <!-- 新增编辑店铺 -->
       <add-or-edit-shop :visible.sync="addShopDialogVisible" v-if="addShopDialogVisible" :shopId="shopIds" @getShopDataToTable="getShopDataToTable" />
       <!-- 预约模块 -->
-      <reserve-module :visible.sync="reserveModlueVisible" v-if="reserveModlueVisible" :shopId="shopIds" @getShopDataToTable="getShopDataToTable" />
+      <reserve-module :visible.sync="reserveModlueVisible" v-if="reserveModlueVisible" @doEditReserveTemplate="doEditReserveTemplate" :shopId="shopIds" @getShopDataToTable="getShopDataToTable" />
       <!-- 预约模板 -->
-      <reserve-template :visible.sync="reserveTemplateVisible" v-if="reserveTemplateVisible" :shopId="shopIds" @getShopDataToTable="getShopDataToTable" />
+      <reserve-template :visible.sync="reserveTemplateVisible" v-if="reserveTemplateVisible" @doEditReserveTemplate="doEditReserveTemplate" :reserveTemplateId="reserveTemplateId" :shopId="shopIds" :shopName="shopName" @getShopDataToTable=" getShopDataToTable" />
     </div>
   </div>
 </template>
@@ -148,7 +154,7 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, manageListFun, shopDetailFun, deleteShopFun, manageListApi, getrevenueSharingFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
-import { isReserveType, isHasVipType, isDiscountType, subAccountType, isForceUsType } from '@/utils/mapping';
+import { isReserveType, isHasVipType, isDiscountType, subAccountType, isForceUsType, ifOpenType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import machinesInShop from './machinesInShop';
 import subAccountSet from './subAccountSet';
@@ -174,7 +180,8 @@ export default {
         shopName: '',
         type: '',
         areas: [],
-        address: ''
+        address: '',
+        ifOpen: ''
       },
       addShopDialogVisible: false,
       shopDataToTable: [],
@@ -183,18 +190,22 @@ export default {
       revenueSharingDetail: null, //分账详情
       deviceDialogVisible: false,
       shopIds: '', //店铺id
-      deviceDialogTitle: '',
+      shopName: '',
       multipleSelection: [],
       subAccountSetDialogVisible: false,
       subAccountSetTitle: '分账批量配置',
       isAllChecked: false,
       reserveModlueVisible: false,
-      reserveTemplateVisible: false
+      reserveTemplateVisible: false,
+      reserveTemplateId: ''
     };
   },
   computed: {
     subAccountType() {
       return subAccountType;
+    },
+    isReserveType() {
+      return isReserveType;
     }
   },
   filters: {
@@ -306,33 +317,17 @@ export default {
       this.detailData = res || {};
       this.revenueSharingDetail = resSharingDetail || null;
     },
-    async getDeciveFromShop(row) {
-      if (row.machineCount === 0) {
-        return false;
-      }
-      this.deviceDialogTitle = row.shopName;
-      this.shopIds = row.shopId;
-      this.deviceDialogVisible = true;
-    },
-    async getReserveModlue(row) {
-      if (row.machineCount === 0) {
-        return false;
-      }
-      this.shopIds = row.shopId;
-      this.reserveModlueVisible = true;
-    },
-    async handleAddOrEditShop(row = {}) {
+    async openDialog(row) {
+      this.reserveTemplateId = '';
       this.shopIds = '';
       if (row.shopId) {
         this.shopIds = row.shopId;
       }
-      this.addShopDialogVisible = true;
+      this.shopName = row.shopName;
     },
-    async handleReserveTemplate(row = {}) {
-      this.shopIds = '';
-      if (row.shopId) {
-        this.shopIds = row.shopId;
-      }
+    doEditReserveTemplate(row) {
+      this.reserveTemplateId = row.id || '';
+      this.shopIds = row.shopId || '';
       this.reserveTemplateVisible = true;
     },
     // 删除店铺

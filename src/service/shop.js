@@ -16,6 +16,8 @@ const getrevenueSharingApi = 'revenueSharing/get'; // 获取店铺分账信息�
 const getByUserOperatornameApi = 'operator/getByUsername'; // 根据账号获取运营商 method 'post'
 const reserveModuleListApi = 'shopMachineType/list'; // 预约模板列表 method 'post'
 const reserveTemplateApi = "shopMachineType/addOrEdit"; // 预约保存模板（新增或修改） method 'post'
+const reserveDetailApi = "shopMachineType/detail?"; // 预约详情 method 'post'
+const getListSubTypeApi = 'machine/listSubType'; //新二级类型 method 'post'
 
 //获取区域列表
 export const areaListFun = payload => fetch.post(areaListApi, payload);
@@ -59,4 +61,10 @@ export const getReserveModuleListFun = payload =>
 // 预约保存模板（新增或修改）
 export const doReserveTemplateFun = payload =>
          fetch.post(reserveTemplateApi, payload);
+// 预约保存模板（新增或修改）
+export const getReserveDetailFun = payload =>
+         fetch.post(reserveDetailApi, payload);
 
+//获取旧二级类型
+export const getListSubTypeFun = payload =>
+         fetch.post(getListSubTypeApi, payload);
