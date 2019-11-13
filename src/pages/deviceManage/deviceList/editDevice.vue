@@ -474,9 +474,9 @@ export default {
     getFormatExtraAttr(list = []) {
       //setting说明
       let setting = [];
-      let values = [];
       list.forEach(item => {
         if (!this._.isEmpty(item.setting)) {
+          let values = [];
           item.setting.forEach(i => {
             values.push(i.default);
           });
