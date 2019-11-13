@@ -145,7 +145,7 @@ export default {
     },
     async getmachineSubType(val = '', isChangeId = true) {
       if (isChangeId) this.templateForm.subTypeId = '';
-      let payload = { parentTypeId: val, shopId: this.shopId };
+      let payload = { parentTypeId: val, shopId: this.shopId, onlyMine: true };
       let res = await getListSubTypeFun(payload); //获取某个设备下二级类型
       this.machineSubTypeList = res;
     },
