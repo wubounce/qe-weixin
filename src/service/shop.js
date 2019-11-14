@@ -18,6 +18,8 @@ const reserveModuleListApi = 'shopMachineType/list'; // 预约模板列表 metho
 const reserveTemplateApi = "shopMachineType/addOrEdit"; // 预约保存模板（新增或修改） method 'post'
 const reserveDetailApi = "shopMachineType/detail?"; // 预约详情 method 'post'
 const getListSubTypeApi = 'machine/listSubType'; //新二级类型 method 'post'
+const setIfOpenApi = "shopMachineType/setIfOpen"; //设置开关(0是开，1是关) method 'post'
+const delModuleApi = "shopMachineType/delete"; //设置开关(0是开，1是关) method 'post'
 
 //获取区域列表
 export const areaListFun = payload => fetch.post(areaListApi, payload);
@@ -54,17 +56,19 @@ export const getByUserOperatornameFun = payload => fetch.post(getByUserOperatorn
 
 
 // 预约模板列表
-export const getReserveModuleListFun = payload =>
-         fetch.post(reserveModuleListApi, payload);
-
+export const getReserveModuleListFun = payload =>fetch.post(reserveModuleListApi, payload);
 
 // 预约保存模板（新增或修改）
-export const doReserveTemplateFun = payload =>
-         fetch.post(reserveTemplateApi, payload);
+export const doReserveTemplateFun = payload =>fetch.post(reserveTemplateApi, payload);
+
 // 预约保存模板（新增或修改）
-export const getReserveDetailFun = payload =>
-         fetch.post(reserveDetailApi, payload);
+export const getReserveDetailFun = payload =>fetch.post(reserveDetailApi, payload);
 
 //获取旧二级类型
-export const getListSubTypeFun = payload =>
-         fetch.post(getListSubTypeApi, payload);
+export const getListSubTypeFun = payload =>fetch.post(getListSubTypeApi, payload);
+
+//模板列表设置开关(0是开，1是关)
+export const setModuleIsOpenFun = payload =>fetch.post(setIfOpenApi, payload);
+
+//删除预约模板
+export const delModuleFun = payload =>fetch.post(delModuleApi, payload);

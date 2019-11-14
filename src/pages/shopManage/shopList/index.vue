@@ -66,7 +66,7 @@
         </el-table-column>
         <el-table-column header-align="left" prop="machineCount" label="预约模板数">
           <template slot-scope="scope">
-            <span class="rowstyle" @click="openDialog(scope.row);reserveModlueVisible = true;">{{scope.row.machineCount}}</span>
+            <span class="rowstyle" @click="openDialog(scope.row);reserveModlueVisible = true;">{{scope.row.appointTemplateCount}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="isRevenueSharing" label="分账配置">
@@ -154,7 +154,7 @@
 <script type="text/ecmascript-6">
 import { shopTypeListFun, manageListFun, shopDetailFun, deleteShopFun, manageListApi, getrevenueSharingFun } from '@/service/shop';
 import { exportExcel } from '@/service/common';
-import { isReserveType, isHasVipType, isDiscountType, subAccountType, isForceUsType, ifOpenType } from '@/utils/mapping';
+import { isReserveType, isHasVipType, isDiscountType, subAccountType, isForceUsType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
 import machinesInShop from './machinesInShop';
 import subAccountSet from './subAccountSet';

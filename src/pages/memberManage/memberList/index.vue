@@ -73,7 +73,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { shopListFun, operatorListFun, lockOperatorrFun, getOperatorInfoFun, delOperatorFun } from '@/service/member';
+import { shopListFun, operatorListFun, lockOperatorFun, getOperatorInfoFun, delOperatorFun } from '@/service/member';
 import Pagination from '@/components/Pager';
 import PagerMixin from '@/mixins/PagerMixin';
 import addOrEditMember from './addOrEditMember';
@@ -148,7 +148,7 @@ export default {
         isLock = 1;
       }
       let payload = Object.assign({}, { id: row.id, isLock: isLock });
-      await lockOperatorrFun(payload);
+      await lockOperatorFun(payload);
       this.$Message.success('操作成功');
     },
     async openAddBDDialog(row = {}) {
