@@ -178,7 +178,7 @@
             <el-table-column prop="detergentLiquid" label="用量/ml">
               <template slot-scope="scope">
                 <el-form-item :prop="'detergentFunctionList.' + scope.$index + '.detergentLiquid'" :rules='deviceEditFormRules.detergentLiquid'>
-                  <el-input v-model.trim="scope.row.detergentLiquid">
+                  <el-input v-model.trim="scope.row.detergentLiquid" maxlength="3">
                   </el-input>
                 </el-form-item>
               </template>
@@ -329,7 +329,7 @@ export default {
         ],
         chargeMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { pattern: /^([0-4]{1}([.]{1}[0-9]{0,2})?|5|5.0|5.00)$/, message: '请输入0.01-5之间数字，最多保留2位小数', trigger: 'blur' }],
         functionCode: [{ required: true, message: '请输入脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentLiquid: [{ required: true, message: '请输入用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
+        detergentLiquid: [{ required: true, message: '请输入用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,2})$/, message: '请输入1-999之间的数字', trigger: 'blur' }],
         detergentPrice: [{ required: true, message: '请输入洗衣液价格', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0.01-99之间的数字,最多保留2位小数', trigger: 'blur' }],
         'extraAttr.power1': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
         'extraAttr.power2': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
@@ -474,9 +474,9 @@ export default {
     getFormatExtraAttr(list = []) {
       //setting说明
       let setting = [];
-      let values = [];
       list.forEach(item => {
         if (!this._.isEmpty(item.setting)) {
+          let values = [];
           item.setting.forEach(i => {
             values.push(i.default);
           });
