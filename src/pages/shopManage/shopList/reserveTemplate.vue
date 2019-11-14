@@ -140,7 +140,7 @@ export default {
     },
     async getmachineParentType() {
       //获取设备类型
-      let res = await getlistParentTypeFun();
+      let res = await getlistParentTypeFun({ reserve: 0 });
       this.machineParentTypeList = res;
     },
     async getmachineSubType(val = '', isChangeId = true) {
