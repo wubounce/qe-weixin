@@ -198,7 +198,7 @@
           <el-table-column prop="setting" label="属性值">
             <template slot-scope="scope">
               <span v-for="(item,index) in scope.row.setting" :key="index" class="extraAttr_setting">
-                <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type==='select'" :label="item.name">
+                <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type&&item.type==='select'" :label="item.name">
                   <el-select v-model="item.default" :placeholder="item.desc">
                     <el-option v-if="deviceEditForm.company==='qiekj'" v-for="(item) in item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
                     <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions || item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
@@ -390,7 +390,7 @@ export default {
             item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
             if (!this._.isEmpty(item.setting)) {
               item = item.setting.filter(j => {
-                return j.type === 'select' ? this.waterSet(j) : item;
+                return j.type && j.type === 'select' ? this.waterSet(j) : item;
               });
             }
             return item;
