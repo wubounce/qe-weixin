@@ -21,7 +21,7 @@
           </el-select>
         </el-form-item>
       </div>
-      <el-table :data="templateForm.functionJson" style="width: 100%" key="functionJson" class="reserve-table">
+      <el-table v-if="configVO" :data="templateForm.functionJson" style="width: 100%" key="functionJson" class="reserve-table">
         <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
         <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
           <template slot-scope="scope">
@@ -93,24 +93,7 @@ export default {
         needMinutes: [{ required: true, message: '请输入耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,4})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
         functionPrice: [{ required: true, message: '请输入原价', trigger: 'blur' }, { pattern: /^(([0-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }]
       },
-      configVO: {
-        name: {
-          available: true,
-          title: '功能'
-        },
-        price: {
-          available: true,
-          title: '原价/元'
-        },
-        time: {
-          available: true,
-          title: '耗时/分'
-        },
-        open: {
-          available: true,
-          title: '状态'
-        }
-      },
+      configVO: null,
       machineParentTypeList: [],
       machineSubTypeList: []
     };
