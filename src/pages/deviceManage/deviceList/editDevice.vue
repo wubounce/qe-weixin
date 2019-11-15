@@ -232,7 +232,7 @@
                   </el-form-item>
                   <!-- <el-form-item v-else :label="item.name" :prop="'setting.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
                   <el-form-item v-else :label="item.name">
-                    <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="3">
+                    <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="10">
                     </el-input>
                   </el-form-item>
                 </span>
