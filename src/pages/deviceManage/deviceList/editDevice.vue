@@ -6,35 +6,186 @@
       </el-form-item>
       <el-tabs v-model="deviceEditTab">
         <el-tab-pane label="功能设置" name="first">
-          <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
-            <el-table :data="deviceEditForm.functionList" style="width: 100%">
-              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
-              <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
-                <template slot-scope="scope">
-                  <div v-if="configVO.time.join">
-                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
+          <div v-if="configVO">
+            <!-- 饮水机 -->
+            <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
+              <el-table :data="deviceEditForm.functionList" style="width: 100%">
+                <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+                <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
+                  <template slot-scope="scope">
+                    <div v-if="configVO.time.join">
+                      <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
+                        <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
+                        </el-input>
+                      </el-form-item>
+                      <span v-else>{{getRestNeedMinutes(scope.row)}}</span>
+                    </div>
+                    <el-form-item v-else :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
                       <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
                       </el-input>
                     </el-form-item>
-                    <span v-else>{{getRestNeedMinutes(scope.row)}}</span>
-                  </div>
-                  <el-form-item v-else :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
-                    <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
+                  </template>
+                </el-table-column>
+                <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                  <template slot-scope="scope">
+                    <div v-if="configVO.price.join">
+                      <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
+                        <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
+                        </el-input>
+                      </el-form-item>
+                      <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
+                    </div>
+                    <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
+                      <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
+                  <template slot-scope="scope">
+                    <el-switch v-model="scope.row.ifOpenStatus">
+                    </el-switch>
+                  </template>
+                </el-table-column>
+              </el-table>
+
+            </div>
+            <!-- 充电桩 -->
+            <div v-if="deviceEditForm.isQuantifyCharge === 1">
+              <el-form-item label="可选时间范围：">
+                <el-col :span="5">
+                  <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
+                    <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item" :value="item"></el-option>
+                  </el-select>
+                  <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="5">
+                  <el-select v-model="deviceEditForm.extraAttr.max" placeholder="请选择">
+                    <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item" :value="item"></el-option>
+                  </el-select>
+                  <span style="position: absolute;left: 410px;color:#bfbfbf;">小时</span>
+                </el-col>
+              </el-form-item>
+              <el-form-item label="单位刻度时间：">
+                <div class="add-discount">
+                  <el-select v-model="deviceEditForm.extraAttr.step" placeholder="请选择">
+                    <el-option label="0.5" :value="0.5"></el-option>
+                    <el-option label="1" :value="1"></el-option>
+                  </el-select>
+                  <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
+                </div>
+              </el-form-item>
+              <el-form-item label="推荐充电时间：">
+                <div class="add-discount">
+                  <el-select v-model="deviceEditForm.extraAttr.default" placeholder="请选择">
+                    <el-option v-for="item in ((1 / deviceEditForm.extraAttr.step) * deviceEditForm.extraAttr.max)" v-show="(item*deviceEditForm.extraAttr.step)>=deviceEditForm.extraAttr.min" :key="item" :label="(item*deviceEditForm.extraAttr.step)" :value="item*deviceEditForm.extraAttr.step"></el-option>
+                  </el-select>
+                  <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
+                </div>
+              </el-form-item>
+              <div class="charge-control">
+                <h2>
+                  <span>充电功率范围 (瓦)</span>
+                  <span style="float:right">
+                    <el-tooltip content="用户充电时间=用户选择时间 × 充电功率对应时间系数" placement="top">
+                      <svg-icon icon-class="zhibiaoshuoming" />
+                    </el-tooltip>
+                    时间系数
+                  </span>
+                </h2>
+                <ul>
+                  <li>
+                    <el-col :span="2">低功率</el-col>
+                    <el-col :span="1">1</el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="5">
+                      <el-form-item prop="extraAttr.power1">
+                        <el-input v-model.trim="deviceEditForm.extraAttr.power1"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <span style="float:right">{{deviceEditForm.extraAttr.ratio1}}</span>
+                  </li>
+                  <li>
+                    <el-col :span="2">中功率</el-col>
+                    <el-col :span="1">{{deviceEditForm.extraAttr.power1 | getBeginPower}}</el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="5">
+                      <el-form-item prop="extraAttr.power2">
+                        <el-input v-model.trim="deviceEditForm.extraAttr.power2"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <span style="float:right">
+                      <el-form-item prop="extraAttr.ratio2">
+                        <el-input v-model.trim="deviceEditForm.extraAttr.ratio2" maxlength="3"></el-input>
+                      </el-form-item>
+                    </span>
+                  </li>
+                  <li>
+                    <el-col :span="2">高功率</el-col>
+                    <el-col :span="1">{{deviceEditForm.extraAttr.power2 | getBeginPower}}</el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="5">
+                      <el-form-item prop="extraAttr.power3">
+                        <el-input v-model.trim="deviceEditForm.extraAttr.power3"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <span style="float:right">
+                      <el-form-item prop="extraAttr.ratio3">
+                        <el-input v-model.trim="deviceEditForm.extraAttr.ratio3" maxlength="3"></el-input>
+                      </el-form-item>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <el-table :data="deviceEditForm.functionList" style="width: 100%">
+                <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+                <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                  <template slot-scope="scope">
+                    <div v-if="configVO.price.join">
+                      <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
+                        <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
+                        </el-input>
+                      </el-form-item>
+                      <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
+                    </div>
+                    <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
+                      <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
+                      </el-input>
+                    </el-form-item>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.price.available">
+                  <template slot-scope="scope">
+                    <el-switch v-model="scope.row.ifOpenStatus">
+                    </el-switch>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <!-- 正常 -->
+            <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
+              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
+              <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
+                <template slot-scope="scope">
+                  <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
+                    <el-input v-model.trim="scope.row.needMinutes" maxlength="4">
                     </el-input>
                   </el-form-item>
                 </template>
               </el-table-column>
               <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
                 <template slot-scope="scope">
-                  <div v-if="configVO.price.join">
-                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
-                      <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
-                      </el-input>
-                    </el-form-item>
-                    <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
-                  </div>
-                  <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
-                    <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
+                  <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
+                    <el-input v-model.trim="scope.row.functionPrice" maxlength="5">
+                    </el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="functionCode" :label="configVO.pulse.title" v-if="configVO.pulse.available">
+                <template slot-scope="scope">
+                  <el-form-item :prop="'functionList.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
+                    <el-input v-model.trim="scope.row.functionCode" maxlength="2">
                     </el-input>
                   </el-form-item>
                 </template>
@@ -46,153 +197,7 @@
                 </template>
               </el-table-column>
             </el-table>
-
           </div>
-          <div v-if="deviceEditForm.isQuantifyCharge === 1">
-            <el-form-item label="可选时间范围：">
-              <el-col :span="5">
-                <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
-                  <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item" :value="item"></el-option>
-                </el-select>
-                <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
-              </el-col>
-              <el-col class="line" :span="1">-</el-col>
-              <el-col :span="5">
-                <el-select v-model="deviceEditForm.extraAttr.max" placeholder="请选择">
-                  <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item" :value="item"></el-option>
-                </el-select>
-                <span style="position: absolute;left: 410px;color:#bfbfbf;">小时</span>
-              </el-col>
-            </el-form-item>
-            <el-form-item label="单位刻度时间：">
-              <div class="add-discount">
-                <el-select v-model="deviceEditForm.extraAttr.step" placeholder="请选择">
-                  <el-option label="0.5" :value="0.5"></el-option>
-                  <el-option label="1" :value="1"></el-option>
-                </el-select>
-                <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
-              </div>
-            </el-form-item>
-            <el-form-item label="推荐充电时间：">
-              <div class="add-discount">
-                <el-select v-model="deviceEditForm.extraAttr.default" placeholder="请选择">
-                  <el-option v-for="item in ((1 / deviceEditForm.extraAttr.step) * deviceEditForm.extraAttr.max)" v-show="(item*deviceEditForm.extraAttr.step)>=deviceEditForm.extraAttr.min" :key="item" :label="(item*deviceEditForm.extraAttr.step)" :value="item*deviceEditForm.extraAttr.step"></el-option>
-                </el-select>
-                <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
-              </div>
-            </el-form-item>
-            <div class="charge-control">
-              <h2>
-                <span>充电功率范围 (瓦)</span>
-                <span style="float:right">
-                  <el-tooltip content="用户充电时间=用户选择时间 × 充电功率对应时间系数" placement="top">
-                    <svg-icon icon-class="zhibiaoshuoming" />
-                  </el-tooltip>
-                  时间系数
-                </span>
-              </h2>
-              <ul>
-                <li>
-                  <el-col :span="2">低功率</el-col>
-                  <el-col :span="1">1</el-col>
-                  <el-col class="line" :span="1">-</el-col>
-                  <el-col :span="5">
-                    <el-form-item prop="extraAttr.power1">
-                      <el-input v-model.trim="deviceEditForm.extraAttr.power1"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <span style="float:right">{{deviceEditForm.extraAttr.ratio1}}</span>
-                </li>
-                <li>
-                  <el-col :span="2">中功率</el-col>
-                  <el-col :span="1">{{deviceEditForm.extraAttr.power1 | getBeginPower}}</el-col>
-                  <el-col class="line" :span="1">-</el-col>
-                  <el-col :span="5">
-                    <el-form-item prop="extraAttr.power2">
-                      <el-input v-model.trim="deviceEditForm.extraAttr.power2"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <span style="float:right">
-                    <el-form-item prop="extraAttr.ratio2">
-                      <el-input v-model.trim="deviceEditForm.extraAttr.ratio2" maxlength="3"></el-input>
-                    </el-form-item>
-                  </span>
-                </li>
-                <li>
-                  <el-col :span="2">高功率</el-col>
-                  <el-col :span="1">{{deviceEditForm.extraAttr.power2 | getBeginPower}}</el-col>
-                  <el-col class="line" :span="1">-</el-col>
-                  <el-col :span="5">
-                    <el-form-item prop="extraAttr.power3">
-                      <el-input v-model.trim="deviceEditForm.extraAttr.power3"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <span style="float:right">
-                    <el-form-item prop="extraAttr.ratio3">
-                      <el-input v-model.trim="deviceEditForm.extraAttr.ratio3" maxlength="3"></el-input>
-                    </el-form-item>
-                  </span>
-                </li>
-              </ul>
-            </div>
-            <el-table :data="deviceEditForm.functionList" style="width: 100%">
-              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
-              <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
-                <template slot-scope="scope">
-                  <div v-if="configVO.price.join">
-                    <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
-                      <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
-                      </el-input>
-                    </el-form-item>
-                    <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
-                  </div>
-                  <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
-                    <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
-                    </el-input>
-                  </el-form-item>
-                </template>
-              </el-table-column>
-              <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.price.available">
-                <template slot-scope="scope">
-                  <el-switch v-model="scope.row.ifOpenStatus">
-                  </el-switch>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-          <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
-            <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
-            <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
-              <template slot-scope="scope">
-                <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
-                  <el-input v-model.trim="scope.row.needMinutes" maxlength="4">
-                  </el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
-              <template slot-scope="scope">
-                <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
-                  <el-input v-model.trim="scope.row.functionPrice" maxlength="5">
-                  </el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column prop="functionCode" :label="configVO.pulse.title" v-if="configVO.pulse.available">
-              <template slot-scope="scope">
-                <el-form-item :prop="'functionList.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
-                  <el-input v-model.trim="scope.row.functionCode" maxlength="2">
-                  </el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
-              <template slot-scope="scope">
-                <el-switch v-model="scope.row.ifOpenStatus">
-                </el-switch>
-              </template>
-            </el-table-column>
-          </el-table>
         </el-tab-pane>
         <el-tab-pane label="洗衣液设置" name="second" v-if="deviceEditForm.isDetergent === 1">
           <el-form-item label="洗衣液功能" prop="isOpenDetergent" class="edit-isOpenDetergent">
@@ -224,7 +229,7 @@
             <el-table-column prop="setting" label="属性值">
               <template slot-scope="scope">
                 <span v-for="(item,index) in scope.row.setting" :key="index" class="extraAttr_setting">
-                  <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type==='select'" :label="item.name">
+                  <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type&&item.type==='select'" :label="item.name">
                     <el-select v-model="item.default" :placeholder="item.desc">
                       <el-option v-if="deviceEditForm.company==='qiekj'" v-for="(item) in item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
                       <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions || item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
@@ -359,13 +364,7 @@ export default {
       chargeTimeMax: 0,
       chargeTimeMin: 0,
       chargeTimeStep: 0,
-      configVO: {
-        extra: {},
-        name: {},
-        open: {},
-        price: {},
-        time: {}
-      }
+      configVO: null
     };
   },
   components: {},
@@ -396,7 +395,7 @@ export default {
             item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
             if (!this._.isEmpty(item.setting)) {
               item = item.setting.filter(j => {
-                return j.type === 'select' ? this.waterSet(j) : item;
+                return j.type && j.type === 'select' ? this.waterSet(j) : item;
               });
             }
             return item;
