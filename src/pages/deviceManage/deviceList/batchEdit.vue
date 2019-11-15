@@ -198,7 +198,7 @@
           <el-table-column prop="setting" label="属性值">
             <template slot-scope="scope">
               <span v-for="(item,index) in scope.row.setting" :key="index" class="extraAttr_setting">
-                <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type==='select'" :label="item.name">
+                <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type&&item.type==='select'" :label="item.name">
                   <el-select v-model="item.default" :placeholder="item.desc">
                     <el-option v-if="deviceEditForm.company==='qiekj'" v-for="(item) in item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
                     <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions || item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
@@ -342,32 +342,7 @@ export default {
       chargeTimeMax: 0,
       chargeTimeMin: 0,
       chargeTimeStep: 0,
-      configVO: {
-        name: {
-          available: true,
-          title: '功能'
-        },
-        price: {
-          available: true,
-          title: '原价/元'
-        },
-        time: {
-          available: true,
-          title: '耗时/分'
-        },
-        open: {
-          available: true,
-          title: '状态'
-        },
-        pulse: {
-          available: true,
-          title: '脉冲数'
-        },
-        extra: {
-          available: true,
-          title: '耗时/分'
-        }
-      }
+      configVO: null
     };
   },
   filters: {
@@ -415,7 +390,7 @@ export default {
             item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
             if (!this._.isEmpty(item.setting)) {
               item = item.setting.filter(j => {
-                return j.type === 'select' ? this.waterSet(j) : item;
+                return j.type && j.type === 'select' ? this.waterSet(j) : item;
               });
             }
             return item;
