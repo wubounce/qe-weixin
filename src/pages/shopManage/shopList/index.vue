@@ -22,9 +22,9 @@
           <el-option v-for="(name, id) in isReserveType" :key="id" :label="name" :value="(+id)"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="分账配置：" prop="type">
+      <el-form-item label="分账配置：" prop="isRevenueSharing">
         <el-select v-model="searchData.isRevenueSharing " clearable placeholder="请选择">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="不限" value=""></el-option>
           <el-option v-for="(name, id) in subAccountType" :key="id" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
@@ -57,11 +57,6 @@
         <el-table-column header-align="left" prop="profit" label="累计收益(元)" min-width="100">
           <template slot-scope="scope">
             <span>{{scope.row.profit | tofixd}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column header-align="left" prop="isReserve" label="预约功能">
-          <template slot-scope="scope">
-            <span>{{scope.row.isReserve | isReserveType}}</span>
           </template>
         </el-table-column>
         <el-table-column header-align="left" prop="machineCount" label="预约模板数">
@@ -181,7 +176,8 @@ export default {
         type: '',
         areas: [],
         address: '',
-        ifOpen: ''
+        isReserveType: '',
+        isRevenueSharing: ''
       },
       addShopDialogVisible: false,
       shopDataToTable: [],
