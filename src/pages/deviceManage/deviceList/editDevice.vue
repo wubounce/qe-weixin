@@ -360,11 +360,30 @@ export default {
       chargeTimeMin: 0,
       chargeTimeStep: 0,
       configVO: {
-        extra: {},
-        name: {},
-        open: {},
-        price: {},
-        time: {}
+        name: {
+          available: true,
+          title: '功能'
+        },
+        price: {
+          available: true,
+          title: '原价/元'
+        },
+        time: {
+          available: true,
+          title: '耗时/分'
+        },
+        open: {
+          available: true,
+          title: '状态'
+        },
+        pulse: {
+          available: true,
+          title: '脉冲数'
+        },
+        extra: {
+          available: true,
+          title: '耗时/分'
+        }
       }
     };
   },
