@@ -77,7 +77,7 @@
             <el-tooltip content="分账配置" placement="top" effect="dark" v-if="scope.row.attribute === 1">
               <svg-icon icon-class="zhangdan" class="icon-zhangmu" @click="subAccountSet(scope.row)" />
             </el-tooltip>
-            <el-tooltip content="预约配置" placement="top" effect="dark">
+            <el-tooltip content="预约配置" placement="top" effect="dark" v-if="checkPerms('mer:shop:appointment')">
               <svg-icon icon-class="yuyue" class="icon-zhangmu" @click="openDialog(scope.row);reserveTemplateVisible = true;" />
             </el-tooltip>
             <el-tooltip content="删除" placement="top" effect="dark">
@@ -158,6 +158,7 @@ import reserveModule from './reserveModule';
 import reserveTemplate from './reserveTemplate';
 import PagerMixin from '@/mixins/PagerMixin';
 import Area from '@/components/Area';
+import { checkPerms } from '@/utils/tools';
 export default {
   mixins: [PagerMixin],
   components: {
@@ -231,6 +232,7 @@ export default {
     this.getShopDataToTable();
   },
   methods: {
+    checkPerms,
     async getShopTypeList() {
       this.shopTypeList = await shopTypeListFun();
     },
