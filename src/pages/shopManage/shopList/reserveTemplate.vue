@@ -123,7 +123,7 @@ export default {
     },
     async getmachineParentType() {
       //获取设备类型
-      let res = await getlistParentTypeFun({ reserve: 0 });
+      let res = await getlistParentTypeFun({ reserve: 0, shopId: this.shopId });
       this.machineParentTypeList = res;
     },
     async getmachineSubType(val = '', isChangeId = true) {
