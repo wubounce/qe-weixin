@@ -14,6 +14,9 @@
           <tr v-for="(item, index) in tableData" :key="index">
             <td v-for="(col, index) in columns" :key="index" :width="col.width">{{ item[col.prop] }}</td>
           </tr>
+          <tr v-for="(item, index) in tableData" :key="index">
+            <td v-for="(col, index) in columns" :key="index" :width="col.width">{{ item[col.prop] }}</td>
+          </tr>
           <tr>
             <td v-for="(item, index) in summary" :key="index">{{item}}</td>
           </tr>
@@ -116,8 +119,6 @@ export default {
 <style lang="scss" scoped>
 .print-content {
   background: #d8d8d8;
-  max-height: 800px;
-  overflow: auto;
   padding: 5px;
   /deep/ .el-table .cell {
     line-height: 20px !important;
