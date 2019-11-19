@@ -439,8 +439,9 @@ export default {
           item.functionPrice = this.deviceEditForm.chargeMachinePirce;
         }
         //使用 omit 方法移除不要的属性或者 pick 方法只留下需要的属性
-        const pickNativeProperty = this._.pick(this.nativeFunctionList[index], xorList);
-        return (item = { ...item, ...pickNativeProperty });
+        // const pickNativeProperty = this._.omit(item, xorList);
+        // return (item = { ...item, ...pickNativeProperty });
+        return this._.omit(item, xorList);
       });
       return ifOpenLen;
     },
