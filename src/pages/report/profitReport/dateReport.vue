@@ -28,6 +28,8 @@
         <span>详细数据</span>
         <el-button style="float: right;" @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
+        <el-button style="float: right;" @click="printVisible=true">
+          <svg-icon icon-class="daochu" class="daochu" />打印</el-button>
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
@@ -42,6 +44,7 @@
         <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
+    <print-table :visible.sync="printVisible" :tableData="tableDataList" :columns="columns"></print-table>
   </div>
 </template>
 
@@ -50,10 +53,13 @@ import { dayReportFun, dayReportApi } from '@/service/report';
 import { exportExcel } from '@/service/common';
 import { calMax, calMin, checkPerms } from '@/utils/tools';
 import ShopFilter from '@/components/Shopfilter';
+import printTable from '@/components/printTable';
 export default {
   name: 'date-earing',
   data() {
     return {
+      printVisible: false,
+      columns: [{ label: '日期', prop: 'date' }, { label: '设备订单数', prop: 'machineCount' }, { label: '设备订单支付金额(元)', prop: 'machineMoney' }, { label: '设备订单退款金额(元)', prop: 'machineRefundMoney' }, { label: '设备订单营收(元)', prop: 'machineafterMoney' }, { label: 'VIP结算数', prop: 'vipCount' }, { label: 'VIP结算营收(元)', prop: 'vipMoney' }, { label: '金币订单数', prop: 'coinCount' }, { label: '金币营收(元)', prop: 'coinMoney' }, { label: '营收(元)', prop: 'money' }], // 操作列
       linechart: null,
       orderMax: null,
       moneyMax: null,
@@ -80,7 +86,8 @@ export default {
     };
   },
   components: {
-    ShopFilter
+    ShopFilter,
+    printTable
   },
   mounted() {
     this.$nextTick(() => {

@@ -12,6 +12,9 @@ import store from './store';
 import filter from '@/filters/index'; // global filter
 import directive from '@/directive/index'; // global directive
 import common from '@/utils/common'; // global directive
+//打印插件
+import Print from '@/utils/print'
+
 
 import { Message } from 'element-ui';
 import lodash from 'lodash';
@@ -44,6 +47,7 @@ Vue.prototype._ = lodash;
 Vue.use(filter);
 Vue.use(directive);
 Vue.use(common);
+Vue.use(Print);
 new Vue({
   el: '#app',
   router,
