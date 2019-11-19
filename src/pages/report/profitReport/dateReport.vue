@@ -28,8 +28,8 @@
         <span>详细数据</span>
         <el-button style="float: right;" @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
-        <el-button style="float: right;" @click="printVisible=true">
-          <svg-icon icon-class="daochu" class="daochu" />打印</el-button>
+        <el-button style="float: right;margin-right:8px" @click="printVisible=true">
+          <svg-icon icon-class="print" class="daochu" />打印</el-button>
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
@@ -44,7 +44,7 @@
         <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
-    <print-table :visible.sync="printVisible" :tableData="tableDataList" :columns="columns"></print-table>
+    <print-table v-if="pritsummary.length>0" :visible.sync="printVisible" :searchData="searchData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
   </div>
 </template>
 
@@ -59,7 +59,8 @@ export default {
   data() {
     return {
       printVisible: false,
-      columns: [{ label: '日期', prop: 'date' }, { label: '设备订单数', prop: 'machineCount' }, { label: '设备订单支付金额(元)', prop: 'machineMoney' }, { label: '设备订单退款金额(元)', prop: 'machineRefundMoney' }, { label: '设备订单营收(元)', prop: 'machineafterMoney' }, { label: 'VIP结算数', prop: 'vipCount' }, { label: 'VIP结算营收(元)', prop: 'vipMoney' }, { label: '金币订单数', prop: 'coinCount' }, { label: '金币营收(元)', prop: 'coinMoney' }, { label: '营收(元)', prop: 'money' }], // 操作列
+      columns: [{ label: '日期', prop: 'date', width: 120 }, { label: '设备订单数', prop: 'machineCount' }, { label: '设备订单支付金额(元)', prop: 'machineMoney' }, { label: '设备订单退款金额(元)', prop: 'machineRefundMoney' }, { label: '设备订单营收(元)', prop: 'machineafterMoney' }, { label: 'VIP结算数', prop: 'vipCount' }, { label: 'VIP结算营收(元)', prop: 'vipMoney' }, { label: '金币订单数', prop: 'coinCount' }, { label: '金币营收(元)', prop: 'coinMoney' }, { label: '营收(元)', prop: 'money' }], // 操作列
+      pritsummary: [],
       linechart: null,
       orderMax: null,
       moneyMax: null,
@@ -147,9 +148,6 @@ export default {
       let h = b.date.replace(/\-/g, '');
       return h - k;
     },
-    getFilterShop() {
-      this.filterShopVisible = true;
-    },
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
@@ -173,6 +171,7 @@ export default {
           sums[index] = 'N/A';
         }
       });
+      this.pritsummary = sums;
       return sums;
     },
     exportTable() {
