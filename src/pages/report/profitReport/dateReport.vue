@@ -136,8 +136,12 @@ export default {
       this.orderMin = calMin(this.oderDataList); //订单Y轴最大值
       this.moneyMin = calMin(this.moneyDataList); //金额Y轴最大值
       this.tableDataList = res.list;
-      this.tableDataList.forEach(i => {
+      this.tableDataList = this.tableDataList.map(i => {
         i['machineafterMoney'] = (i.machineMoney - i.machineRefundMoney).toFixed(2);
+        if (!checkPerms('mer:tokencoin:vip')) {
+          return this._.omit(i, ['coinCount', 'coinMoney']);
+        }
+        return i;
       });
       this.tableDataList.sort(this.ortId); //表格时间倒序
       this.linechart.setOption(this.lineChartOption);
@@ -166,7 +170,7 @@ export default {
               return prev;
             }
           }, 0);
-          sums[index] = index === 1 || index === 5 || index === 7 ? sums[index].toFixed(0) : sums[index].toFixed(2);
+          sums[index] = column.property === 'machineCount' || column.property === 'vipCount' || column.property === 'coinCount' ? sums[index].toFixed(0) : sums[index].toFixed(2);
         } else {
           sums[index] = 'N/A';
         }

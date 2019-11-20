@@ -1,27 +1,27 @@
 <template>
   <el-dialog title="" :visible.sync="visible" :show-close="false" :close-on-click-modal="false" :before-close="modalClose" top="5vh" :close="modalClose" width="915">
-    <center class="print-content" align="center" ref="print">
+    <center class="print-content" align="center" ref="print" id="print">
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <th :colspan="columns.length" class="table-title">{{tableTitle}}</th>
+            <th :colspan="columnsData.length" class="table-title">{{tableTitle}}</th>
           </tr>
           <tr>
-            <th v-for="(col, index) in columns" :key="index">{{col.label}}</th>
+            <th v-for="(col, index) in columnsData" :key="index">{{col.label}}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, index) in tableData" :key="index">
-            <td v-for="(col, index) in columns" :key="index" :width="col.width">{{ item[col.prop] }}</td>
+            <td v-for="(col, index) in columnsData" :key="index" :width="col.width">{{ item[col.prop] }}</td>
           </tr>
           <tr>
             <td v-for="(item, index) in summary" :key="index">{{item}}</td>
           </tr>
           <tr>
-            <td :colspan="columns.length">数据打印时间:{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数据打印操作人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据生成秘钥：Qekj{{key}} </td>
+            <td :colspan="columnsData.length">数据打印时间:{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数据打印操作人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据生成秘钥：Qekj{{key}} </td>
           </tr>
           <tr>
-            <td :colspan="columns.length">数据统计店铺:{{shopNames.join(',')}}</td>
+            <td :colspan="columnsData.length">数据统计店铺:{{shopNames.join(',')}}</td>
           </tr>
         </tbody>
       </table>
@@ -37,6 +37,7 @@
 import moment from 'moment';
 import { shopListFun } from '@/service/report';
 import { getUserInfoInLocalstorage } from '@/utils/auth';
+import { checkPerms } from '@/utils/tools';
 export default {
   name: 'printTable',
   props: {
@@ -76,15 +77,29 @@ export default {
       pritnDate: moment().format('YYYY-MM-DD HH:mm:ss'),
       userInfoIn: getUserInfoInLocalstorage() ? getUserInfoInLocalstorage() : {},
       tableTitle: '',
-      shopNames: []
+      shopNames: [],
+      columnsData: []
     };
+  },
+  mounted() {
+    if (!checkPerms('mer:tokencoin:vip')) {
+      this.columnsData = this.columns.filter(i => {
+        return i.prop !== 'coinCount' && i.prop !== 'coinMoney';
+      });
+    } else {
+      this.columnsData = this.columns;
+    }
   },
   created() {
     this.getShopList();
   },
   computed: {
     key() {
-      return ((Math.random() * Date.now()) / 1000000).toFixed(0);
+      let num = '';
+      for (var i = 0; i < 6; i++) {
+        num += Math.floor(Math.random() * 10);
+      }
+      return num;
     }
   },
   methods: {
@@ -103,7 +118,19 @@ export default {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
     doPrint() {
-      this.$print(this.$refs.print);
+      var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串//判断是否IE浏览器
+      console.log(userAgent);
+
+      if ((userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1) || (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1)) {
+        let html = document.getElementById('print').innerHTML;
+        let oPop = window.open('', 'oPop');
+        oPop.document.write(html);
+        oPop.print();
+        oPop.close();
+        console.log('ie,Safari');
+      } else {
+        this.$print(this.$refs.print);
+      }
     }
   },
   watch: {
