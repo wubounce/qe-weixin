@@ -1,5 +1,6 @@
 <template>
   <el-dialog title="" :visible.sync="visible" :show-close="false" :close-on-click-modal="false" :before-close="modalClose" top="5vh" :close="modalClose" width="915">
+    <!--startprint-->
     <center class="print-content" align="center" ref="print" id="print">
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <thead>
@@ -12,20 +13,21 @@
         </thead>
         <tbody>
           <tr v-for="(item, index) in tableData" :key="index">
-            <td v-for="(col, index) in columnsData" :key="index" :width="col.width">{{ item[col.prop] }}</td>
+            <td v-for="(col, index) in columnsData" :key="index" :width="col.width" :style="col.style">{{ item[col.prop] }}</td>
           </tr>
           <tr>
-            <td v-for="(item, index) in summary" :key="index">{{item}}</td>
+            <td v-for="(item, index) in summary" :key="index" :style="item.style">{{item.total}}</td>
           </tr>
           <tr>
-            <td :colspan="columnsData.length">数据打印时间:{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数据打印操作人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据生成秘钥：Qekj{{key}} </td>
+            <td :colspan="columnsData.length" style="text-align:left">数据打印时间:{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数据打印操作人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据生成秘钥：Qekj{{key}} </td>
           </tr>
           <tr>
-            <td :colspan="columnsData.length">数据统计店铺:{{shopNames.join(',')}}</td>
+            <td :colspan="columnsData.length" style="text-align:left">数据统计店铺:{{shopNames.join(',')}}</td>
           </tr>
         </tbody>
       </table>
     </center>
+    <!--endprint-->
     <div class="print-action">
       <el-button type="primary" class="no-print" @click="doPrint">打印</el-button>
       <el-button class="no-print" @click="modalClose" style="width:95px">取消</el-button>
@@ -111,26 +113,51 @@ export default {
       } else {
         shopNmaes = res.map(i => i.shopName);
       }
-      this.tableTitle = shopNmaes.length > 0 ? `${shopNmaes[0]}等${shopNmaes.length}家店铺${this.searchData.time[0]}~${this.searchData.time[1]}营收报表` : `${this.searchData.time[0]}~${this.searchData.time[1]}营收报表`;
+      this.tableTitle = shopNmaes.length > 0 ? `${shopNmaes[0]}${shopNmaes.length === 1 ? '' : '等'}${shopNmaes.length}家店铺${this.searchData.time[0]}~${this.searchData.time[1]}营收报表` : `${this.searchData.time[0]}~${this.searchData.time[1]}营收报表`;
       this.shopNames = shopNmaes;
     },
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
     },
     doPrint() {
-      var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串//判断是否IE浏览器
-      console.log(userAgent);
-
-      if ((userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1) || (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1)) {
+      let userAgent = navigator.userAgent; //取得浏览器的userAgent字符串//判断是否IE浏览器
+      if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1) {
         let html = document.getElementById('print').innerHTML;
         let oPop = window.open('', 'oPop');
         oPop.document.write(html);
         oPop.print();
         oPop.close();
-        console.log('ie,Safari');
+      } else if (userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1) {
+        this.iePreview();
       } else {
         this.$print(this.$refs.print);
       }
+    },
+    iePreview() {
+      let bdhtml = window.document.body.innerHTML;
+      let sprnstr = '<!--startprint-->';
+      let eprnstr = '<!--endprint-->';
+      let prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr) + 17);
+      prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr));
+      window.document.body.innerHTML = prnhtml;
+      if (!!window.ActiveXObject || 'ActiveXObject' in window) {
+        //是否ie
+        this.remove_ie_header_and_footer();
+      }
+      window.print();
+      window.document.body.innerHTML = bdhtml;
+    },
+    /**
+     * 移除页眉页脚
+     * */
+    remove_ie_header_and_footer() {
+      var hkey_path;
+      hkey_path = 'HKEY_CURRENT_USER\\Software\\Microsoft\\Internet Explorer\\PageSetup\\';
+      try {
+        var RegWsh = new ActiveXObject('WScript.Shell');
+        RegWsh.RegWrite(hkey_path + 'header', '');
+        RegWsh.RegWrite(hkey_path + 'footer', '');
+      } catch (e) {}
     }
   },
   watch: {
@@ -159,9 +186,9 @@ export default {
     line-height: 28px;
     font-weight: 500;
   }
-  table td {
-    text-align: left;
-  }
+  // table td {
+  //   text-align: left;
+  // }
   .table-title {
     font-weight: 700;
     line-height: 42px;

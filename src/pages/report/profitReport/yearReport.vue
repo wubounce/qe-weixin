@@ -61,7 +61,79 @@ export default {
   data() {
     return {
       printVisible: false,
-      columns: [{ label: '日期', prop: 'date', width: 120 }, { label: '设备订单数', prop: 'machineCount' }, { label: '设备订单支付金额(元)', prop: 'machineMoney' }, { label: '设备订单退款金额(元)', prop: 'machineRefundMoney' }, { label: '设备订单营收(元)', prop: 'machineafterMoney' }, { label: 'VIP结算数', prop: 'vipCount' }, { label: 'VIP结算营收(元)', prop: 'vipMoney' }, { label: '金币订单数', prop: 'coinCount' }, { label: '金币营收(元)', prop: 'coinMoney' }, { label: '营收(元)', prop: 'money' }], // 操作列
+      columns: [
+        {
+          label: '日期',
+          prop: 'date',
+          width: 120,
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: '设备订单数',
+          prop: 'machineCount',
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: '设备订单支付金额(元)',
+          prop: 'machineMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '设备订单退款金额(元)',
+          prop: 'machineRefundMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '设备订单营收(元)',
+          prop: 'machineafterMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: 'VIP结算数',
+          prop: 'vipCount',
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: 'VIP结算营收(元)',
+          prop: 'vipMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '金币订单数',
+          prop: 'coinCount',
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: '金币营收(元)',
+          prop: 'coinMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '营收(元)',
+          prop: 'money',
+          style: {
+            textAlign: 'right'
+          }
+        }
+      ],
       pritsummary: [],
       linechart: null,
       orderMax: null,
@@ -143,9 +215,16 @@ export default {
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
+      let printNums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
           sums[index] = '合计';
+          printNums.push({
+            total: '合计',
+            style: {
+              textAlign: 'center'
+            }
+          });
           return;
         }
         const values = data.map(item => Number(item[column.property]));
@@ -159,8 +238,20 @@ export default {
             }
           }, 0);
           sums[index] = column.property === 'machineCount' || column.property === 'vipCount' || column.property === 'coinCount' ? sums[index].toFixed(0) : sums[index].toFixed(2);
+          printNums.push({
+            total: sums[index],
+            style: {
+              textAlign: column.property === 'machineCount' || column.property === 'vipCount' || column.property === 'coinCount' ? 'center' : 'right'
+            }
+          });
         } else {
           sums[index] = 'N/A';
+          printNums.push({
+            total: 0,
+            style: {
+              textAlign: column.property === 'machineCount' || column.property === 'vipCount' || column.property === 'coinCount' ? 'center' : 'right'
+            }
+          });
         }
       });
       this.pritsummary = sums;
