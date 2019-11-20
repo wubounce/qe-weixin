@@ -27,6 +27,8 @@
         <span>详细数据</span>
         <el-button style="float: right;" @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
+        <el-button style="float: right;margin-right:8px" @click="printVisible=true">
+          <svg-icon icon-class="print" class="daochu" />打印</el-button>
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column header-align="left" prop="date" label="时间"></el-table-column>
@@ -41,6 +43,7 @@
         <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
+    <print-table v-if="pritsummary.length>0" :visible.sync="printVisible" :searchData="searchData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
   </div>
 </template>
 
@@ -50,12 +53,88 @@ import { exportExcel } from '@/service/common';
 import { calMax, calMin, checkPerms } from '@/utils/tools';
 import ShopFilter from '@/components/Shopfilter';
 import PagerMixin from '@/mixins/PagerMixin';
+import printTable from '@/components/printTable';
 
 export default {
   name: 'date-earing',
   mixins: [PagerMixin],
   data() {
     return {
+      printVisible: false,
+      columns: [
+        {
+          label: '日期',
+          prop: 'date',
+          width: 120,
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: '设备订单数',
+          prop: 'machineCount',
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: '设备订单支付金额(元)',
+          prop: 'machineMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '设备订单退款金额(元)',
+          prop: 'machineRefundMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '设备订单营收(元)',
+          prop: 'machineafterMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: 'VIP结算数',
+          prop: 'vipCount',
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: 'VIP结算营收(元)',
+          prop: 'vipMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '金币订单数',
+          prop: 'coinCount',
+          style: {
+            textAlign: 'center'
+          }
+        },
+        {
+          label: '金币营收(元)',
+          prop: 'coinMoney',
+          style: {
+            textAlign: 'right'
+          }
+        },
+        {
+          label: '营收(元)',
+          prop: 'money',
+          style: {
+            textAlign: 'right'
+          }
+        }
+      ],
+      pritsummary: [],
       linechart: null,
       orderMax: null,
       moneyMax: null,
@@ -77,7 +156,8 @@ export default {
     };
   },
   components: {
-    ShopFilter
+    ShopFilter,
+    printTable
   },
   mounted() {
     this.$nextTick(() => {
@@ -116,8 +196,12 @@ export default {
       this.orderMin = calMin(this.oderDataList); //订单Y轴最小值
       this.moneyMin = calMin(this.moneyDataList); //金额Y轴最小值
       this.tableDataList = res.list;
-      this.tableDataList.forEach(i => {
+      this.tableDataList = this.tableDataList.map(i => {
         i['machineafterMoney'] = (i.machineMoney - i.machineRefundMoney).toFixed(2);
+        if (!checkPerms('mer:tokencoin:vip')) {
+          return this._.omit(i, ['coinCount', 'coinMoney']);
+        }
+        return i;
       });
       this.tableDataList.sort(this.ortId); //表格时间倒序
       this.linechart.setOption(this.lineChartOption);
@@ -131,9 +215,16 @@ export default {
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
+      let printNums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
           sums[index] = '合计';
+          printNums.push({
+            total: '合计',
+            style: {
+              textAlign: 'center'
+            }
+          });
           return;
         }
         const values = data.map(item => Number(item[column.property]));
@@ -146,11 +237,24 @@ export default {
               return prev;
             }
           }, 0);
-          sums[index] = index === 1 || index === 5 || index === 7 ? sums[index].toFixed(0) : sums[index].toFixed(2);
+          sums[index] = column.property === 'machineCount' || column.property === 'vipCount' || column.property === 'coinCount' ? sums[index].toFixed(0) : sums[index].toFixed(2);
+          printNums.push({
+            total: sums[index],
+            style: {
+              textAlign: column.property === 'machineCount' || column.property === 'vipCount' || column.property === 'coinCount' ? 'center' : 'right'
+            }
+          });
         } else {
           sums[index] = 'N/A';
+          printNums.push({
+            total: 0,
+            style: {
+              textAlign: column.property === 'machineCount' || column.property === 'vipCount' || column.property === 'coinCount' ? 'center' : 'right'
+            }
+          });
         }
       });
+      this.pritsummary = sums;
       return sums;
     },
     exportTable() {
