@@ -5,24 +5,27 @@
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <th :colspan="columnsData.length" class="table-title">{{tableTitle}}</th>
+            <th :colspan="columnsData.length" class="table-title" style="border-bottom: none; font-size:20px;">营收报表</th>
           </tr>
           <tr>
-            <th v-for="(col, index) in columnsData" :key="index">{{col.label}}</th>
+            <th :colspan="columnsData.length" style="text-align:right;border-top: none;padding-right:5px; line-height: 22px; font-weight:normal" class="table-title">{{printTime}}</th>
+          </tr>
+          <tr>
+            <th v-for="(col, index) in columnsData" :width="col.width" :key="index">{{col.label}}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, index) in tableData" :key="index">
-            <td v-for="(col, index) in columnsData" :key="index" :width="col.width" :style="col.style">{{ item[col.prop] }}</td>
+            <td v-for="(col, index) in columnsData" :key="index" :style="col.style">{{ item[col.prop] }}</td>
           </tr>
           <tr>
             <td v-for="(item, index) in summary" :key="index" :style="item.style">{{item.total}}</td>
           </tr>
           <tr>
-            <td :colspan="columnsData.length" style="text-align:left">数据打印时间:{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数据打印操作人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据生成秘钥：Qekj{{key}} </td>
+            <td :colspan="columnsData.length" style="text-align:left; padding-left:5px">报表数据包含店铺：{{shopNames.join(',')}}</td>
           </tr>
           <tr>
-            <td :colspan="columnsData.length" style="text-align:left">数据统计店铺:{{shopNames.join(',')}}</td>
+            <td :colspan="columnsData.length" style="text-align:left; padding-left:5px">打印时间：{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;打印人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 报表生成秘钥：Qekj{{key}} </td>
           </tr>
         </tbody>
       </table>
@@ -78,8 +81,8 @@ export default {
     return {
       pritnDate: moment().format('YYYY-MM-DD HH:mm:ss'),
       userInfoIn: getUserInfoInLocalstorage() ? getUserInfoInLocalstorage() : {},
-      tableTitle: '',
       shopNames: [],
+      printTime: `${this.searchData.time[0]}  至  ${this.searchData.time[1]}`,
       columnsData: []
     };
   },
@@ -113,7 +116,6 @@ export default {
       } else {
         shopNmaes = res.map(i => i.shopName);
       }
-      this.tableTitle = shopNmaes.length > 0 ? `${shopNmaes[0]}${shopNmaes.length === 1 ? '' : '等'}${shopNmaes.length}家店铺${this.searchData.time[0]}~${this.searchData.time[1]}营收报表` : `${this.searchData.time[0]}~${this.searchData.time[1]}营收报表`;
       this.shopNames = shopNmaes;
     },
     modalClose() {
@@ -175,23 +177,26 @@ export default {
     line-height: 20px !important;
   }
   table {
-    border: 1px solid #999;
+    border: 1px solid #333;
     border-collapse: collapse;
     background: #fff;
   }
+
   table td,
   table th {
     font-size: 10pt;
-    border: 1px solid #999;
-    line-height: 28px;
+    border: 1px solid #333;
+    padding-top: 5px;
+    padding-bottom: 5px;
     font-weight: 500;
   }
-  // table td {
-  //   text-align: left;
-  // }
+
+  table td {
+    padding-right: 5px;
+  }
   .table-title {
     font-weight: 700;
-    line-height: 42px;
+    line-height: 22px;
   }
 }
 .print-action {
@@ -208,13 +213,17 @@ export default {
 
 @media print {
   @page {
-    margin: 1cm;
+    margin-top: 15mm;
+    margin-left: 10mm;
+    margin-right: 10mm;
   }
   body {
     padding: 0;
-    margin: 2cm;
+    margin-top: 10mm;
+    margin-left: 6mm;
+    margin-right: 6mm;
     font-family: 'Microsoft Yahei', 'Times New Roman', serif;
-    font-size: 10pt;
+    font-size: 8pt;
   }
   .no-print {
     display: none;
