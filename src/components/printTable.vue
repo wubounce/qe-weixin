@@ -82,21 +82,9 @@ export default {
       pritnDate: moment().format('YYYY-MM-DD HH:mm:ss'),
       userInfoIn: getUserInfoInLocalstorage() ? getUserInfoInLocalstorage() : {},
       shopNames: [],
-      printTime: `${this.searchData.time[0]}  至  ${this.searchData.time[1]}`,
+      printTime: '',
       columnsData: []
     };
-  },
-  mounted() {
-    if (!checkPerms('mer:tokencoin:vip')) {
-      this.columnsData = this.columns.filter(i => {
-        return i.prop !== 'coinCount' && i.prop !== 'coinMoney';
-      });
-    } else {
-      this.columnsData = this.columns;
-    }
-  },
-  created() {
-    this.getShopList();
   },
   computed: {
     key() {
@@ -107,6 +95,19 @@ export default {
       return num;
     }
   },
+  mounted() {},
+  created() {
+    if (!checkPerms('mer:tokencoin:vip')) {
+      this.columnsData = this.columns.filter(i => {
+        return i.prop !== 'coinCount' && i.prop !== 'coinMoney';
+      });
+    } else {
+      this.columnsData = this.columns;
+    }
+    this.printTime = this.type(this.searchData.time) === 'array' ? `${this.searchData.time[0]}  至  ${this.searchData.time[1]}` : `${this.searchData.time}年`;
+    this.getShopList();
+  },
+
   methods: {
     async getShopList() {
       let res = await shopListFun();
@@ -120,6 +121,12 @@ export default {
     },
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    type(obj) {
+      return Object.prototype.toString
+        .call(obj)
+        .slice(8, -1)
+        .toLowerCase();
     },
     doPrint() {
       let userAgent = navigator.userAgent; //取得浏览器的userAgent字符串//判断是否IE浏览器
@@ -160,14 +167,6 @@ export default {
         RegWsh.RegWrite(hkey_path + 'header', '');
         RegWsh.RegWrite(hkey_path + 'footer', '');
       } catch (e) {}
-    }
-  },
-  watch: {
-    'searchData.shopIds': function(newVal) {
-      this.getShopList();
-    },
-    'searchData.time': function(newVal) {
-      this.printTime = `${this.searchData.time[0]}  至  ${this.searchData.time[1]}`;
     }
   }
 };

@@ -28,7 +28,7 @@
         <span>详细数据</span>
         <el-button style="float: right;" @click="exportTable()">
           <svg-icon icon-class="daochu" class="daochu" />导出</el-button>
-        <el-button style="float: right;margin-right:8px" @click="printVisible=true">
+        <el-button style="float: right;margin-right:8px" @click="printVisible = true">
           <svg-icon icon-class="print" class="daochu" />打印</el-button>
       </div>
       <el-table :data="tableDataList" show-summary :summary-method="getSummaries" style="width: 100%">
@@ -44,7 +44,7 @@
         <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
-    <print-table v-if="pritsummary.length>0" :visible.sync="printVisible" :searchData="searchData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
+    <print-table v-if="printVisible" :visible.sync="printVisible" :searchData="printRestData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
   </div>
 </template>
 
@@ -59,6 +59,7 @@ export default {
   data() {
     return {
       printVisible: false,
+      printRestData: {},
       columns: [
         {
           label: '时间',
@@ -168,6 +169,7 @@ export default {
     });
   },
   created() {
+    this.printRestData = Object.assign({}, this.searchData);
     this.getProfitDate();
   },
   methods: {
@@ -185,6 +187,7 @@ export default {
       }
     },
     searchForm() {
+      this.printRestData = Object.assign({}, this.searchData);
       this.getProfitDate();
     },
     resetSearchForm(formName) {
