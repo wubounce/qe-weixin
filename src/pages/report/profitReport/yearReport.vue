@@ -43,7 +43,7 @@
         <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
-    <print-table v-if="pritsummary.length>0" :visible.sync="printVisible" :searchData="searchData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
+    <print-table v-if="printVisible" :visible.sync="printVisible" :searchData="printRestData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
   </div>
 </template>
 
@@ -61,73 +61,74 @@ export default {
   data() {
     return {
       printVisible: false,
+      printRestData: {},
       columns: [
         {
-          label: '日期',
+          label: '时间',
           prop: 'date',
-          width: 120,
+          width: 110,
           style: {
             textAlign: 'center'
           }
         },
         {
-          label: '设备订单数',
+          label: '设备订单',
           prop: 'machineCount',
           style: {
             textAlign: 'center'
           }
         },
         {
-          label: '设备订单支付金额(元)',
+          label: '设备支付',
           prop: 'machineMoney',
           style: {
             textAlign: 'right'
           }
         },
         {
-          label: '设备订单退款金额(元)',
+          label: '设备退款',
           prop: 'machineRefundMoney',
           style: {
             textAlign: 'right'
           }
         },
         {
-          label: '设备订单营收(元)',
+          label: '设备营收',
           prop: 'machineafterMoney',
           style: {
             textAlign: 'right'
           }
         },
         {
-          label: 'VIP结算数',
+          label: 'VIP结算',
           prop: 'vipCount',
           style: {
             textAlign: 'center'
           }
         },
         {
-          label: 'VIP结算营收(元)',
+          label: 'VIP营收',
           prop: 'vipMoney',
           style: {
             textAlign: 'right'
           }
         },
         {
-          label: '金币订单数',
+          label: '金币订单',
           prop: 'coinCount',
           style: {
             textAlign: 'center'
           }
         },
         {
-          label: '金币营收(元)',
+          label: '金币营收',
           prop: 'coinMoney',
           style: {
             textAlign: 'right'
           }
         },
         {
-          label: '营收(元)',
+          label: '营收',
           prop: 'money',
           style: {
             textAlign: 'right'
@@ -165,6 +166,7 @@ export default {
     });
   },
   created() {
+    this.printRestData = Object.assign({}, this.searchData);
     this.getProfitDate();
   },
   methods: {
@@ -173,6 +175,7 @@ export default {
       this.linechart = echarts.init(document.getElementById('datelinechart'));
     },
     searchForm() {
+      this.printRestData = Object.assign({}, this.searchData);
       this.getProfitDate();
     },
     resetForm(formName) {
