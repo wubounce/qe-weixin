@@ -165,6 +165,9 @@ export default {
   watch: {
     'searchData.shopIds': function(newVal) {
       this.getShopList();
+    },
+    'searchData.time': function(newVal) {
+      this.printTime = `${this.searchData.time[0]}  至  ${this.searchData.time[1]}`;
     }
   }
 };
