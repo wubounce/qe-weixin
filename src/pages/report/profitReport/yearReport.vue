@@ -43,7 +43,7 @@
         <el-table-column header-align="left" prop="money" label="营收(元)"></el-table-column>
       </el-table>
     </div>
-    <print-table v-if="pritsummary.length>0" :visible.sync="printVisible" :searchData="searchData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
+    <print-table v-if="printVisible" :visible.sync="printVisible" :searchData="printRestData" :tableData="tableDataList" :columns="columns" :summary="pritsummary"></print-table>
   </div>
 </template>
 
@@ -61,6 +61,7 @@ export default {
   data() {
     return {
       printVisible: false,
+      printRestData: {},
       columns: [
         {
           label: '时间',
@@ -165,6 +166,7 @@ export default {
     });
   },
   created() {
+    this.printRestData = Object.assign({}, this.searchData);
     this.getProfitDate();
   },
   methods: {
@@ -173,6 +175,7 @@ export default {
       this.linechart = echarts.init(document.getElementById('datelinechart'));
     },
     searchForm() {
+      this.printRestData = Object.assign({}, this.searchData);
       this.getProfitDate();
     },
     resetForm(formName) {
