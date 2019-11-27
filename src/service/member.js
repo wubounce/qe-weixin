@@ -30,7 +30,7 @@ export const updateOperatorInfoFun = (payload) => fetch.post(updateOperatorInfoA
 export const delOperatorFun = (payload) => fetch.post(delOperatorApi, payload);
 
 // 禁用管理员
-export const lockOperatorrFun = (payload) => fetch.post(lockOperatorApi, payload);
+export const lockOperatorFun = (payload) => fetch.post(lockOperatorApi, payload);
 
 //店铺列表
 export const shopListFun = (payload) => fetch.post(shopListApi, payload);

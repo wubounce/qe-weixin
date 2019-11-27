@@ -24,19 +24,6 @@
       <el-form-item label="详细地址：" class="shop-name" prop="address">
         <el-input v-model.trim="addShopFrom.address" placeholder="例：A座1005室"></el-input>
       </el-form-item>
-      <el-form-item label="预约功能：" prop="isReserve">
-        <el-col :span="4">
-          <el-radio-group v-model="addShopFrom.isReserve" @change="offAndOnReserve">
-            <el-radio name="type" v-for="(name, id) in ifOpenType" :key="id" :label="(+id)">{{name}}</el-radio>
-          </el-radio-group>
-        </el-col>
-        <el-col class="line" :span="1">|</el-col>
-        <el-col :span="19">
-          <el-form-item label="预约时长（分钟）：" prop="orderLimitMinutes">
-            <el-input v-model.trim="addShopFrom.orderLimitMinutes" :placeholder="isOffAndOnReservePlaceholder" :disabled="isOffAndOnReserve"></el-input>
-          </el-form-item>
-        </el-col>
-      </el-form-item>
       <el-form-item label="营业时间：" prop="workTime">
         <el-time-picker is-range v-model="addShopFrom.workTime" placeholder="请选择" format="HH:mm" value-format="HH:mm" :clearable="false"> </el-time-picker>
       </el-form-item>
@@ -95,7 +82,6 @@ export default {
       addShopFrom: {
         shopId: '',
         areas: [],
-        isReserve: 0,
         workTime: ['00:00', '23:59'],
         shopName: '',
         shopType: '',
@@ -105,13 +91,10 @@ export default {
         address: '',
         lat: '',
         lng: '',
-        orderLimitMinutes: '',
         organization: '',
         serviceTelephone: '',
         forceWithHolding: 0
       },
-      isOffAndOnReserve: false,
-      isOffAndOnReservePlaceholder: '请填写1-9数字',
       //地图 城市搜索
       searchName: '', // 搜索城市
       searchOption: {
@@ -151,7 +134,6 @@ export default {
         shopType: [{ required: true, message: '请选择店铺类型', trigger: 'change' }],
         areas: [{ type: 'array', required: true, message: '请选择省市区', trigger: 'change', validator: validateAres }],
         address: [{ required: true, message: '请填写详细地址', trigger: 'blur' }],
-        orderLimitMinutes: [{ required: true, message: '请填写预约时长（分钟）', trigger: 'blur' }, { pattern: /^[1-9]+\d*$/, message: '预约时长请填写1到9的数字', trigger: 'blur' }],
         workTime: [{ required: true, message: '请选择营业时间', trigger: 'change' }],
         serviceTelephone: [{ pattern: /^[0-9]*$/, message: '客服电话需为纯数字', trigger: 'blur' }]
       }
@@ -191,7 +173,6 @@ export default {
       this.center = [res.lng, res.lat];
       this.marker.position = [res.lng, res.lat];
       this.searchOption.city = res.cityName;
-      this.offAndOnReserve(this.addShopFrom.isReserve);
     },
     async getShopTypeList() {
       this.shopTypeList = await shopTypeListFun();
@@ -204,18 +185,6 @@ export default {
       this.addShopFrom.lat = pois[0].lat;
       this.addShopFrom.organization = pois[0].name;
       this.addShopFrom.lng && this.addShopFrom.lat ? (this.isposition = true) : (this.isposition = false);
-    },
-    offAndOnReserve(val) {
-      if (val == 1) {
-        this.isOffAndOnReserve = true;
-        this.addShopRules.orderLimitMinutes[0].required = false;
-        this.isOffAndOnReservePlaceholder = '开启预约功能可填';
-        this.addShopFrom.orderLimitMinutes = '';
-      } else {
-        this.isOffAndOnReserve = false;
-        this.addShopRules.orderLimitMinutes[0].required = true;
-        this.isOffAndOnReservePlaceholder = '请填写1到9的数字';
-      }
     },
     getAreaName(data) {
       if (data.length >= 2) {
