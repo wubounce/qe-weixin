@@ -16,7 +16,7 @@
     <h3 class="detail-base-title" style="border:none">功能属性</h3>
     <el-tabs v-model="detailActiveTab">
       <el-tab-pane label="功能设置" name="first">
-        <div v-if="detailData.parentTypeName === '饮水机'&&isBoiledWater(detailData.support)">
+        <div v-if="detailData.parentTypeName === '饮水机'&&isBoiledWater(detailData.support)||detailData.parentTypeName === '淋浴'&&isBoiledWater(detailData.support)">
           <el-table :data="detailData.functionList" style="width: 100%">
             <el-table-column prop="functionName" :label="detailData.configVO.name.title" v-if="detailData.configVO.name.available"></el-table-column>
             <el-table-column prop="needMinutes" :label="detailData.configVO.time.title" v-if="detailData.configVO.time.available"></el-table-column>
