@@ -66,12 +66,12 @@
           <div v-if="deviceEditForm.isQuantifyCharge === 1&&deviceEditForm.extraAttr">
             <el-form-item label="编辑内容：">
               <el-checkbox-group v-model="baseEditBatchFuntion">
-                <el-checkbox label="extraAttr" v-if="configVO.extraAttr.available">{{configVO.extraAttr.unit}}</el-checkbox>
+                <el-checkbox label="extraAttr" v-if="configVO.extra.available">{{configVO.extra.unit}}</el-checkbox>
                 <el-checkbox label="functionPrice" v-if="configVO.price.available">{{configVO.price.unit}}</el-checkbox>
                 <el-checkbox label="ifOpen" v-if="configVO.open.available">{{configVO.open.unit}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-            <div v-if="configVO.extraAttr.available&&isShowOptions('extraAttr')">
+            <div v-if="configVO.extra.available&&isShowOptions('extraAttr')">
               <el-form-item label="可选时间范围：">
                 <el-col :span="5">
                   <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
