@@ -47,14 +47,17 @@
         <el-upload class="upload-demo" ref="upload" action="#" :limit="1" :before-upload="beforeUpload">
           <div class="upload_template">
             <el-button slot="trigger" type="primary" class="upload_btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
-            <p class="download">
-              <a href="https://static.qiekj.com/images/template/%E9%87%91%E5%B8%81%E6%89%B9%E9%87%8F%E5%85%85%E5%80%BC%E6%A8%A1%E6%9D%BF.xlsx" rel="external nofollow" download="模板">
-                <svg-icon icon-class="daochu" class="daochu" /><span>下载模板</span>
-              </a>
-            </p>
-            <div slot="tip" class="file_name" v-if="fileName">上传附件：{{fileName}}</div>
           </div>
         </el-upload>
+        <div class="file_content">
+          <a href="https://static.qiekj.com/images/template/%E9%87%91%E5%B8%81%E6%89%B9%E9%87%8F%E5%85%85%E5%80%BC%E6%A8%A1%E6%9D%BF.xlsx" rel="external nofollow" download="模板">
+            <svg-icon icon-class="daochu" class="daochu" /><span>下载模板</span>
+          </a>
+          <div class="file_name" v-if="fileName">
+            <div class="excel_tip">
+              <svg-icon icon-class="excel" class="excel" /><span>{{fileName}}</span></div><i class="el-dialog__close el-icon el-icon-close" @click="handleRemove"></i>
+          </div>
+        </div>
         <div class="action">
           <el-button @click="modalClose">取消</el-button>
           <el-button type="primary" @click="submitUpload()">确定</el-button>
@@ -187,6 +190,11 @@ export default {
       this.$http.post('', formData, requestConfig).then(res => {
         this.$Message.success('上传成功');
       });
+    },
+    // 移除附件
+    handleRemove() {
+      this.files = [];
+      this.fileName = '';
     }
   }
 };
@@ -208,10 +216,16 @@ export default {
 .upload_template {
   text-align: center;
   font-size: 14px;
-  margin: 50px 0;
+  margin-top: 50px;
 }
-.download a {
-  color: $menuText;
+.file_content {
+  padding: 17px 0 50px 0;
+  a {
+    display: inline-block;
+    text-align: center;
+    color: $menuText;
+    width: 100%;
+  }
 }
 .daochu {
   margin-right: 10px;
@@ -221,10 +235,37 @@ export default {
 .upload_btn {
   width: 140px;
   height: 63px;
-  margin-bottom: 15px;
 }
 .file_name {
-  margin-top: 20px;
+  width: 100%;
+  height: 44px;
+  line-height: 44px;
+  background: rgba(250, 250, 250, 1);
+  margin-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+.excel_tip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/deep/ .el-icon-close {
+  width: 18px;
+  height: 18px;
+  background: #bbbbbb;
+  border-radius: 50px;
+  line-height: 18px !important;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+}
+.excel {
+  width: 24px;
+  height: 26px;
+  margin-right: 10px;
 }
 .action {
   text-align: right;
