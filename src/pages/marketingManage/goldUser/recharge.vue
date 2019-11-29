@@ -44,15 +44,18 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="批量充值" name="second">
-        <el-upload class="upload-demo" ref="upload" action="#" :limit="1" :file-list="fileList" :before-upload="beforeUpload">
-          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-          <a href="./static/moban.xlsx" rel="external nofollow" download="模板">
-            <el-button size="small" type="success">下载模板</el-button>
-          </a>
-          <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过5MB</div>
-          <div slot="tip" class="el-upload-list__item-name">{{fileName}}</div>
+        <el-upload class="upload-demo" ref="upload" action="#" :limit="1" :before-upload="beforeUpload">
+          <div class="upload_template">
+            <el-button slot="trigger" type="primary" class="upload_btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
+            <p class="download">
+              <a href="https://static.qiekj.com/images/template/%E9%87%91%E5%B8%81%E6%89%B9%E9%87%8F%E5%85%85%E5%80%BC%E6%A8%A1%E6%9D%BF.xlsx" rel="external nofollow" download="模板">
+                <svg-icon icon-class="daochu" class="daochu" /><span>下载模板</span>
+              </a>
+            </p>
+            <div slot="tip" class="file_name" v-if="fileName">上传附件：{{fileName}}</div>
+          </div>
         </el-upload>
-        <div slot="footer" class="action">
+        <div class="action">
           <el-button @click="modalClose">取消</el-button>
           <el-button type="primary" @click="submitUpload()">确定</el-button>
         </div>
@@ -155,37 +158,33 @@ export default {
       });
     },
     beforeUpload(file) {
-      debugger;
-      console.log(file, '文件');
       this.files = file;
       const reg = /\.xlsx?$/i;
       const size = 5;
-      if (!file.name.test(reg)) {
+      if (!reg.test(file.name)) {
         this.$Message.warning('上传模板只能是 xls、xlsx格式!');
-        return;
+        return false;
       }
       if (file.size > 0 && file.size / 1024 / 1024 > size) {
         this.$Message.warning(`上传模板大小不能超过 ${size} MB!`);
-        return;
+        return false;
       }
       this.fileName = file.name;
       return false; // 返回false不会自动上传
     },
     submitUpload() {
-      debugger;
-      console.log('上传' + this.files.name);
       if (!this.fileName) {
         this.$Message.warning('请选择要上传的文件！');
         return false;
       }
-      let fileFormData = new FormData();
-      fileFormData.append('file', this.files, this.fileName); //filename是键，file是值，就是要传的文件，test.zip是要传的文件名
+      let formData = new FormData();
+      formData.append('files[]', this.files);
       let requestConfig = {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       };
-      this.$http.post(`/basedata/oesmembers/upload?companyId=` + this.company, fileFormData, requestConfig).then(res => {
+      this.$http.post('', formData, requestConfig).then(res => {
         this.$Message.success('上传成功');
       });
     }
@@ -201,6 +200,31 @@ export default {
 .recharge_tooltip p {
   font-size: 14px;
   line-height: 20px;
+}
+.upload-demo,
+/deep/ .el-upload {
+  width: 100%;
+}
+.upload_template {
+  text-align: center;
+  font-size: 14px;
+  margin: 50px 0;
+}
+.download a {
+  color: $menuText;
+}
+.daochu {
+  margin-right: 10px;
+  color: $menuText;
+  fill: $menuText;
+}
+.upload_btn {
+  width: 140px;
+  height: 63px;
+  margin-bottom: 15px;
+}
+.file_name {
+  margin-top: 20px;
 }
 .action {
   text-align: right;
