@@ -94,6 +94,11 @@
         <el-table-column header-align="left" prop="payTime" label="支付时间" width="180"></el-table-column>
         <el-table-column header-align="left" label="操作" fixed="right" width="180px">
           <template slot-scope="scope">
+            <div>
+              <el-tooltip content="复位" placement="top" effect="dark">
+                <svg-icon icon-class="cancelOrder" class="icon-fuwei" @click="handleDelete(scope.row)" />
+              </el-tooltip>
+            </div>
             <div v-if="scope.row.orderStatus === 5">
               <span class="rowstyle" @click="lookShopDetail(scope.row);refundDialogVisible=true">退款详情</span>
             </div>
@@ -369,6 +374,18 @@ export default {
         this.compensateFrom = row;
         this.compensateDialogVisible = true;
       }
+    },
+    // 删除
+    handleDelete(row) {
+      this.$confirm('取消订单将使订单失效，确定吗？', '提示', {
+        showClose: false,
+        center: true
+      }).then(() => {
+        deleteShopFun({ id: row.id }).then(() => {
+          this.$message.success('删除成功');
+          this.getOrderDataToTable();
+        });
+      });
     }
   }
 };

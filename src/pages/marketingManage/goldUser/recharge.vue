@@ -1,28 +1,64 @@
 <template>
-  <el-dialog title="充值金币" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
-    <el-form :model="rechargeForm" :rules="rechargeFormRules" ref="rechargeForm" label-width="125px" label-position="left" class="recharge-form">
-      <el-form-item label="用户账号：" prop="phone">
-        <el-select v-model.trim="rechargeForm.phone" filterable remote clearable :loading="loading" :remote-method="getUserList" placeholder="请填写用户手机号">
-          <el-option v-for="(item,index) in userList" :key="index" :label="item.phone" :value="item.phone"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="适用店铺：" prop="shopId">
-        <el-select v-model="rechargeForm.shopId" filterable clearable placeholder="未选择">
-          <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="金币金额(元)：" prop="cashValue">
-        <el-input v-model.trim="rechargeForm.cashValue" placeholder="请填写充值金额"></el-input>
-      </el-form-item>
-      <el-form-item label="金币本金(枚)：">{{rechargeForm.cashValue?rechargeForm.cashValue*exchangeRate:'' | numFormat}}</el-form-item>
-      <el-form-item label="赠送金币(枚)：" prop="presentAmount">
-        <el-input v-model.trim="rechargeForm.presentAmount" placeholder="请填写赠送金币"></el-input>
-      </el-form-item>
-      <el-form-item class="action">
-        <el-button type="primary" @click="onHandleRecharge('rechargeForm')">确定</el-button>
-        <el-button @click="resetForm('rechargeForm')">取消</el-button>
-      </el-form-item>
-    </el-form>
+  <el-dialog :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
+    <div slot="title">
+      <span class="el-dialog__title" style="margin-right:8px;">充值金币</span>
+      <el-tooltip placement="bottom-start" class="recharge-tip">
+        <div slot="content" class="recharge_tooltip">
+          <p>充值金币请注意以下规则：</p>
+          <p>1.会员账号：需已注册企鹅平台用户账号；</p>
+          <p>2.适用店铺：为运营商账号下的店铺，且已开通金币方案；</p>
+          <p>3.充值金额：范围为0~9999，支持两位小数；</p>
+          <p>4.金币本金：等于金币金额*100；</p>
+          <p>5.赠送金币：范围为0~999900，不支持小数；</p>
+          <p>6.充值金额和赠送金币不可同时为0。</p>
+          <p>7.批量充值请以模板格式编辑上传的附件；</p>
+          <p>8.批量充值时同一个店铺不可对同一用户重复充值。</p>
+        </div>
+        <svg-icon icon-class="zhibiaoshuoming" />
+      </el-tooltip>
+    </div>
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="个人充值" name="first">
+        <el-form :model="rechargeForm" :rules="rechargeFormRules" ref="rechargeForm" label-width="125px" label-position="left" class="recharge-form">
+          <el-form-item label="用户账号：" prop="phone">
+            <el-select v-model.trim="rechargeForm.phone" filterable remote clearable :loading="loading" :remote-method="getUserList" placeholder="请填写用户手机号">
+              <el-option v-for="(item,index) in userList" :key="index" :label="item.phone" :value="item.phone"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="适用店铺：" prop="shopId">
+            <el-select v-model="rechargeForm.shopId" filterable clearable placeholder="未选择">
+              <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="金币金额(元)：" prop="cashValue">
+            <el-input v-model.trim="rechargeForm.cashValue" placeholder="请填写充值金额"></el-input>
+          </el-form-item>
+          <el-form-item label="金币本金(枚)：">{{rechargeForm.cashValue?rechargeForm.cashValue*exchangeRate:'' | numFormat}}</el-form-item>
+          <el-form-item label="赠送金币(枚)：" prop="presentAmount">
+            <el-input v-model.trim="rechargeForm.presentAmount" placeholder="请填写赠送金币"></el-input>
+          </el-form-item>
+          <el-form-item class="action">
+            <el-button type="primary" @click="onHandleRecharge('rechargeForm')">确定</el-button>
+            <el-button @click="resetForm('rechargeForm')">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="批量充值" name="second">
+        <el-upload class="upload-demo" ref="upload" action="#" :limit="1" :file-list="fileList" :before-upload="beforeUpload">
+          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+          <a href="./static/moban.xlsx" rel="external nofollow" download="模板">
+            <el-button size="small" type="success">下载模板</el-button>
+          </a>
+          <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过5MB</div>
+          <div slot="tip" class="el-upload-list__item-name">{{fileName}}</div>
+        </el-upload>
+        <div slot="footer" class="action">
+          <el-button @click="modalClose">取消</el-button>
+          <el-button type="primary" @click="submitUpload()">确定</el-button>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+
   </el-dialog>
 </template>
 
@@ -37,6 +73,9 @@ export default {
   },
   data() {
     return {
+      activeName: 'second',
+      files: [],
+      fileName: '',
       shopList: [],
       userList: [],
       exchangeRate: 100,
@@ -114,6 +153,41 @@ export default {
           });
         }
       });
+    },
+    beforeUpload(file) {
+      debugger;
+      console.log(file, '文件');
+      this.files = file;
+      const reg = /\.xlsx?$/i;
+      const size = 5;
+      if (!file.name.test(reg)) {
+        this.$Message.warning('上传模板只能是 xls、xlsx格式!');
+        return;
+      }
+      if (file.size > 0 && file.size / 1024 / 1024 > size) {
+        this.$Message.warning(`上传模板大小不能超过 ${size} MB!`);
+        return;
+      }
+      this.fileName = file.name;
+      return false; // 返回false不会自动上传
+    },
+    submitUpload() {
+      debugger;
+      console.log('上传' + this.files.name);
+      if (!this.fileName) {
+        this.$Message.warning('请选择要上传的文件！');
+        return false;
+      }
+      let fileFormData = new FormData();
+      fileFormData.append('file', this.files, this.fileName); //filename是键，file是值，就是要传的文件，test.zip是要传的文件名
+      let requestConfig = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      this.$http.post(`/basedata/oesmembers/upload?companyId=` + this.company, fileFormData, requestConfig).then(res => {
+        this.$Message.success('上传成功');
+      });
     }
   }
 };
@@ -123,6 +197,10 @@ export default {
 @import '~@/styles/variables.scss';
 .recharge-form {
   padding-top: 24px;
+}
+.recharge_tooltip p {
+  font-size: 14px;
+  line-height: 20px;
 }
 .action {
   text-align: right;

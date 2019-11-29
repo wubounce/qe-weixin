@@ -165,6 +165,9 @@
             <el-tooltip content="编辑" placement="top" effect="dark">
               <svg-icon icon-class="bianji" class="icon-bianji" @click="handleDeviceEdit(scope.row)" />
             </el-tooltip>
+            <el-tooltip content="删除" placement="top" effect="dark">
+              <svg-icon icon-class="shanchu" class="icon-shanchu" @click="handleDelete(scope.row)" />
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -618,6 +621,19 @@ export default {
       this.batchPoint.shopId = this._.get(this.multipleSelection, '[0].shopId', '');
       this.batchPoint.shopName = this._.get(this.multipleSelection, '[0].shopName', '');
       console.log(this.batchPoint);
+    },
+    // 删除
+    handleDelete(row) {
+      this.$confirm('删除后将无法查看此设备历史数据，<br/> 确定继续删除吗？', '提示', {
+        dangerouslyUseHTMLString: true,
+        showClose: false,
+        center: true
+      }).then(() => {
+        deleteShopFun({ id: row.id }).then(() => {
+          this.$message.success('删除成功');
+          this.getShopDataToTable();
+        });
+      });
     },
     exportTable() {
       let payload = Object.assign({}, this.searchData);
