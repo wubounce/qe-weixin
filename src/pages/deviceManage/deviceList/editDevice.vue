@@ -8,7 +8,7 @@
         <el-tab-pane label="功能设置" name="first">
           <div v-if="configVO">
             <!-- 饮水机 -->
-            <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
+            <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)||deviceEditForm.parentTypeName === '淋浴'&&isBoiledWater(deviceEditForm.support)">
               <el-table :data="deviceEditForm.functionList" style="width: 100%">
                 <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
                 <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
@@ -374,18 +374,30 @@ export default {
     }
   },
   created() {
-    this.formatExtraAttr();
     this.getFunctionSetList();
-    this.configVO = this._.get(this.deviceEditForm, 'configVO', {});
-    this.$set(this.deviceEditForm, 'extraAttr', this._.get(this.deviceEditForm, 'functionList[0].extraAttr', {}));
-    this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
-    this.deviceEditForm.functionList.forEach(item => {
-      item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
-    });
   },
   methods: {
     modalClose() {
       this.$emit('update:visible', false); // 直接修改父组件的属性
+    },
+    async getFunctionSetList() {
+      //获取充电范围模板
+      let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
+      let res = await getFunctionSetListFun(payload);
+      if (this.deviceEditForm.isQuantifyCharge === 1) {
+        let extraAttr = this._.get(res, 'extraAttr', {});
+        this.chargeTimeMax = extraAttr.max || 0;
+        this.chargeTimeMin = extraAttr.min || 0;
+        this.chargeTimeStep = extraAttr.step || 0;
+      }
+      this.deviceEditForm.functionList = res.list || [];
+      this.configVO = this._.get(res, 'configVO', {});
+      this.$set(this.deviceEditForm, 'extraAttr', this._.get(res, 'list[0].extraAttr', {}));
+      this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
+      this.deviceEditForm.functionList.forEach(item => {
+        item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
+      });
+      this.formatExtraAttr();
     },
     formatExtraAttr() {
       //额外参数设置充电桩功率，水位default字段代表options中的第几位
@@ -413,17 +425,7 @@ export default {
       }
       return j;
     },
-    async getFunctionSetList() {
-      //获取充电范围模板
-      let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
-      let res = await getFunctionSetListFun(payload);
-      if (this.deviceEditForm.isQuantifyCharge === 1) {
-        let extraAttr = this._.get(res, 'extraAttr', {});
-        this.chargeTimeMax = extraAttr.max || 0;
-        this.chargeTimeMin = extraAttr.min || 0;
-        this.chargeTimeStep = extraAttr.step || 0;
-      }
-    },
+
     getRestNeedMinutes(row) {
       return (row.needMinutes = this._.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
     },
