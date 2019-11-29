@@ -55,7 +55,7 @@
           </a>
           <div class="file_name" v-if="fileName">
             <div class="excel_tip">
-              <svg-icon icon-class="excel" class="excel" /><span>{{fileName}}</span></div><i class="el-dialog__close el-icon el-icon-close" @click="handleRemove"></i>
+              <svg-icon icon-class="excel" class="excel" /><span>{{fileName}}</span></div><i class="el-dialog__close el-icon el-icon-close remove_file" @click="handleRemove"></i>
           </div>
         </div>
         <div class="action">
@@ -252,7 +252,7 @@ export default {
   justify-content: center;
   align-items: center;
 }
-/deep/ .el-icon-close {
+.remove_file {
   width: 18px;
   height: 18px;
   background: #bbbbbb;
