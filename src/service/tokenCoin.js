@@ -17,6 +17,7 @@ export const tokenCoinUsereApi = 'tokenCoin/user'; // 积分查询 method 'post'
 export const refillAndDeductApi = 'tokenCoin/refillAndDeduct'; // 商家金币充值扣除 method 'post'
 export const tokenCoinMemberListApi = 'tokenCoin/member/list'; // 金币会员管理 method 'post'
 export const tokenCoinMemberRecordApi = 'tokenCoin/member/record'; // 会员充值记录 method 'post'
+export const tokenCoinBatchRefillApi = 'tokenCoin/batch/refill'; // 金币批量充值 method 'post'
 
 
 // 添加金币
@@ -60,3 +61,8 @@ export const tokenCoinMemberListFun = payload => fetch.post(tokenCoinMemberListA
 
 // 会员充值记录
 export const tokenCoinMemberRecordFun = payload => fetch.post(tokenCoinMemberRecordApi, payload);
+
+
+// 金币批量充值
+export const tokenCoinBatchRefillFun = (payload) =>
+         fetch.post(tokenCoinBatchRefillApi, payload);

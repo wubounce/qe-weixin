@@ -69,7 +69,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { tokenCoinListFun, getByPhoneFun, configTokenCoinFun, refillAndDeductFun } from '@/service/tokenCoin';
+import { tokenCoinListFun, getByPhoneFun, configTokenCoinFun, refillAndDeductFun, tokenCoinBatchRefillFun } from '@/service/tokenCoin';
+import { getToken } from '@/utils/auth';
 export default {
   props: {
     visible: {
@@ -181,14 +182,13 @@ export default {
         return false;
       }
       let formData = new FormData();
-      formData.append('files[]', this.files);
-      let requestConfig = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      };
-      this.$http.post('', formData, requestConfig).then(res => {
-        this.$Message.success('上传成功');
+      formData.append('file', this.files);
+      formData.append('token', getToken());
+      console.log(formData);
+      tokenCoinBatchRefillFun(formData).then(res => {
+        this.$Message.success('充值成功');
+        this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
+        this.modalClose();
       });
     },
     // 移除附件
