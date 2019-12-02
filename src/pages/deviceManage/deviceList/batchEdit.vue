@@ -14,12 +14,12 @@
         <!-- 功能设置 -->
         <div v-if="checkBatchFuntion === 1&&configVO">
           <!-- 饮水机 -->
-          <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)">
+          <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)||deviceEditForm.parentTypeName === '淋浴'&&isBoiledWater(deviceEditForm.support)">
             <el-form-item label="编辑内容：">
               <el-checkbox-group v-model="baseEditBatchFuntion">
-                <el-checkbox label="needMinutes" v-if="configVO.time.available">单脉冲流量</el-checkbox>
-                <el-checkbox label="functionPrice" v-if="configVO.price.available">价格</el-checkbox>
-                <el-checkbox label="ifOpen" v-if="configVO.open.available">状态</el-checkbox>
+                <el-checkbox label="needMinutes" v-if="configVO.time.available">{{configVO.time.unit}}</el-checkbox>
+                <el-checkbox label="functionPrice" v-if="configVO.price.available">{{configVO.price.unit}}</el-checkbox>
+                <el-checkbox label="ifOpen" v-if="configVO.open.available">{{configVO.open.unit}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
             <el-table :data="deviceEditForm.functionList" key="waterfunctionList" style="width: 100%">
@@ -66,12 +66,12 @@
           <div v-if="deviceEditForm.isQuantifyCharge === 1&&deviceEditForm.extraAttr">
             <el-form-item label="编辑内容：">
               <el-checkbox-group v-model="baseEditBatchFuntion">
-                <el-checkbox label="extraAttr">时间</el-checkbox>
-                <el-checkbox label="functionPrice" v-if="configVO.price.available">价格</el-checkbox>
-                <el-checkbox label="ifOpen" v-if="configVO.open.available">状态</el-checkbox>
+                <el-checkbox label="extraAttr" v-if="configVO.extra.available">{{configVO.extra.unit}}</el-checkbox>
+                <el-checkbox label="functionPrice" v-if="configVO.price.available">{{configVO.price.unit}}</el-checkbox>
+                <el-checkbox label="ifOpen" v-if="configVO.open.available">{{configVO.open.unit}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-            <div v-if="isShowOptions('extraAttr')">
+            <div v-if="configVO.extra.available&&isShowOptions('extraAttr')">
               <el-form-item label="可选时间范围：">
                 <el-col :span="5">
                   <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
@@ -125,10 +125,10 @@
           <div v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
             <el-form-item label="编辑内容：">
               <el-checkbox-group v-model="baseEditBatchFuntion">
-                <el-checkbox label="needMinutes" v-if="configVO.time.available">耗时</el-checkbox>
-                <el-checkbox label="functionPrice" v-if="configVO.price.available">价格</el-checkbox>
-                <el-checkbox label="functionCode" v-if="configVO.pulse.available">脉冲</el-checkbox>
-                <el-checkbox label="ifOpen" v-if="configVO.open.available">状态</el-checkbox>
+                <el-checkbox label="needMinutes" v-if="configVO.time.available">{{configVO.time.unit}}</el-checkbox>
+                <el-checkbox label="functionPrice" v-if="configVO.price.available">{{configVO.price.unit}}</el-checkbox>
+                <el-checkbox label="functionCode" v-if="configVO.pulse.available">{{configVO.pulse.unit}}</el-checkbox>
+                <el-checkbox label="ifOpen" v-if="configVO.open.available">{{configVO.open.unit}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
             <el-table :data="deviceEditForm.functionList" style="width: 100%" key="functionList">
@@ -447,8 +447,6 @@ export default {
     },
     //批量基本功能设置和其他属性
     batchEditBaseFunction() {
-      console.log(this.formatBathEditData());
-      console.log(this.deviceEditForm.functionList);
       //编辑内容是否开启状态栏，开启状态栏至少要开启一项功能
       if (this._.includes(this.baseEditBatchFuntion, 'ifOpen') && this.formatBathEditData() === this.deviceEditForm.functionList.length) {
         this.$Message.error('请至少开启一项功能');
