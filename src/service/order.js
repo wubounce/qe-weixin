@@ -9,7 +9,8 @@ const machineResetApi = 'machine/reset'; // 订单列表，复位 method 'post'
 const machineBootApi = 'machine/boot'; // 订单列表，启动 method 'post'
 const orderDetailApi = 'order/getOrderManagerDetail'; // 获取订单详情
 const compensateApi = 'voucher/compensate'; //订单补偿
-const isReleaseCompensateApji = '/voucher/release/judge'; // 判断是否补偿过优惠券 method 'post'
+const isReleaseCompensateApi = 'voucher/release/judge'; // 判断是否补偿过优惠券 method 'post'
+const delAfterOrderApi = 'order/after/clear'; // 后支付订单取消 method 'post'
 
 // 订单列表
 export const orderListFun = payload => fetch.post(orderListApi, payload);
@@ -31,4 +32,9 @@ export const orderDetailFun = payload => fetch.post(orderDetailApi, payload);
 export const compensateFun = payload => fetch.post(compensateApi, payload);
 
 // 判断是否补偿过优惠券
-export const isReleaseCompensateFun = payload => fetch.post(isReleaseCompensateApji, payload);
+export const isReleaseCompensateFun = payload =>
+         fetch.post(isReleaseCompensateApi, payload);
+
+// 后支付订单取消
+export const delAfterOrderFun = payload =>
+         fetch.post(delAfterOrderApi, payload);

@@ -92,29 +92,31 @@
         </el-table-column>
         <el-table-column header-align="left" prop="createTime" label="下单时间" width="180"></el-table-column>
         <el-table-column header-align="left" prop="payTime" label="支付时间" width="180"></el-table-column>
-        <el-table-column header-align="left" label="操作" fixed="right" width="180px">
+        <el-table-column header-align="left" label="操作" fixed="right" min-width="180">
           <template slot-scope="scope">
-            <div>
-              <el-tooltip content="复位" placement="top" effect="dark">
+            <div v-if="scope.row.orderType === 3">
+              <el-tooltip content="取消订单" placement=" top" effect="dark">
                 <svg-icon icon-class="cancelOrder" class="icon-fuwei" @click="handleDelete(scope.row)" />
               </el-tooltip>
             </div>
-            <div v-if="scope.row.orderStatus === 5">
-              <span class="rowstyle" @click="lookShopDetail(scope.row);refundDialogVisible=true">退款详情</span>
-            </div>
-            <div v-if="scope.row.orderStatus === 2">
-              <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
-                <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
-              </el-tooltip>
-              <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false&&notAllowToStart(scope.row.support)">
-                <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
-              </el-tooltip>
-              <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4 && scope.row.isRefund===1">
-                <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
-              </el-tooltip>
-              <el-tooltip content="补偿券" placement="top" effect="dark" v-if="scope.row.shopState === 2">
-                <svg-icon icon-class="youhuiquan" class="icon-qidong" @click="handleCompensate(scope.row)" />
-              </el-tooltip>
+            <div v-else>
+              <div v-if="scope.row.orderStatus === 5">
+                <span class="rowstyle" @click="lookShopDetail(scope.row);refundDialogVisible=true">退款详情</span>
+              </div>
+              <div v-if="scope.row.orderStatus === 2">
+                <el-tooltip content="复位" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false">
+                  <svg-icon icon-class="fuwei" class="icon-fuwei" @click="handleDeviceReset(scope.row)" />
+                </el-tooltip>
+                <el-tooltip content="启动" placement="top" effect="dark" v-show="scope.row.subType !== '通用脉冲充电桩'&&scope.row.notQuantitative===false&&notAllowToStart(scope.row.support)">
+                  <svg-icon icon-class="qidong" class="icon-qidong" @click="handleDeviceStart(scope.row)" />
+                </el-tooltip>
+                <el-tooltip content="退款" placement="top" effect="dark" v-if="scope.row.payType !== 4 && scope.row.isRefund===1">
+                  <svg-icon icon-class="tuikuan" class="icon-qidong" @click="handleOrderRefund(scope.row)" />
+                </el-tooltip>
+                <el-tooltip content="补偿券" placement="top" effect="dark" v-if="scope.row.shopState === 2">
+                  <svg-icon icon-class="youhuiquan" class="icon-qidong" @click="handleCompensate(scope.row)" />
+                </el-tooltip>
+              </div>
             </div>
           </template>
         </el-table-column>
@@ -208,7 +210,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { orderListFun, orderDetailFun, machineResetFun, machineBootFun, ordeRrefundFun, isReleaseCompensateFun } from '@/service/order';
+import { orderListFun, orderDetailFun, machineResetFun, machineBootFun, ordeRrefundFun, isReleaseCompensateFun, delAfterOrderFun } from '@/service/order';
 import { shopListFun } from '@/service/report';
 import { orderStatus, PayType } from '@/utils/mapping';
 import Pagination from '@/components/Pager';
@@ -381,7 +383,7 @@ export default {
         showClose: false,
         center: true
       }).then(() => {
-        deleteShopFun({ id: row.id }).then(() => {
+        delAfterOrderFun({ orderId: row.id }).then(() => {
           this.$message.success('删除成功');
           this.getOrderDataToTable();
         });

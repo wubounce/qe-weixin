@@ -150,7 +150,7 @@
             <span>{{scope.row.profit | tofixd}}</span>
           </template>
         </el-table-column>
-        <el-table-column header-align="left" label="操作" fixed="right" width="200px">
+        <el-table-column header-align="left" label="操作" fixed="right" min-width="220">
           <template slot-scope="scope">
             <el-tooltip content="筒自洁" placement="top" effect="dark" v-show="scope.row.machineState===1||scope.row.machineState ===4">
               <span v-if="scope.row.machineTypeName==='洗鞋机'&&scope.row.subTypeName&&scope.row.subTypeName.includes('脉冲')===false||scope.row.machineTypeName==='洗衣机'&&scope.row.subTypeName&&scope.row.subTypeName.includes('脉冲')===false">
@@ -233,7 +233,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, newListSubTypeAllFun, getNewListSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList, quantifyResetFun, quantifyStartFun } from '@/service/device';
+import { deviceListFun, detailDeviceListFun, getlistParentTypeFun, newListSubTypeAllFun, getNewListSubTypeFun, tzjDeviceFun, manageResetDeviceFun, machineStartFun, deviceList, quantifyResetFun, quantifyStartFun, deleteDeviceFun } from '@/service/device';
 import { exportExcel } from '@/service/common';
 import { shopListFun } from '@/service/report';
 import { poitionListFun } from '@/service/point';
@@ -629,9 +629,9 @@ export default {
         showClose: false,
         center: true
       }).then(() => {
-        deleteShopFun({ id: row.id }).then(() => {
+        deleteDeviceFun({ machineId: row.machineId }).then(() => {
           this.$message.success('删除成功');
-          this.getShopDataToTable();
+          this.getDeviceDataToTable();
         });
       });
     },

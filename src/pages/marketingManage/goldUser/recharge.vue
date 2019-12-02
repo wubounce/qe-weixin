@@ -79,7 +79,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'second',
+      activeName: 'first',
       files: [],
       fileName: '',
       shopList: [],
