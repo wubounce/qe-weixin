@@ -1,6 +1,18 @@
 <template>
-  <el-dialog title="编辑设备" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="768px">
-    <el-form :model="deviceEditForm" :rules="deviceEditFormRules" ref="deviceEditForm" label-position="left" class="device-edit-wrap">
+  <el-dialog
+    title="编辑设备"
+    :visible.sync="visible"
+    :before-close="modalClose"
+    :close="modalClose"
+    width="768px"
+  >
+    <el-form
+      :model="deviceEditForm"
+      :rules="deviceEditFormRules"
+      ref="deviceEditForm"
+      label-position="left"
+      class="device-edit-wrap"
+    >
       <el-form-item prop="machineName" label="设备名称" label-width="80px" class="edit-device-name">
         <el-input v-model.trim="deviceEditForm.machineName"></el-input>
       </el-form-item>
@@ -8,61 +20,103 @@
         <el-tab-pane label="功能设置" name="first">
           <div v-if="configVO">
             <!-- 饮水机 -->
-            <div v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)||deviceEditForm.parentTypeName === '淋浴'&&isBoiledWater(deviceEditForm.support)">
+            <div
+              v-if="deviceEditForm.parentTypeName === '饮水机'&&isBoiledWater(deviceEditForm.support)||deviceEditForm.parentTypeName === '淋浴'&&isBoiledWater(deviceEditForm.support)"
+            >
               <el-table :data="deviceEditForm.functionList" style="width: 100%">
-                <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
-                <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
+                <el-table-column
+                  prop="functionName"
+                  :label="configVO.name.title"
+                  v-if="configVO.name.available"
+                ></el-table-column>
+                <el-table-column
+                  prop="needMinutes"
+                  :label="configVO.time.title"
+                  v-if="configVO.time.available"
+                >
                   <template slot-scope="scope">
                     <div v-if="configVO.time.join">
-                      <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
-                        <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
-                        </el-input>
+                      <el-form-item
+                        v-if="scope.$index===0"
+                        :prop="'functionList.' + scope.$index + '.needMinutes'"
+                        :rules="deviceEditFormRules.waterMachineNeedMinutes"
+                      >
+                        <el-input v-model.trim="scope.row.needMinutes" maxlength="8"></el-input>
                       </el-form-item>
                       <span v-else>{{getRestNeedMinutes(scope.row)}}</span>
                     </div>
-                    <el-form-item v-else :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.waterMachineNeedMinutes'>
-                      <el-input v-model.trim="scope.row.needMinutes" maxlength="8">
-                      </el-input>
+                    <el-form-item
+                      v-else
+                      :prop="'functionList.' + scope.$index + '.needMinutes'"
+                      :rules="deviceEditFormRules.waterMachineNeedMinutes"
+                    >
+                      <el-input v-model.trim="scope.row.needMinutes" maxlength="8"></el-input>
                     </el-form-item>
                   </template>
                 </el-table-column>
-                <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                <el-table-column
+                  prop="functionPrice"
+                  :label="configVO.price.title"
+                  v-if="configVO.price.available"
+                >
                   <template slot-scope="scope">
                     <div v-if="configVO.price.join">
-                      <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
-                        <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
-                        </el-input>
+                      <el-form-item
+                        v-if="scope.$index===0"
+                        :prop="'functionList.' + scope.$index + '.functionPrice'"
+                        :rules="deviceEditFormRules.waterMachinePirce"
+                      >
+                        <el-input v-model.trim="scope.row.functionPrice" maxlength="6"></el-input>
                       </el-form-item>
                       <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
                     </div>
-                    <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.waterMachinePirce'>
-                      <el-input v-model.trim="scope.row.functionPrice" maxlength="6">
-                      </el-input>
+                    <el-form-item
+                      v-else
+                      :prop="'functionList.' + scope.$index + '.functionPrice'"
+                      :rules="deviceEditFormRules.waterMachinePirce"
+                    >
+                      <el-input v-model.trim="scope.row.functionPrice" maxlength="6"></el-input>
                     </el-form-item>
                   </template>
                 </el-table-column>
-                <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
+                <el-table-column
+                  prop="ifOpenStatus"
+                  header-align="right"
+                  align="right"
+                  :label="configVO.open.title"
+                  v-if="configVO.open.available"
+                >
                   <template slot-scope="scope">
-                    <el-switch v-model="scope.row.ifOpenStatus">
-                    </el-switch>
+                    <el-switch v-model="scope.row.ifOpenStatus"></el-switch>
                   </template>
                 </el-table-column>
               </el-table>
-
             </div>
             <!-- 充电桩 -->
             <div v-if="deviceEditForm.isQuantifyCharge === 1">
               <el-form-item label="可选时间范围：">
                 <el-col :span="5">
                   <el-select v-model="deviceEditForm.extraAttr.min" placeholder="请选择">
-                    <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item" :value="item"></el-option>
+                    <el-option
+                      v-for="item in chargeTimeMax"
+                      v-show="item>=chargeTimeMin"
+                      :key="item"
+                      :label="item"
+                      :value="item"
+                    ></el-option>
                   </el-select>
                   <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
                 </el-col>
                 <el-col class="line" :span="1">-</el-col>
                 <el-col :span="5">
                   <el-select v-model="deviceEditForm.extraAttr.max" placeholder="请选择">
-                    <el-option v-for="item in chargeTimeMax" v-show="item>=chargeTimeMin" :key="item" :label="item" :value="item"></el-option>
+                    <el-option
+                      v-for="item in chargeTimeMax"
+                      v-show="item>=chargeTimeMin"
+                      :key="item"
+                      :label="item"
+                      :value="item"
+                    ></el-option>
                   </el-select>
                   <span style="position: absolute;left: 410px;color:#bfbfbf;">小时</span>
                 </el-col>
@@ -79,7 +133,13 @@
               <el-form-item label="推荐充电时间：">
                 <div class="add-discount">
                   <el-select v-model="deviceEditForm.extraAttr.default" placeholder="请选择">
-                    <el-option v-for="item in ((1 / deviceEditForm.extraAttr.step) * deviceEditForm.extraAttr.max)" v-show="(item*deviceEditForm.extraAttr.step)>=deviceEditForm.extraAttr.min" :key="item" :label="(item*deviceEditForm.extraAttr.step)" :value="item*deviceEditForm.extraAttr.step"></el-option>
+                    <el-option
+                      v-for="item in ((1 / deviceEditForm.extraAttr.step) * deviceEditForm.extraAttr.max)"
+                      v-show="(item*deviceEditForm.extraAttr.step)>=deviceEditForm.extraAttr.min"
+                      :key="item"
+                      :label="(item*deviceEditForm.extraAttr.step)"
+                      :value="item*deviceEditForm.extraAttr.step"
+                    ></el-option>
                   </el-select>
                   <span style="position: absolute;left: 235px;color:#bfbfbf;">小时</span>
                 </div>
@@ -90,8 +150,7 @@
                   <span style="float:right">
                     <el-tooltip content="用户充电时间=用户选择时间 × 充电功率对应时间系数" placement="top">
                       <svg-icon icon-class="zhibiaoshuoming" />
-                    </el-tooltip>
-                    时间系数
+                    </el-tooltip>时间系数
                   </span>
                 </h2>
                 <ul>
@@ -139,61 +198,111 @@
                 </ul>
               </div>
               <el-table :data="deviceEditForm.functionList" style="width: 100%">
-                <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
-                <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+                <el-table-column
+                  prop="functionName"
+                  :label="configVO.name.title"
+                  v-if="configVO.name.available"
+                ></el-table-column>
+                <el-table-column
+                  prop="functionPrice"
+                  :label="configVO.price.title"
+                  v-if="configVO.price.available"
+                >
                   <template slot-scope="scope">
                     <div v-if="configVO.price.join">
-                      <el-form-item v-if="scope.$index===0" :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
-                        <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
-                        </el-input>
+                      <el-form-item
+                        v-if="scope.$index===0"
+                        :prop="'functionList.' + scope.$index + '.functionPrice'"
+                        :rules="deviceEditFormRules.chargeMachinePirce"
+                      >
+                        <el-input v-model.trim="scope.row.functionPrice" maxlength="4"></el-input>
                       </el-form-item>
                       <span v-else>{{getRestFunctionPrice(scope.row)}}</span>
                     </div>
-                    <el-form-item v-else :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.chargeMachinePirce'>
-                      <el-input v-model.trim="scope.row.functionPrice" maxlength="4">
-                      </el-input>
+                    <el-form-item
+                      v-else
+                      :prop="'functionList.' + scope.$index + '.functionPrice'"
+                      :rules="deviceEditFormRules.chargeMachinePirce"
+                    >
+                      <el-input v-model.trim="scope.row.functionPrice" maxlength="4"></el-input>
                     </el-form-item>
                   </template>
                 </el-table-column>
-                <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.price.available">
+                <el-table-column
+                  prop="ifOpenStatus"
+                  header-align="right"
+                  align="right"
+                  :label="configVO.open.title"
+                  v-if="configVO.price.available"
+                >
                   <template slot-scope="scope">
-                    <el-switch v-model="scope.row.ifOpenStatus">
-                    </el-switch>
+                    <el-switch v-model="scope.row.ifOpenStatus"></el-switch>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
             <!-- 正常 -->
-            <el-table :data="deviceEditForm.functionList" style="width: 100%" v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1">
-              <el-table-column prop="functionName" :label="configVO.name.title" v-if="configVO.name.available"></el-table-column>
-              <el-table-column prop="needMinutes" :label="configVO.time.title" v-if="configVO.time.available">
+            <el-table
+              :data="deviceEditForm.functionList"
+              style="width: 100%"
+              v-if="isBoiledWater(deviceEditForm.support)===false&&deviceEditForm.isQuantifyCharge !== 1"
+            >
+              <el-table-column
+                prop="functionName"
+                :label="configVO.name.title"
+                v-if="configVO.name.available"
+              ></el-table-column>
+              <el-table-column
+                prop="needMinutes"
+                :label="configVO.time.title"
+                v-if="configVO.time.available"
+              >
                 <template slot-scope="scope">
-                  <el-form-item :prop="'functionList.' + scope.$index + '.needMinutes'" :rules='deviceEditFormRules.needMinutes'>
-                    <el-input v-model.trim="scope.row.needMinutes" maxlength="4">
-                    </el-input>
+                  <el-form-item
+                    :prop="'functionList.' + scope.$index + '.needMinutes'"
+                    :rules="deviceEditFormRules.needMinutes"
+                  >
+                    <el-input v-model.trim="scope.row.needMinutes" maxlength="4"></el-input>
                   </el-form-item>
                 </template>
               </el-table-column>
-              <el-table-column prop="functionPrice" :label="configVO.price.title" v-if="configVO.price.available">
+              <el-table-column
+                prop="functionPrice"
+                :label="configVO.price.title"
+                v-if="configVO.price.available"
+              >
                 <template slot-scope="scope">
-                  <el-form-item :prop="'functionList.' + scope.$index + '.functionPrice'" :rules='deviceEditFormRules.functionPrice'>
-                    <el-input v-model.trim="scope.row.functionPrice" maxlength="5">
-                    </el-input>
+                  <el-form-item
+                    :prop="'functionList.' + scope.$index + '.functionPrice'"
+                    :rules="deviceEditFormRules.functionPrice"
+                  >
+                    <el-input v-model.trim="scope.row.functionPrice" maxlength="5"></el-input>
                   </el-form-item>
                 </template>
               </el-table-column>
-              <el-table-column prop="functionCode" :label="configVO.pulse.title" v-if="configVO.pulse.available">
+              <el-table-column
+                prop="functionCode"
+                :label="configVO.pulse.title"
+                v-if="configVO.pulse.available"
+              >
                 <template slot-scope="scope">
-                  <el-form-item :prop="'functionList.' + scope.$index + '.functionCode'" :rules='deviceEditFormRules.functionCode'>
-                    <el-input v-model.trim="scope.row.functionCode" maxlength="2">
-                    </el-input>
+                  <el-form-item
+                    :prop="'functionList.' + scope.$index + '.functionCode'"
+                    :rules="deviceEditFormRules.functionCode"
+                  >
+                    <el-input v-model.trim="scope.row.functionCode" maxlength="2"></el-input>
                   </el-form-item>
                 </template>
               </el-table-column>
-              <el-table-column prop="ifOpenStatus" header-align="right" align="right" :label="configVO.open.title" v-if="configVO.open.available">
+              <el-table-column
+                prop="ifOpenStatus"
+                header-align="right"
+                align="right"
+                :label="configVO.open.title"
+                v-if="configVO.open.available"
+              >
                 <template slot-scope="scope">
-                  <el-switch v-model="scope.row.ifOpenStatus">
-                  </el-switch>
+                  <el-switch v-model="scope.row.ifOpenStatus"></el-switch>
                 </template>
               </el-table-column>
             </el-table>
@@ -201,44 +310,72 @@
         </el-tab-pane>
         <el-tab-pane label="洗衣液设置" name="second" v-if="deviceEditForm.isDetergent === 1">
           <el-form-item label="洗衣液功能" prop="isOpenDetergent" class="edit-isOpenDetergent">
-            <el-switch v-model="deviceEditForm.isOpenDetergentStatus">
-            </el-switch>
+            <el-switch v-model="deviceEditForm.isOpenDetergentStatus"></el-switch>
           </el-form-item>
           <el-table :data="deviceEditForm.detergentFunctionList" style="width: 100%">
             <el-table-column prop="functionName" label="功能"></el-table-column>
             <el-table-column prop="detergentLiquid" label="用量/ml">
               <template slot-scope="scope">
-                <el-form-item :prop="'detergentFunctionList.' + scope.$index + '.detergentLiquid'" :rules='deviceEditFormRules.detergentLiquid'>
-                  <el-input v-model.trim="scope.row.detergentLiquid" maxlength="3">
-                  </el-input>
+                <el-form-item
+                  :prop="'detergentFunctionList.' + scope.$index + '.detergentLiquid'"
+                  :rules="deviceEditFormRules.detergentLiquid"
+                >
+                  <el-input v-model.trim="scope.row.detergentLiquid" maxlength="3"></el-input>
                 </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="functionPrice" label="原价/元">
               <template slot-scope="scope">
-                <el-form-item :prop="'detergentFunctionList.' + scope.$index + '.detergentPrice'" :rules='deviceEditFormRules.detergentPrice'>
-                  <el-input v-model.trim="scope.row.detergentPrice">
-                  </el-input>
+                <el-form-item
+                  :prop="'detergentFunctionList.' + scope.$index + '.detergentPrice'"
+                  :rules="deviceEditFormRules.detergentPrice"
+                >
+                  <el-input v-model.trim="scope.row.detergentPrice"></el-input>
                 </el-form-item>
-              </template></el-table-column>
+              </template>
+            </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="其他属性设置" name="third" v-if="deviceEditForm.setting&&deviceEditForm.setting.length >0">
+        <el-tab-pane
+          label="其他属性设置"
+          name="third"
+          v-if="deviceEditForm.setting&&deviceEditForm.setting.length >0"
+        >
           <el-table :data="deviceEditForm.setting" style="width: 100%">
             <el-table-column prop="functionName" label="属性名称" width="300"></el-table-column>
             <el-table-column prop="setting" label="属性值">
               <template slot-scope="scope">
-                <span v-for="(item,index) in scope.row.setting" :key="index" class="extraAttr_setting">
-                  <el-form-item prop="setting" class="edit-waterLevel" v-if="item.type&&item.type==='select'" :label="item.name">
+                <span
+                  v-for="(item,index) in scope.row.setting"
+                  :key="index"
+                  class="extraAttr_setting"
+                >
+                  <el-form-item
+                    prop="setting"
+                    class="edit-waterLevel"
+                    v-if="item.type&&item.type==='select'"
+                    :label="item.name"
+                  >
                     <el-select v-model="item.default" :placeholder="item.desc">
-                      <el-option v-if="deviceEditForm.company==='qiekj'" v-for="(item) in item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
-                      <el-option v-if="deviceEditForm.company==='youfang'" v-for="(item) in item.youfangOptions || item.options" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                      <el-option
+                        v-if="deviceEditForm.company==='qiekj'"
+                        v-for="(item) in item.options"
+                        :key="item.value"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
+                      <el-option
+                        v-if="deviceEditForm.company==='youfang'"
+                        v-for="(item) in item.youfangOptions || item.options"
+                        :key="item.value"
+                        :label="item.name"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </el-form-item>
                   <!-- <el-form-item v-else :label="item.name" :prop="'setting.'+ scope.$index +'.setting.'+ index +'.default'" :rules='deviceEditFormRules.default'> -->
                   <el-form-item v-else :label="item.name">
-                    <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="10">
-                    </el-input>
+                    <el-input v-model.trim="item.default" :placeholder="item.desc" maxlength="10"></el-input>
                   </el-form-item>
                 </span>
               </template>
@@ -255,9 +392,9 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getFunctionSetListFun, deviceAddorEditFun } from '@/service/device';
-import { validatNum } from '@/utils/validate';
-import waterMixin from './waterMixin';
+import { getFunctionSetListFun, deviceAddorEditFun } from "@/service/device";
+import { validatNum } from "@/utils/validate";
+import waterMixin from "./waterMixin";
 export default {
   mixins: [waterMixin],
   props: {
@@ -275,35 +412,39 @@ export default {
   data() {
     var validatorPower1 = (rule, value, callback) => {
       if (value <= 1) {
-        return callback(new Error('功率必须大于1'));
+        return callback(new Error("功率必须大于1"));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
         return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
-        callback(new Error('功率必须为数字值,无小数'));
+        callback(new Error("功率必须为数字值,无小数"));
       } else {
         callback();
       }
     };
     var validatorPower2 = (rule, value, callback) => {
-      let power = this.$options.filters.getBeginPower(this.deviceEditForm.extraAttr.power1);
+      let power = this.$options.filters.getBeginPower(
+        this.deviceEditForm.extraAttr.power1
+      );
       if (value <= power) {
         return callback(new Error(`功率必须大于${power}`));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
         return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
-        callback(new Error('功率必须为数字值,无小数'));
+        callback(new Error("功率必须为数字值,无小数"));
       } else {
         callback();
       }
     };
     var validatorPower3 = (rule, value, callback) => {
-      let power = this.$options.filters.getBeginPower(this.deviceEditForm.extraAttr.power2);
+      let power = this.$options.filters.getBeginPower(
+        this.deviceEditForm.extraAttr.power2
+      );
       if (value <= power) {
         return callback(new Error(`功率必须大于${power}`));
       } else if (value > this.deviceEditForm.extraAttr.maxPower) {
         return callback(new Error(`请输入正确的功率范围数值`));
       } else if (!validatNum(value)) {
-        callback(new Error('功率必须为数字值,无小数'));
+        callback(new Error("功率必须为数字值,无小数"));
       } else {
         callback();
       }
@@ -326,39 +467,120 @@ export default {
       }
     };
     return {
-      deviceEditTab: 'first',
+      deviceEditTab: "first",
       deviceEditForm: this.deviceEditdetailForm,
       deviceEditFormRules: {
-        machineName: [{ required: true, message: '请输入设备名称', trigger: 'blur' }],
-        needMinutes: [{ required: true, message: '请输入耗时', trigger: 'blur' }, { pattern: /^([1-9]\d{0,4})$/, message: '请输入1-9999之间的数字', trigger: 'blur' }],
-        functionPrice: [{ required: true, message: '请输入原价', trigger: 'blur' }, { pattern: /^(([0-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0-99之间的数字,最多保留2位小数', trigger: 'blur' }],
-        waterMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { validator: validatorWterMachinePirce, trigger: 'blur' }],
-        waterMachineNeedMinutes: [
-          { required: true, message: '请输入单脉冲流量', trigger: 'blur' },
+        machineName: [
+          { required: true, message: "请输入设备名称", trigger: "blur" }
+        ],
+        needMinutes: [
+          { required: true, message: "请输入耗时", trigger: "blur" },
           {
-            trigger: 'blur',
+            pattern: /^([1-9]\d{0,4})$/,
+            message: "请输入1-9999之间的数字",
+            trigger: "blur"
+          }
+        ],
+        functionPrice: [
+          { required: true, message: "请输入原价", trigger: "blur" },
+          {
+            pattern: /^(([0-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/,
+            message: "请输入0-99之间的数字,最多保留2位小数",
+            trigger: "blur"
+          }
+        ],
+        waterMachinePirce: [
+          { required: true, message: "请输入价格", trigger: "blur" },
+          { validator: validatorWterMachinePirce, trigger: "blur" }
+        ],
+        waterMachineNeedMinutes: [
+          { required: true, message: "请输入单脉冲流量", trigger: "blur" },
+          {
+            trigger: "blur",
             validator: (rule, value, callback) => {
               let reg = /^([0-9]*)([.]{0,1}\d{0,3})?$/;
               if (!reg.test(value)) {
-                callback(new Error('请输入0.001-9999之间数字，最多保留3位小数'));
+                callback(
+                  new Error("请输入0.001-9999之间数字，最多保留3位小数")
+                );
               } else if (Number(value) === 0 || Number(value) > 9999.0) {
-                callback(new Error('请输入0.001-9999之间数字，最多保留3位小数'));
+                callback(
+                  new Error("请输入0.001-9999之间数字，最多保留3位小数")
+                );
               } else {
                 callback();
               }
             }
           }
         ],
-        chargeMachinePirce: [{ required: true, message: '请输入价格', trigger: 'blur' }, { pattern: /^([0-4]{1}([.]{1}[0-9]{0,2})?|5|5.0|5.00)$/, message: '请输入0.01-5之间数字，最多保留2位小数', trigger: 'blur' }],
-        functionCode: [{ required: true, message: '请输入脉冲', trigger: 'blur' }, { pattern: /^([1-9]\d{0,1})$/, message: '请输入1-99之间的数字', trigger: 'blur' }],
-        detergentLiquid: [{ required: true, message: '请输入用量', trigger: 'blur' }, { pattern: /^([1-9]\d{0,2})$/, message: '请输入1-999之间的数字', trigger: 'blur' }],
-        detergentPrice: [{ required: true, message: '请输入洗衣液价格', trigger: 'blur' }, { pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/, message: '请输入0.01-99之间的数字,最多保留2位小数', trigger: 'blur' }],
-        'extraAttr.power1': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower1, trigger: 'blur' }],
-        'extraAttr.power2': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower2, trigger: 'blur' }],
-        'extraAttr.power3': [{ required: true, message: '请输入功率', trigger: 'blur' }, { validator: validatorPower3, trigger: 'blur' }],
-        'extraAttr.ratio2': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
-        'extraAttr.ratio3': [{ required: true, message: '请输入系数', trigger: 'blur' }, { pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/, message: '请输入0.1-1之间的数字，最多保留1位小数', trigger: 'blur' }],
-        default: [{ required: true, message: '内容不可为空', trigger: 'blur' }, { pattern: /^([1-9]+\d*)|(0\.[1-9]{0,1}?)$/, message: '请输入整数，最多保留1位小数', trigger: 'blur' }]
+        chargeMachinePirce: [
+          { required: true, message: "请输入价格", trigger: "blur" },
+          {
+            pattern: /^([0-4]{1}([.]{1}[0-9]{0,2})?|5|5.0|5.00)$/,
+            message: "请输入0.01-5之间数字，最多保留2位小数",
+            trigger: "blur"
+          }
+        ],
+        functionCode: [
+          { required: true, message: "请输入脉冲", trigger: "blur" },
+          {
+            pattern: /^([1-9]\d{0,1})$/,
+            message: "请输入1-99之间的数字",
+            trigger: "blur"
+          }
+        ],
+        detergentLiquid: [
+          { required: true, message: "请输入用量", trigger: "blur" },
+          {
+            pattern: /^([1-9]\d{0,2})$/,
+            message: "请输入1-999之间的数字",
+            trigger: "blur"
+          }
+        ],
+        detergentPrice: [
+          { required: true, message: "请输入洗衣液价格", trigger: "blur" },
+          {
+            pattern: /^(([1-9]|[1-9][0-8])(\.\d{0,2})?|(([1-8][0-9])(\.\d{0,2})?)|0\.[1-9]{0,2}|99|99.0|99.00)$/,
+            message: "请输入0.01-99之间的数字,最多保留2位小数",
+            trigger: "blur"
+          }
+        ],
+        "extraAttr.power1": [
+          { required: true, message: "请输入功率", trigger: "blur" },
+          { validator: validatorPower1, trigger: "blur" }
+        ],
+        "extraAttr.power2": [
+          { required: true, message: "请输入功率", trigger: "blur" },
+          { validator: validatorPower2, trigger: "blur" }
+        ],
+        "extraAttr.power3": [
+          { required: true, message: "请输入功率", trigger: "blur" },
+          { validator: validatorPower3, trigger: "blur" }
+        ],
+        "extraAttr.ratio2": [
+          { required: true, message: "请输入系数", trigger: "blur" },
+          {
+            pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/,
+            message: "请输入0.1-1之间的数字，最多保留1位小数",
+            trigger: "blur"
+          }
+        ],
+        "extraAttr.ratio3": [
+          { required: true, message: "请输入系数", trigger: "blur" },
+          {
+            pattern: /^((0\.[1-9]{0,1}?)|1|1.0)$/,
+            message: "请输入0.1-1之间的数字，最多保留1位小数",
+            trigger: "blur"
+          }
+        ],
+        default: [
+          { required: true, message: "内容不可为空", trigger: "blur" },
+          {
+            pattern: /^([1-9]+\d*)|(0\.[1-9]{0,1}?)$/,
+            message: "请输入整数，最多保留1位小数",
+            trigger: "blur"
+          }
+        ]
       },
       //充电时间选择
       chargeTimeMax: 0,
@@ -378,96 +600,146 @@ export default {
   },
   methods: {
     modalClose() {
-      this.$emit('update:visible', false); // 直接修改父组件的属性
+      this.$emit("update:visible", false); // 直接修改父组件的属性
     },
     async getFunctionSetList() {
       //获取充电范围模板
-      let payload = Object.assign({}, { subTypeId: this.deviceEditForm.subTypeId, shopId: this.deviceEditForm.shopId });
+      let payload = Object.assign(
+        {},
+        { machineId: this.deviceEditForm.machineId }
+      );
       let res = await getFunctionSetListFun(payload);
       if (this.deviceEditForm.isQuantifyCharge === 1) {
-        let extraAttr = this._.get(res, 'extraAttr', {});
+        let extraAttr = this._.get(res, "extraAttr", {});
         this.chargeTimeMax = extraAttr.max || 0;
         this.chargeTimeMin = extraAttr.min || 0;
         this.chargeTimeStep = extraAttr.step || 0;
       }
       this.deviceEditForm.functionList = res.list || [];
-      this.configVO = this._.get(res, 'configVO', {});
-      this.$set(this.deviceEditForm, 'extraAttr', this._.get(res, 'list[0].extraAttr', {}));
-      this.deviceEditForm.isOpenDetergent == 1 ? this.$set(this.deviceEditForm, 'isOpenDetergentStatus', true) : this.$set(this.deviceEditForm, 'isOpenDetergentStatus', false);
+      this.configVO = this._.get(res, "configVO", {});
+      this.$set(
+        this.deviceEditForm,
+        "extraAttr",
+        this._.get(res, "list[0].extraAttr", {})
+      );
+      this.deviceEditForm.isOpenDetergent == 1
+        ? this.$set(this.deviceEditForm, "isOpenDetergentStatus", true)
+        : this.$set(this.deviceEditForm, "isOpenDetergentStatus", false);
       this.deviceEditForm.functionList.forEach(item => {
-        item.ifOpen === 0 ? this.$set(item, 'ifOpenStatus', true) : this.$set(item, 'ifOpenStatus', false);
+        item.ifOpen === 0
+          ? this.$set(item, "ifOpenStatus", true)
+          : this.$set(item, "ifOpenStatus", false);
       });
       this.formatExtraAttr();
     },
     formatExtraAttr() {
       //额外参数设置充电桩功率，水位default字段代表options中的第几位
       if (!this._.isEmpty(this.deviceEditForm.setting)) {
-        this.deviceEditForm.setting = this.deviceEditForm.setting.filter(item => {
-          if (!this._.isEmpty(item.setting)) {
-            item.setting = this._.isString(item.setting) ? JSON.parse(item.setting) : item.setting;
+        this.deviceEditForm.setting = this.deviceEditForm.setting.filter(
+          item => {
             if (!this._.isEmpty(item.setting)) {
-              item = item.setting.filter(j => {
-                return j.type && j.type === 'select' ? this.waterSet(j) : item;
-              });
+              item.setting = this._.isString(item.setting)
+                ? JSON.parse(item.setting)
+                : item.setting;
+              if (!this._.isEmpty(item.setting)) {
+                item = item.setting.filter(j => {
+                  return j.type && j.type === "select"
+                    ? this.waterSet(j)
+                    : item;
+                });
+              }
+              return item;
             }
-            return item;
           }
-        });
+        );
       }
     },
     waterSet(j = {}) {
-      let defaultvalue = Number(this._.get(j, 'default', '0')) - 1;
-      if (this.deviceEditForm.company === 'qiekj') {
-        j.default = this._.get(j, `options[${defaultvalue}].value`, '0');
+      let defaultvalue = Number(this._.get(j, "default", "0")) - 1;
+      if (this.deviceEditForm.company === "qiekj") {
+        j.default = this._.get(j, `options[${defaultvalue}].value`, "0");
       }
-      if (this.deviceEditForm.company === 'youfang') {
-        j.default = j.youfangOptions ? this._.get(j, `youfangOptions[${defaultvalue}].value`, '0') : this._.get(j, `options[${defaultvalue}].value`, '0');
+      if (this.deviceEditForm.company === "youfang") {
+        j.default = j.youfangOptions
+          ? this._.get(j, `youfangOptions[${defaultvalue}].value`, "0")
+          : this._.get(j, `options[${defaultvalue}].value`, "0");
       }
       return j;
     },
 
     getRestNeedMinutes(row) {
-      return (row.needMinutes = this._.get(this.deviceEditForm, 'functionList[0].needMinutes', row.needMinutes));
+      return (row.needMinutes = this._.get(
+        this.deviceEditForm,
+        "functionList[0].needMinutes",
+        row.needMinutes
+      ));
     },
     getRestFunctionPrice(row) {
-      return (row.functionPrice = this._.get(this.deviceEditForm, 'functionList[0].functionPrice', row.needMinutes));
+      return (row.functionPrice = this._.get(
+        this.deviceEditForm,
+        "functionList[0].functionPrice",
+        row.needMinutes
+      ));
     },
     onEditDecive(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let ifOpenLen = 0;
-          this.deviceEditForm.isOpenDetergentStatus === true ? (this.deviceEditForm.isOpenDetergent = 1) : (this.deviceEditForm.isOpenDetergent = 0);
-          this.deviceEditForm.functionList = this.deviceEditForm.functionList.map(item => {
-            if (item.ifOpenStatus) {
-              item.ifOpen = 0;
-            } else {
-              item.ifOpen = 1;
-              ifOpenLen = ifOpenLen + 1;
+          this.deviceEditForm.isOpenDetergentStatus === true
+            ? (this.deviceEditForm.isOpenDetergent = 1)
+            : (this.deviceEditForm.isOpenDetergent = 0);
+          this.deviceEditForm.functionList = this.deviceEditForm.functionList.map(
+            item => {
+              if (item.ifOpenStatus) {
+                item.ifOpen = 0;
+              } else {
+                item.ifOpen = 1;
+                ifOpenLen = ifOpenLen + 1;
+              }
+              if (this.deviceEditForm.isQuantifyCharge === 1) {
+                let neextraAttr = this._.cloneDeep(
+                  this.deviceEditForm.extraAttr
+                );
+                this.$set(
+                  neextraAttr,
+                  "channel",
+                  this._.get(item, "extraAttr.channel", "")
+                );
+                item.extraAttr = neextraAttr;
+              }
+              return item;
             }
-            if (this.deviceEditForm.isQuantifyCharge === 1) {
-              let neextraAttr = this._.cloneDeep(this.deviceEditForm.extraAttr);
-              this.$set(neextraAttr, 'channel', this._.get(item, 'extraAttr.channel', ''));
-              item.extraAttr = neextraAttr;
-            }
-            return item;
-          });
+          );
           if (ifOpenLen === this.deviceEditForm.functionList.length) {
-            this.$Message.error('请至少开启一项功能');
+            this.$Message.error("请至少开启一项功能");
             return false;
           }
           let data = Object.assign({}, this.deviceEditForm);
-          data.functionJson = this.deviceEditForm.functionList ? JSON.stringify(this.deviceEditForm.functionList) : null;
-          data.detergentJson = this.deviceEditForm.detergentFunctionList ? JSON.stringify(this.deviceEditForm.detergentFunctionList) : null;
+          data.functionJson = this.deviceEditForm.functionList
+            ? JSON.stringify(this.deviceEditForm.functionList)
+            : null;
+          data.detergentJson = this.deviceEditForm.detergentFunctionList
+            ? JSON.stringify(this.deviceEditForm.detergentFunctionList)
+            : null;
           /* eslint-disable no-unused-vars */
-          let { functionList, detergentFunctionList, configVO, extraAttr, setting, ...payload } = data;
+          let {
+            functionList,
+            detergentFunctionList,
+            configVO,
+            waterLevel,
+            extraAttr,
+            setting,
+            ...payload
+          } = data;
           payload.setting = this.getFormatExtraAttr(setting || []);
           deviceAddorEditFun(payload).then(() => {
-            this.$Message.success('编辑成功');
+            this.$Message.success("编辑成功");
             this.modalClose();
-            this.$listeners.getDeviceDataToTable && this.$listeners.getDeviceDataToTable(); //若组件传递事件confirm则执行
+            this.$listeners.getDeviceDataToTable &&
+              this.$listeners.getDeviceDataToTable(); //若组件传递事件confirm则执行
           });
         } else {
-          this.$Message.error('请输入完整信息');
+          this.$Message.error("请输入完整信息");
           return false;
         }
       });
@@ -503,7 +775,7 @@ export default {
 };
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import '~@/styles/variables.scss';
+@import "~@/styles/variables.scss";
 
 .edit-device-name {
   padding-top: 16px;
