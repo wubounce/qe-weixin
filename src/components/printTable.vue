@@ -1,14 +1,31 @@
 <template>
-  <el-dialog title="" :visible.sync="visible" :show-close="false" :close-on-click-modal="false" :before-close="modalClose" top="5vh" :close="modalClose" width="915">
+  <el-dialog
+    title
+    :visible.sync="visible"
+    :show-close="false"
+    :close-on-click-modal="false"
+    :before-close="modalClose"
+    top="5vh"
+    :close="modalClose"
+    width="915"
+  >
     <!--startprint-->
     <center class="print-content" align="center" ref="print" id="print">
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
-            <th :colspan="columnsData.length" class="table-title" style="border-bottom: none; font-size:20px;">营收报表</th>
+            <th
+              :colspan="columnsData.length"
+              class="table-title"
+              style="border-bottom: none; font-size:20px;"
+            >营收报表</th>
           </tr>
           <tr>
-            <th :colspan="columnsData.length" style="text-align:right;border-top: none;padding-right:5px; line-height: 22px; font-weight:normal" class="table-title">{{printTime}}</th>
+            <th
+              :colspan="columnsData.length"
+              style="text-align:right;border-top: none;padding-right:5px; line-height: 22px; font-weight:normal"
+              class="table-title"
+            >{{printTime}}</th>
           </tr>
           <tr>
             <th v-for="(col, index) in columnsData" :width="col.width" :key="index">{{col.label}}</th>
@@ -16,16 +33,26 @@
         </thead>
         <tbody>
           <tr v-for="(item, index) in tableData" :key="index">
-            <td v-for="(col, index) in columnsData" :key="index" :style="col.style">{{ item[col.prop] }}</td>
+            <td
+              v-for="(col, index) in columnsData"
+              :key="index"
+              :style="col.style"
+            >{{ item[col.prop] }}</td>
           </tr>
           <tr>
             <td v-for="(item, index) in summary" :key="index" :style="item.style">{{item.total}}</td>
           </tr>
           <tr>
-            <td :colspan="columnsData.length" style="text-align:left; padding-left:5px">报表数据包含店铺：{{shopNames.join(',')}}</td>
+            <td
+              :colspan="columnsData.length"
+              style="text-align:left; padding-left:5px"
+            >报表数据包含店铺：{{shopNames.join(',')}}</td>
           </tr>
           <tr>
-            <td :colspan="columnsData.length" style="text-align:left; padding-left:5px">打印时间：{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;打印人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 报表生成秘钥：Qekj{{key}} </td>
+            <td
+              :colspan="columnsData.length"
+              style="text-align:left; padding-left:5px"
+            >打印时间：{{pritnDate}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;打印人：{{userInfoIn.realName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 报表生成秘钥：Qekj{{key}}</td>
           </tr>
         </tbody>
       </table>
@@ -39,12 +66,12 @@
 </template>
 
   <script>
-import moment from 'moment';
-import { shopListFun } from '@/service/report';
-import { getUserInfoInLocalstorage } from '@/utils/auth';
-import { checkPerms } from '@/utils/tools';
+import moment from "moment";
+import { shopListFun } from "@/service/report";
+import { getUserInfoInLocalstorage } from "@/utils/auth";
+import { checkPerms } from "@/utils/tools";
 export default {
-  name: 'printTable',
+  name: "printTable",
   props: {
     visible: {
       type: Boolean,
@@ -79,16 +106,18 @@ export default {
   },
   data() {
     return {
-      pritnDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-      userInfoIn: getUserInfoInLocalstorage() ? getUserInfoInLocalstorage() : {},
+      pritnDate: moment().format("YYYY-MM-DD HH:mm:ss"),
+      userInfoIn: getUserInfoInLocalstorage()
+        ? getUserInfoInLocalstorage()
+        : {},
       shopNames: [],
-      printTime: '',
+      printTime: "",
       columnsData: []
     };
   },
   computed: {
     key() {
-      let num = '';
+      let num = "";
       for (var i = 0; i < 6; i++) {
         num += Math.floor(Math.random() * 10);
       }
@@ -97,14 +126,17 @@ export default {
   },
   mounted() {},
   created() {
-    if (!checkPerms('mer:tokencoin:vip')) {
+    if (!checkPerms("mer:tokencoin:vip")) {
       this.columnsData = this.columns.filter(i => {
-        return i.prop !== 'coinCount' && i.prop !== 'coinMoney';
+        return i.prop !== "coinCount" && i.prop !== "coinMoney";
       });
     } else {
       this.columnsData = this.columns;
     }
-    this.printTime = this.type(this.searchData.time) === 'array' ? `${this.searchData.time[0]}  至  ${this.searchData.time[1]}` : `${this.searchData.time}年`;
+    this.printTime =
+      this.type(this.searchData.time) === "array"
+        ? `${this.searchData.time[0]}  至  ${this.searchData.time[1]}`
+        : `${this.searchData.time}年`;
     this.getShopList();
   },
 
@@ -113,14 +145,16 @@ export default {
       let res = await shopListFun();
       let shopNmaes;
       if (this.searchData.shopIds.length > 0) {
-        shopNmaes = res.filter(v => this.searchData.shopIds.some(k => k == v.shopId)).map(item => item.shopName);
+        shopNmaes = res
+          .filter(v => this.searchData.shopIds.some(k => k == v.shopId))
+          .map(item => item.shopName);
       } else {
         shopNmaes = res.map(i => i.shopName);
       }
       this.shopNames = shopNmaes;
     },
     modalClose() {
-      this.$emit('update:visible', false); // 直接修改父组件的属性
+      this.$emit("update:visible", false); // 直接修改父组件的属性
     },
     type(obj) {
       return Object.prototype.toString
@@ -130,13 +164,16 @@ export default {
     },
     doPrint() {
       let userAgent = navigator.userAgent; //取得浏览器的userAgent字符串//判断是否IE浏览器
-      if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1) {
-        let html = document.getElementById('print').innerHTML;
-        let oPop = window.open('', 'oPop');
+      if (userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Chrome") < 1) {
+        let html = document.getElementById("print").innerHTML;
+        let oPop = window.open("", "oPop");
         oPop.document.write(html);
         oPop.print();
         oPop.close();
-      } else if (userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1) {
+      } else if (
+        userAgent.indexOf("compatible") > -1 &&
+        userAgent.indexOf("MSIE") > -1
+      ) {
         this.iePreview();
       } else {
         this.$print(this.$refs.print);
@@ -144,12 +181,12 @@ export default {
     },
     iePreview() {
       let bdhtml = window.document.body.innerHTML;
-      let sprnstr = '<!--startprint-->';
-      let eprnstr = '<!--endprint-->';
+      let sprnstr = "<!--startprint-->";
+      let eprnstr = "<!--endprint-->";
       let prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr) + 17);
       prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr));
       window.document.body.innerHTML = prnhtml;
-      if (!!window.ActiveXObject || 'ActiveXObject' in window) {
+      if (!!window.ActiveXObject || "ActiveXObject" in window) {
         //是否ie
         this.remove_ie_header_and_footer();
       }
@@ -161,12 +198,13 @@ export default {
      * */
     remove_ie_header_and_footer() {
       var hkey_path;
-      hkey_path = 'HKEY_CURRENT_USER\\Software\\Microsoft\\Internet Explorer\\PageSetup\\';
+      hkey_path =
+        "HKEY_CURRENT_USER\\Software\\Microsoft\\Internet Explorer\\PageSetup\\";
       /* eslint-disable */
       try {
-        var RegWsh = new ActiveXObject('WScript.Shell');
-        RegWsh.RegWrite(hkey_path + 'header', '');
-        RegWsh.RegWrite(hkey_path + 'footer', '');
+        var RegWsh = new ActiveXObject("WScript.Shell");
+        RegWsh.RegWrite(hkey_path + "header", "");
+        RegWsh.RegWrite(hkey_path + "footer", "");
       } catch (e) {}
     }
   }
@@ -225,7 +263,7 @@ export default {
     margin-top: 10mm;
     margin-left: 6mm;
     margin-right: 6mm;
-    font-family: 'Microsoft Yahei', 'Times New Roman', serif;
+    font-family: "Microsoft Yahei", "Times New Roman", serif;
     font-size: 8pt;
   }
   .no-print {
