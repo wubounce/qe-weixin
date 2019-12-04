@@ -15,6 +15,14 @@ npm run dev
 ### Compiles and minifies for production
 
 ```
+npm run build-dev
+```
+
+```
+npm run build-pre
+```
+
+```
 npm run build
 ```
 
