@@ -22,18 +22,18 @@
         <el-form :model="rechargeForm" :rules="rechargeFormRules" ref="rechargeForm" label-width="125px" label-position="left" class="recharge-form">
           <el-form-item label="用户账号：" prop="phone">
             <el-select v-model.trim="rechargeForm.phone" filterable remote clearable :loading="loading" :remote-method="getUserList" placeholder="请填写用户手机号">
-              <el-option v-for="(item,index) in userList" :key="index" :label="item.phone" :value="item.phone"></el-option>
+              <el-option v-for="(item, index) in userList" :key="index" :label="item.phone" :value="item.phone"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="适用店铺：" prop="shopId">
             <el-select v-model="rechargeForm.shopId" filterable clearable placeholder="未选择">
-              <el-option v-for="(item,index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
+              <el-option v-for="(item, index) in shopList" :key="index" :label="item.shopName" :value="item.shopId"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="金币金额(元)：" prop="cashValue">
             <el-input v-model.trim="rechargeForm.cashValue" placeholder="请填写充值金额"></el-input>
           </el-form-item>
-          <el-form-item label="金币本金(枚)：">{{rechargeForm.cashValue?rechargeForm.cashValue*exchangeRate:'' | numFormat}}</el-form-item>
+          <el-form-item label="金币本金(枚)：">{{ rechargeForm.cashValue ? rechargeForm.cashValue * exchangeRate : '' | numFormat }}</el-form-item>
           <el-form-item label="赠送金币(枚)：" prop="presentAmount">
             <el-input v-model.trim="rechargeForm.presentAmount" placeholder="请填写赠送金币"></el-input>
           </el-form-item>
@@ -46,16 +46,20 @@
       <el-tab-pane label="批量充值" name="second">
         <el-upload class="upload-demo" ref="upload" action="#" :limit="1" :before-upload="beforeUpload">
           <div class="upload_template">
-            <el-button slot="trigger" type="primary" class="upload_btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
+            <el-button slot="trigger" type="primary" class="upload_btn"> <i class="el-icon-paperclip"></i>上传附件 </el-button>
           </div>
         </el-upload>
         <div class="file_content">
           <a href="https://static.qiekj.com/images/template/%E9%87%91%E5%B8%81%E6%89%B9%E9%87%8F%E5%85%85%E5%80%BC%E6%A8%A1%E6%9D%BF.xlsx" rel="external nofollow" download="模板">
-            <svg-icon icon-class="daochu" class="daochu" /><span>下载模板</span>
+            <svg-icon icon-class="daochu" class="daochu" />
+            <span>下载模板</span>
           </a>
           <div class="file_name" v-if="fileName">
             <div class="excel_tip">
-              <svg-icon icon-class="excel" class="excel" /><span>{{fileName}}</span></div><i class="el-dialog__close el-icon el-icon-close remove_file" @click="handleRemove"></i>
+              <svg-icon icon-class="excel" class="excel" />
+              <span>{{ fileName }}</span>
+            </div>
+            <i class="el-dialog__close el-icon el-icon-close remove_file" @click="handleRemove"></i>
           </div>
         </div>
         <div class="action">
@@ -64,13 +68,18 @@
         </div>
       </el-tab-pane>
     </el-tabs>
-
   </el-dialog>
 </template>
 
 <script type="text/ecmascript-6">
-import { tokenCoinListFun, getByPhoneFun, configTokenCoinFun, refillAndDeductFun, tokenCoinBatchRefillFun } from '@/service/tokenCoin';
-import { getToken } from '@/utils/auth';
+import {
+  tokenCoinListFun,
+  getByPhoneFun,
+  configTokenCoinFun,
+  refillAndDeductFun,
+  tokenCoinBatchRefillFun
+} from "@/service/tokenCoin";
+import { getToken } from "@/utils/auth";
 export default {
   props: {
     visible: {
@@ -80,34 +89,45 @@ export default {
   },
   data() {
     return {
-      activeName: 'first',
+      activeName: "first",
       files: [],
-      fileName: '',
+      fileName: "",
       shopList: [],
       userList: [],
       exchangeRate: 100,
       rechargeForm: {
-        phone: '',
-        shopId: '',
-        cashValue: '',
-        presentAmount: ''
+        phone: "",
+        shopId: "",
+        cashValue: "",
+        presentAmount: ""
       },
       rechargeFormRules: {
-        phone: [{ required: true, message: '请填写用户手机号码', trigger: 'change' }],
-        shopId: [{ required: true, message: '请选择适用店铺', trigger: 'change' }],
-        cashValue: [{ required: true, message: '请填写充值金额', trigger: 'blur' }, { pattern: /^(([1-9]|([1-9][0-9]{1,2}([0-8])?)|([1-9][0-8]{1,2}([0-9])?))(\.\d{0,2})?|0\.\d{0,2}|9999|9999.0|9999.00)$/, message: '充值金额请输入0~9999之间数字，最多两位小数', trigger: 'blur' }],
+        phone: [
+          { required: true, message: "请填写用户手机号码", trigger: "change" }
+        ],
+        shopId: [
+          { required: true, message: "请选择适用店铺", trigger: "change" }
+        ],
+        cashValue: [
+          { required: true, message: "请填写充值金额", trigger: "blur" },
+          {
+            pattern: /^(([0-9]|([1-9][0-9]{1,2}([0-8])?)|([1-9][0-8]{1,2}([0-9])?))(\.\d{0,2})?|0\.\d{0,2}|9999|9999.0|9999.00)$/,
+            message: "充值金额请输入0~9999之间数字，最多两位小数",
+            trigger: "blur"
+          }
+        ],
         presentAmount: [
           {
             required: true,
-            trigger: 'blur',
+            trigger: "blur",
             validator: (rule, value, callback) => {
               let reg = /^([0-9]|([1-9][0-9]*))$/;
               if (!value) {
-                callback(new Error('请填写赠送金币'));
+                callback(new Error("请填写赠送金币"));
               } else if (!reg.test(value)) {
-                callback(new Error('请填写0~999,900之间整数'));
+                callback(new Error("请填写0~999,900之间整数"));
               } else if (Number(value) > 999900) {
-                callback(new Error('请填写0~999,900之间整数'));
+                callback(new Error("请填写0~999,900之间整数"));
               } else {
                 callback();
               }
@@ -123,23 +143,29 @@ export default {
   },
   methods: {
     modalClose() {
-      this.$emit('update:visible', false); // 直接修改父组件的属性
+      this.$emit("update:visible", false); // 直接修改父组件的属性
     },
     async getTokenCoinConfig() {
       let res = await configTokenCoinFun();
       this.exchangeRate = res.exchangeRate || 100;
     },
     async getShopList() {
-      let res = await tokenCoinListFun({ page: 1, pageSize: 999, isContainClose: 1 });
+      let res = await tokenCoinListFun({
+        page: 1,
+        pageSize: 999,
+        isContainClose: 1
+      });
       let items = (res && res.items) || [];
       this.shopList = items.filter(item => item.isDelete === 0);
     },
     async getUserList(query) {
-      if (query !== '') {
+      if (query !== "") {
         this.loading = true;
         let payload = { phone: query };
         let res = await getByPhoneFun(payload);
-        this.userList = this.options = res ? [{ phone: res.phone, id: res.id }] : {};
+        this.userList = this.options = res
+          ? [{ phone: res.phone, id: res.id }]
+          : {};
         this.loading = false;
       }
     },
@@ -149,13 +175,21 @@ export default {
     onHandleRecharge(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
+          if (
+            Number(this.rechargeForm.cashValue) <= 0 &&
+            Number(this.rechargeForm.presentAmount) <= 0
+          ) {
+            this.$Message.error("充值金额与赠送金币不可同时为0");
+            return false;
+          }
           let payload = Object.assign({ type: 1 }, this.rechargeForm);
           payload.principalAmount = payload.cashValue * this.exchangeRate;
           refillAndDeductFun(payload).then(() => {
+            this.modalClose();
             setTimeout(() => {
-              this.$Message.success('充值成功');
-              this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
-              this.modalClose();
+              this.$Message.success("充值成功");
+              this.$listeners.getGoldUserDataToTable &&
+                this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
             }, 1000);
           });
         }
@@ -166,7 +200,7 @@ export default {
       const reg = /\.xlsx?$/i;
       const size = 5;
       if (!reg.test(file.name)) {
-        this.$Message.warning('上传模板只能是 xls、xlsx格式!');
+        this.$Message.warning("上传模板只能是 xls、xlsx格式!");
         return false;
       }
       if (file.size > 0 && file.size / 1024 / 1024 > size) {
@@ -178,23 +212,24 @@ export default {
     },
     submitUpload() {
       if (!this.fileName) {
-        this.$Message.warning('请选择要上传的文件！');
+        this.$Message.warning("请选择要上传的文件！");
         return false;
       }
       let formData = new FormData();
-      formData.append('file', this.files);
-      formData.append('token', getToken());
+      formData.append("file", this.files);
+      formData.append("token", getToken());
       console.log(formData);
       tokenCoinBatchRefillFun(formData).then(res => {
-        this.$Message.success('充值成功');
-        this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
+        this.$Message.success("充值成功");
+        this.$listeners.getGoldUserDataToTable &&
+          this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
         this.modalClose();
       });
     },
     // 移除附件
     handleRemove() {
       this.files = [];
-      this.fileName = '';
+      this.fileName = "";
     }
   }
 };

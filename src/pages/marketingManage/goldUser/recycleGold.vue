@@ -2,19 +2,19 @@
   <el-dialog title="金币回收" :visible.sync="visible" :before-close="modalClose" :close="modalClose" width="457px">
     <el-form :model="recycleForm" :rules="recycleRulesForm" ref="recycleForm" label-width="125px" label-position="left" class="recharge-recycleForm">
       <el-form-item label="用户账号：">
-        {{userInfo.phone}}
+        {{ userInfo.phone }}
       </el-form-item>
       <el-form-item label="适用店铺：">
-        {{userInfo.shopName}}
+        {{ userInfo.shopName }}
       </el-form-item>
       <el-form-item label="金币本金(枚)：" prop="principalAmount">
-        <el-input v-model.trim="recycleForm.principalAmount" :placeholder="userInfo.principalAmount>0?`最多${userInfo.principalAmount}金币`:`请填写金币本金`"></el-input>
+        <el-input v-model.trim="recycleForm.principalAmount" :placeholder="userInfo.principalAmount > 0 ? `最多${userInfo.principalAmount}金币` : `请填写金币本金`"></el-input>
       </el-form-item>
       <el-form-item label="赠送金币(枚)：" prop="presentAmount">
-        <el-input v-model.trim="recycleForm.presentAmount" :placeholder="userInfo.presentAmount>0?`最多${userInfo.presentAmount}金币`:`请填写赠送金币`"></el-input>
+        <el-input v-model.trim="recycleForm.presentAmount" :placeholder="userInfo.presentAmount > 0 ? `最多${userInfo.presentAmount}金币` : `请填写赠送金币`"></el-input>
       </el-form-item>
       <el-form-item label="金币金额(元)：">
-        {{recycleForm.principalAmount?recycleForm.principalAmount/exchangeRate:'' | numFormat}}
+        {{ recycleForm.principalAmount ? recycleForm.principalAmount / exchangeRate : '' | numFormat }}
       </el-form-item>
       <el-form-item class="action">
         <el-button type="primary" @click="onHandleRecyle('recycleForm')">确定</el-button>
@@ -113,10 +113,10 @@ export default {
           }).then(() => {
             let payload = Object.assign({ type: 2, phone: this.userInfo.phone, shopId: this.userInfo.shopId }, this.recycleForm);
             refillAndDeductFun(payload).then(() => {
+              this.modalClose();
               setTimeout(() => {
                 this.$Message.success('回收成功');
                 this.$listeners.getGoldUserDataToTable && this.$listeners.getGoldUserDataToTable(); //若组件传递事件confirm则执行
-                this.modalClose();
               }, 1000);
             });
           });
