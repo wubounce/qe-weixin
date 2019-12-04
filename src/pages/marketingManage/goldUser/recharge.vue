@@ -198,13 +198,13 @@ export default {
     beforeUpload(file) {
       this.files = file;
       const reg = /\.xlsx?$/i;
-      const size = 5;
+      const size = 500;
       if (!reg.test(file.name)) {
         this.$Message.warning("上传模板只能是 xls、xlsx格式!");
         return false;
       }
-      if (file.size > 0 && file.size / 1024 / 1024 > size) {
-        this.$Message.warning(`上传模板大小不能超过 ${size} MB!`);
+      if (file.size > 0 && file.size / 1024> size) {
+        this.$Message.warning(`上传模板大小不能超过 ${size} KB!`);
         return false;
       }
       this.fileName = file.name;
